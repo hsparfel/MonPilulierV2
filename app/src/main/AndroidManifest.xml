@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.pouillos.monpilulier">
+
+    <application
+        android:name="com.orm.SugarApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <meta-data android:name="DATABASE" android:value="mon_pilulier.db" />
+        <meta-data android:name="VERSION" android:value="12" />
+        <meta-data android:name="QUERY_LOG" android:value="true" />
+        <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.pouillos.monpilulier" />
+        <activity android:name=".activities.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.NewUserActivity"></activity>
+        <activity android:name=".activities.ListAllUserActivity" />
+        <activity android:name=".activities.NewMedicamentActivity"></activity>
+        <activity android:name=".activities.ListAllMedicamentActivity" />
+        <activity android:name=".activities.NewAnalyseActivity"></activity>
+        <activity android:name=".activities.ListAllAnalyseActivity" />
+        <activity android:name=".activities.NewDoseActivity"></activity>
+        <activity android:name=".activities.ListAllDoseActivity" />
+        <activity android:name=".activities.NewExamenActivity"></activity>
+        <activity android:name=".activities.ListAllExamenActivity" />
+        <activity android:name=".activities.NewSpecialiteActivity"></activity>
+        <activity android:name=".activities.ListAllSpecialiteActivity" />
+        <activity android:name=".activities.NewCabinetActivity"></activity>
+        <activity android:name=".activities.ListAllCabinetActivity" />
+        <activity android:name=".activities.NewDureeActivity"></activity>
+        <activity android:name=".activities.ListAllDureeActivity" />
+        <activity android:name=".activities.NewMedecinActivity"></activity>
+        <activity android:name=".activities.ListAllMedecinActivity" />
+        <activity android:name=".activities.NewOrdonnanceActivity"></activity>
+        <activity android:name=".activities.ListAllOrdonnanceActivity" />
+        <activity android:name=".activities.NewOrdoAnalyseActivity"></activity>
+        <activity android:name=".activities.ListAllOrdoAnalyseActivity" />
+    </application>
+
+</manifest>
