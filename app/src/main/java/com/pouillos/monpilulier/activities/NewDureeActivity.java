@@ -133,7 +133,6 @@ public class NewDureeActivity extends AppCompatActivity {
     public void saveToDb(TextView textNom) {
         if (dureeToUpdate==null) {
             Duree duree = new Duree(textNom.getText().toString());
-            duree.setCreationDate(new Date());
             duree.save();
         } else {
             Duree duree = (Duree.find(Duree.class,"id = ?",dureeToUpdate.getId().toString())).get(0);

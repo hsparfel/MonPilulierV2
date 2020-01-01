@@ -9,10 +9,8 @@ import java.util.Date;
 @Table
 public class Medicament extends SugarRecord implements Serializable, Comparable<Medicament>{
 
-private Long id;
 private String name;
 private String detail;
-private Date creationDate;
 
     public Medicament() {
     }
@@ -20,16 +18,6 @@ private Date creationDate;
     public Medicament(String name, String detail) {
         this.name = name;
         this.detail = detail;
-    }
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -48,21 +36,11 @@ private Date creationDate;
         this.detail = detail;
     }
 
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
     @Override
     public String toString() {
         return "Medicament{" +
-                "id=" + id +
                 ", name='" + name + '\'' +
                 ", detail='" + detail + '\'' +
-                ", creationDate=" + creationDate +
                 '}';
     }
 

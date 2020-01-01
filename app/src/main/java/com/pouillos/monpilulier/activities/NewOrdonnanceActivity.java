@@ -18,6 +18,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.pouillos.monpilulier.R;
+import com.pouillos.monpilulier.abstraite.GestionDate;
 import com.pouillos.monpilulier.entities.Ordonnance;
 import com.pouillos.monpilulier.entities.Medecin;
 import com.pouillos.monpilulier.entities.Utilisateur;
@@ -33,7 +34,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class NewOrdonnanceActivity extends AppCompatActivity {
+public class NewOrdonnanceActivity extends AppCompatActivity implements GestionDate {
 
     private ImageButton buttonValider;
     private ImageButton buttonAnnuler;
@@ -141,10 +142,10 @@ public class NewOrdonnanceActivity extends AppCompatActivity {
                 String dateMois = ""+(datePicker.getMonth()+1);
                 String dateAnnee = ""+datePicker.getYear();
                 if (datePicker.getDayOfMonth()<10) {
-                    dateJour = "0"+datePicker.getDayOfMonth();
+                    dateJour = "0"+dateJour;
                 }
                 if (datePicker.getMonth()<10) {
-                    dateMois = "0"+datePicker.getMonth();
+                    dateMois = "0"+dateMois;
                 }
                 String dateString = dateJour+"/"+dateMois+"/"+dateAnnee;
                 tv1.setText("date : "+dateString);
@@ -176,6 +177,7 @@ public class NewOrdonnanceActivity extends AppCompatActivity {
     public void traiterIntent() {
         Intent intent = getIntent();
         cible = (Class<?>) intent.getSerializableExtra("precedent");
+        //TODO recuperer le new medecin
         if (intent.hasExtra("ordonnanceToUpdate")) {
             ordonnanceToUpdate = (Ordonnance) intent.getSerializableExtra("ordonnanceToUpdate");
             textDescription.setText(ordonnanceToUpdate.getDetail());
@@ -184,6 +186,14 @@ public class NewOrdonnanceActivity extends AppCompatActivity {
             textDate.setText(ordonnanceToUpdate.EcrireDate(ordonnanceToUpdate.getDate()));
             spinnerMedecin.setSelection(getIndex(spinnerMedecin, medecin.getName()));
         } else {ordonnanceToUpdate = new Ordonnance();}
+        if (intent.hasExtra("medecinToUpdate")) {
+            medecin = (Medecin) intent.getSerializableExtra("medecinToUpdate");
+            spinnerMedecin.setSelection(getIndex(spinnerMedecin, medecin.getName()));
+        }
+
+
+
+
     }
 
     public void retourPagePrecedente() {
@@ -198,14 +208,14 @@ public class NewOrdonnanceActivity extends AppCompatActivity {
             buttonOrdoPrescription.setVisibility(View.VISIBLE);
             buttonOrdoExamen.setVisibility(View.VISIBLE);
             buttonOrdoAnalyse.setVisibility(View.VISIBLE);
-            buttonValider.setVisibility(View.INVISIBLE);
-            buttonAnnuler.setVisibility(View.INVISIBLE);
+            //buttonValider.setVisibility(View.INVISIBLE);
+            //buttonAnnuler.setVisibility(View.INVISIBLE);
         } else {
             buttonOrdoPrescription.setVisibility(View.INVISIBLE);
             buttonOrdoExamen.setVisibility(View.INVISIBLE);
             buttonOrdoAnalyse.setVisibility(View.INVISIBLE);
-            buttonValider.setVisibility(View.VISIBLE);
-            buttonAnnuler.setVisibility(View.VISIBLE);
+            //buttonValider.setVisibility(View.VISIBLE);
+            //buttonAnnuler.setVisibility(View.VISIBLE);
         }
     }
 
@@ -298,7 +308,6 @@ public class NewOrdonnanceActivity extends AppCompatActivity {
         medecin = (Medecin) Medecin.find(Medecin.class,"name = ?", spinnerMedecin.getSelectedItem().toString()).get(0);
         if (ordonnanceToUpdate.getId() == null) {
             Ordonnance ordonnance = new Ordonnance(textDescription.getText().toString(), utilisateur, medecin, date);
-            ordonnance.setCreationDate(new Date());
             Long Id = ordonnance.save();
             ordonnanceToUpdate = (Ordonnance) Ordonnance.find(Ordonnance.class,"id = ?", Id.toString()).get(0);
         } else {

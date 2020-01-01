@@ -86,6 +86,14 @@
         android:hint="Saisir Une Description"
         android:inputType="textMultiLine" />
 
+    <CheckBox
+        android:id="@+id/checkBoxAssocier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_gravity="center_horizontal"
+        android:text="Associer" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

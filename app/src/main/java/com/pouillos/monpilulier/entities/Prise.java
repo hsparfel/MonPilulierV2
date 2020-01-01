@@ -4,10 +4,8 @@ import java.util.Date;
 
 public class Prise {
 
-    private int id;
     private String name;
     private String detail;
-    private Date creationDate;
     private OrdoPrescription prescription;
     private Date date;
     private boolean effectue;
@@ -21,14 +19,6 @@ public class Prise {
         this.prescription = prescription;
         this.date = date;
         this.effectue = effectue;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -45,14 +35,6 @@ public class Prise {
 
     public void setDetail(String detail) {
         this.detail = detail;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
     }
 
     public OrdoPrescription getPrescription() {
@@ -82,10 +64,8 @@ public class Prise {
     @Override
     public String toString() {
         return "Prise{" +
-                "id=" + id +
                 ", name='" + name + '\'' +
                 ", detail='" + detail + '\'' +
-                ", creationDate=" + creationDate +
                 ", prescription=" + prescription +
                 ", date=" + date +
                 ", effectue=" + effectue +

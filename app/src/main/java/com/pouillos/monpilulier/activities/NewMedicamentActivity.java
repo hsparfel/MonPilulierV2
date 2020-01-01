@@ -134,7 +134,6 @@ public class NewMedicamentActivity extends AppCompatActivity {
     public void saveToDb(TextView textNom, TextView textDescription) {
         if (medicamentToUpdate==null) {
             Medicament medicament = new Medicament(textNom.getText().toString(), textDescription.getText().toString());
-            medicament.setCreationDate(new Date());
             medicament.save();
         } else {
             Medicament medicament = (Medicament.find(Medicament.class,"id = ?",medicamentToUpdate.getId().toString())).get(0);

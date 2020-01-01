@@ -4,9 +4,7 @@ import java.util.Date;
 
 public class Profil {
 
-    private int id;
     private String detail;
-    private Date creationDate;
     private Utilisateur utilisateur;
     private float poids;
     private int taille;
@@ -25,28 +23,12 @@ public class Profil {
         this.date = date;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getDetail() {
         return detail;
     }
 
     public void setDetail(String detail) {
         this.detail = detail;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
     }
 
     public Utilisateur getUtilisateur() {
@@ -92,9 +74,7 @@ public class Profil {
     @Override
     public String toString() {
         return "Profil{" +
-                "id=" + id +
                 ", detail='" + detail + '\'' +
-                ", creationDate=" + creationDate +
                 ", utilisateur=" + utilisateur +
                 ", poids=" + poids +
                 ", taille=" + taille +

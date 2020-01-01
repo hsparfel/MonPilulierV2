@@ -8,10 +8,8 @@ import java.util.Date;
 @Table
 public class Analyse extends SugarRecord implements Serializable, Comparable<Analyse>{
 
-private Long id;
 private String name;
 private String detail;
-private Date creationDate;
 
     public Analyse() {
     }
@@ -19,14 +17,6 @@ private Date creationDate;
     public Analyse(String name, String detail) {
         this.name = name;
         this.detail = detail;
-    }
-    @Override
-    public Long getId() {
-        return id;
-    }
-    @Override
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -43,24 +33,6 @@ private Date creationDate;
 
     public void setDetail(String detail) {
         this.detail = detail;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    @Override
-    public String toString() {
-        return "Analyse{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", detail='" + detail + '\'' +
-                ", creationDate=" + creationDate +
-                '}';
     }
 
     @Override

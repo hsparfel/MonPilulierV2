@@ -8,10 +8,9 @@ import java.util.Date;
 @Table
 public class Cabinet extends SugarRecord implements Serializable, Comparable<Cabinet>{
 
-private Long id;
+
 private String name;
 private String detail;
-private Date creationDate;
 private String adresse;
 private String cp;
 private String ville;
@@ -25,14 +24,6 @@ private String ville;
         this.adresse = adresse;
         this.cp = cp;
         this.ville = ville;
-    }
-    @Override
-    public Long getId() {
-        return id;
-    }
-    @Override
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -49,14 +40,6 @@ private String ville;
 
     public void setDetail(String detail) {
         this.detail = detail;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
     }
 
     public String getAdresse() {
@@ -86,10 +69,8 @@ private String ville;
     @Override
     public String toString() {
         return "Cabinet{" +
-                "id=" + id +
                 ", name='" + name + '\'' +
                 ", detail='" + detail + '\'' +
-                ", creationDate=" + creationDate +
                 ", adresse='" + adresse + '\'' +
                 ", cp='" + cp + '\'' +
                 ", ville='" + ville + '\'' +

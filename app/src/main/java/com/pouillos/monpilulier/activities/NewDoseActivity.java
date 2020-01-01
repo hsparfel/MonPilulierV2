@@ -134,7 +134,6 @@ public class NewDoseActivity extends AppCompatActivity {
     public void saveToDb(TextView textNom, TextView textDescription) {
         if (doseToUpdate==null) {
             Dose dose = new Dose(textNom.getText().toString(), textDescription.getText().toString());
-            dose.setCreationDate(new Date());
             dose.save();
         } else {
             Dose dose = (Dose.find(Dose.class,"id = ?",doseToUpdate.getId().toString())).get(0);

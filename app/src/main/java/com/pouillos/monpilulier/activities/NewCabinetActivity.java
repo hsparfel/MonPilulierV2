@@ -166,7 +166,6 @@ public class NewCabinetActivity extends AppCompatActivity {
     public void saveToDb(TextView textNom, TextView textDescription, TextView textAdresse, TextView textCP, TextView textVille) {
         if (cabinetToUpdate==null) {
             Cabinet cabinet = new Cabinet(textNom.getText().toString(), textDescription.getText().toString(), textAdresse.getText().toString(), textCP.getText().toString(), textVille.getText().toString());
-            cabinet.setCreationDate(new Date());
             cabinet.save();
         } else {
             Cabinet cabinet = (Cabinet.find(Cabinet.class,"id = ?",cabinetToUpdate.getId().toString())).get(0);

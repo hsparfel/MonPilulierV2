@@ -11,31 +11,39 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pouillos.monpilulier.R;
-import com.pouillos.monpilulier.activities.ListAllMedecinActivity;
+import com.pouillos.monpilulier.activities.ListMyMedecinActivity;
 import com.pouillos.monpilulier.activities.NewMedecinActivity;
 import com.pouillos.monpilulier.entities.Association;
 import com.pouillos.monpilulier.entities.Medecin;
 import com.pouillos.monpilulier.entities.Utilisateur;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ListAllMedecinAdapter extends RecyclerView.Adapter<ListAllMedecinViewHolder>{
+public class ListMyMedecinAdapter extends RecyclerView.Adapter<ListAllMedecinViewHolder>{
 
         // FOR DATA
-        private List<Medecin> listAllMedecin;
+        private List<Medecin> listMyMedecin = new ArrayList<>();
         private Utilisateur utilisateur;
+        private List<Association> listAllAssociation;
+
 
         // CONSTRUCTOR
-        public ListAllMedecinAdapter( ) {
+        public ListMyMedecinAdapter( ) {
             this.utilisateur  = (new Utilisateur()).findActifUser();
-            this.listAllMedecin = Medecin.listAll(Medecin.class);
-            Collections.sort(this.listAllMedecin);
+            listAllAssociation = Association.find(Association.class,"utilisateur = ?", utilisateur.getId().toString());
+            for (Association association : listAllAssociation) {
+                if (association.getUtilisateur().getId() == utilisateur.getId()) {
+                    this.listMyMedecin.add(Medecin.findById(Medecin.class,association.getMedecin().getId()));
+                }
+            }
+            Collections.sort(this.listMyMedecin);
         }
 
         @Override
         public int getItemCount() {
-            return listAllMedecin.size();
+            return listMyMedecin.size();
         }
 
         @Override
@@ -47,7 +55,7 @@ public class ListAllMedecinAdapter extends RecyclerView.Adapter<ListAllMedecinVi
 
         @Override
         public void onBindViewHolder(ListAllMedecinViewHolder holder, int position) {
-            Medecin medecin = listAllMedecin.get(position);
+            Medecin medecin = listMyMedecin.get(position);
             holder.display(medecin);
 
             holder.itemView.findViewById(R.id.buttonModify).setOnClickListener(
@@ -55,17 +63,9 @@ public class ListAllMedecinAdapter extends RecyclerView.Adapter<ListAllMedecinVi
                         @Override
                         public void onClick(View v) {
                             Intent newMedecinActivity = new Intent(v.getContext(), NewMedecinActivity.class);
-                            newMedecinActivity.putExtra("precedent", ListAllMedecinActivity.class);
+                            newMedecinActivity.putExtra("precedent", ListMyMedecinActivity.class);
                             newMedecinActivity.putExtra("medecinToUpdate", medecin);
-
-                            List<Association> listAssociation = Association.find(Association.class,"utilisateur = ? and medecin = ?", utilisateur.getId().toString(), medecin.getId().toString());
-                            if (listAssociation.size() >0) {
-                                newMedecinActivity.putExtra("associe", true);
-                            } else {
-                                newMedecinActivity.putExtra("associe", false);
-                            }
-
-
+                            newMedecinActivity.putExtra("associe", true);
 
                             v.getContext().startActivity(newMedecinActivity);
                             ((Activity)v.getContext()).finish();
@@ -86,7 +86,7 @@ public class ListAllMedecinAdapter extends RecyclerView.Adapter<ListAllMedecinVi
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             medecin.delete();
-                                            listAllMedecin = Medecin.listAll(Medecin.class,"name");
+                                            listMyMedecin = Medecin.listAll(Medecin.class,"name");
                                           //  Collections.sort(listAllMedecin);
                                             notifyDataSetChanged();
                                         }

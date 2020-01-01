@@ -134,7 +134,6 @@ public class NewExamenActivity extends AppCompatActivity {
     public void saveToDb(TextView textNom, TextView textDescription) {
         if (examenToUpdate==null) {
             Examen examen = new Examen(textNom.getText().toString(), textDescription.getText().toString());
-            examen.setCreationDate(new Date());
             examen.save();
         } else {
             Examen examen = (Examen.find(Examen.class,"id = ?",examenToUpdate.getId().toString())).get(0);

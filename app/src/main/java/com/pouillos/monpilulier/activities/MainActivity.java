@@ -2,6 +2,7 @@ package com.pouillos.monpilulier.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -10,7 +11,12 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.facebook.stetho.Stetho;
+import com.orm.SchemaGenerator;
+import com.orm.SugarContext;
+import com.orm.SugarDb;
+import com.orm.SugarRecord;
 import com.pouillos.monpilulier.R;
+import com.pouillos.monpilulier.entities.Analyse;
 import com.pouillos.monpilulier.entities.Utilisateur;
 
 import java.io.Serializable;
@@ -18,7 +24,6 @@ import java.io.Serializable;
 public class MainActivity extends AppCompatActivity implements Serializable {
 
     private TextView textUser;
-    //private Button buttonNewUser;
     private Button buttonListAllUser;
     private ImageButton buttonDeleteAllUser;
     private Button buttonListAllMedicament;
@@ -29,9 +34,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     private Button buttonListAllCabinet;
     private Button buttonListAllDuree;
     private Button buttonListAllMedecin;
+    private Button buttonListMyMedecin;
     private Button buttonNewOrdonnance;
     private Button buttonListAllOrdonnance;
     private Button buttonListAllOrdoAnalyse;
+    private Button buttonRAZ;
 
 
     private Utilisateur utilisateur;
@@ -51,10 +58,12 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         buttonListAllCabinet = (Button) findViewById(R.id.buttonListAllCabinet);
         buttonListAllDuree = (Button) findViewById(R.id.buttonListAllDuree);
         buttonListAllMedecin = (Button) findViewById(R.id.buttonListAllMedecin);
+        buttonListMyMedecin = (Button) findViewById(R.id.buttonListMyMedecin);
         buttonNewOrdonnance = (Button) findViewById(R.id.buttonNewOrdonnance);
         buttonListAllOrdonnance = (Button) findViewById(R.id.buttonListAllOrdonnance);
         buttonListAllOrdoAnalyse = (Button) findViewById(R.id.buttonListAllOrdoAnalyse);
         buttonDeleteAllUser = (ImageButton) findViewById(R.id.buttonDeleteAllUser);
+        buttonRAZ = (Button) findViewById(R.id.buttonRAZ);
 
         //afficher le user actif
         utilisateur = (new Utilisateur()).findActifUser();
@@ -64,6 +73,22 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             textUser.setText(utilisateur.getName());
         }
 
+        buttonRAZ.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+               //RAZ A LA DEMANDE
+                // SugarRecord.executeQuery("DROP TABLE PATIENT_MEDECIN");
+
+
+                //RAZ TOUT
+             /*           SugarContext.terminate();
+               SchemaGenerator schemaGenerator = new SchemaGenerator(getApplicationContext());
+                schemaGenerator.deleteTables(new SugarDb(getApplicationContext()).getDB());
+                SugarContext.init(getApplicationContext());
+               schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());*/
+            }
+        });
 
         buttonListAllUser.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,6 +200,16 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             }
         });
 
+        buttonListMyMedecin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent listMyMedecinActivity = new Intent(MainActivity.this, ListMyMedecinActivity.class);
+                listMyMedecinActivity.putExtra("precedent", MainActivity.class);
+                startActivity(listMyMedecinActivity);
+            }
+        });
+
         buttonNewOrdonnance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -225,5 +260,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                 startActivity(listAllOrdonnanceActivity);
             }
         });*/
+
+
     }
 }

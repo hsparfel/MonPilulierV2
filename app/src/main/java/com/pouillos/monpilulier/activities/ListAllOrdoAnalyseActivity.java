@@ -39,8 +39,6 @@ public class ListAllOrdoAnalyseActivity extends AppCompatActivity implements Ser
 
         buttonAdd = findViewById(R.id.buttonAdd);
 
-
-
         buttonAdd.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -53,8 +51,6 @@ public class ListAllOrdoAnalyseActivity extends AppCompatActivity implements Ser
                     }
                 }
         );
-
-
     }
 
     public void traiterIntent(){

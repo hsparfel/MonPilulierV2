@@ -52,14 +52,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Lister Medicaments" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-
 
             <Button
                 android:id="@+id/buttonListAllAnalyse"
@@ -80,14 +72,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Lister Doses" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-
 
             <Button
                 android:id="@+id/buttonListAllExamen"
@@ -108,14 +92,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Lister Specialites" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-
 
             <Button
                 android:id="@+id/buttonListAllCabinet"
@@ -130,26 +106,24 @@
         android:orientation="horizontal">
 
 
-
-        <Button
+            <Button
             android:id="@+id/buttonListAllDuree"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Lister Durees" />
-    </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-
 
             <Button
                 android:id="@+id/buttonListAllMedecin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Lister Medecins" />
+
+            <Button
+                android:id="@+id/buttonListMyMedecin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Mes Medecins" />
         </LinearLayout>
 
         <LinearLayout
@@ -193,6 +167,17 @@
                 android:layout_height="wrap_content"
                 android:text="OrdoAnalyse" />
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"/>
+
+        <Button
+            android:id="@+id/buttonRAZ"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RAZ" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -137,7 +137,6 @@ public class NewAnalyseActivity extends AppCompatActivity {
     public void saveToDb(TextView textNom, TextView textDescription) {
         if (analyseToUpdate==null) {
             Analyse analyse = new Analyse(textNom.getText().toString(), textDescription.getText().toString());
-            analyse.setCreationDate(new Date());
             analyse.save();
         } else {
             Analyse analyse = (Analyse.find(Analyse.class,"id = ?",analyseToUpdate.getId().toString())).get(0);

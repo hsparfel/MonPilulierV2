@@ -30,6 +30,7 @@ public class NewSpecialiteActivity extends AppCompatActivity {
     private Specialite specialiteToUpdate;
     private  Medecin medecinToUpdate;
     private Intent intent;
+    private boolean associe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,16 +98,23 @@ public class NewSpecialiteActivity extends AppCompatActivity {
         if (intent.hasExtra("medecinToUpdate")) {
             medecinToUpdate = (Medecin) intent.getSerializableExtra("medecinToUpdate");
         }
+        if (intent.hasExtra("associe")) {
+            associe = intent.getBooleanExtra("associe",false);
+        }
+
     }
 
     public void retourPagePrecedenteAnnuler(Intent intent) {
+        //boolean medecinIsChecked = (boolean) intent.getBooleanExtra("associe",false);
         Intent nextActivity = new Intent(NewSpecialiteActivity.this,pagePrecedente);
         if (intent.hasExtra("medecinToUpdate")) {
             medecinToUpdate = (Medecin) intent.getSerializableExtra("medecinToUpdate");
             nextActivity.putExtra("medecinToUpdate", medecinToUpdate);
+            nextActivity.putExtra("precedent", ListAllMedecinActivity.class);
         } else {
             nextActivity.putExtra("precedent", NewSpecialiteActivity.class);
         }
+        nextActivity.putExtra("associe", associe);
         startActivity(nextActivity);
         finish();
     }
@@ -118,9 +126,11 @@ public class NewSpecialiteActivity extends AppCompatActivity {
             Specialite specialite = (Specialite) Specialite.find(Specialite.class,"name = ?", textNom.getText().toString()).get(0);
             medecinToUpdate.setSpecialite(specialite);
             nextActivity.putExtra("medecinToUpdate", medecinToUpdate);
+            nextActivity.putExtra("precedent", ListAllMedecinActivity.class);
         } else {
             nextActivity.putExtra("precedent", NewSpecialiteActivity.class);
         }
+        nextActivity.putExtra("associe", associe);
         startActivity(nextActivity);
         finish();
     }
@@ -159,7 +169,6 @@ public class NewSpecialiteActivity extends AppCompatActivity {
     public void saveToDb(TextView textNom, TextView textDescription) {
         if (specialiteToUpdate==null) {
             Specialite specialite = new Specialite(textNom.getText().toString(), textDescription.getText().toString());
-            specialite.setCreationDate(new Date());
             specialite.save();
         } else {
             Specialite specialite = (Specialite.find(Specialite.class,"id = ?",specialiteToUpdate.getId().toString())).get(0);

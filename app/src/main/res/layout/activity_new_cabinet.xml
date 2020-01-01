@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="Enregistrer une nouvelle analyse" />
+        android:text="Enregistrer un nouveau cabinet" />
 
     <EditText
         android:id="@+id/textNom"

@@ -4,9 +4,7 @@ import java.util.Date;
 
 public class OrdoPrescription {
 
-    private int id;
     private String detail;
-    private Date creationDate;
     private Ordonnance ordonnance;
     private Date date;
     private Medicament medicament;
@@ -44,28 +42,12 @@ public class OrdoPrescription {
         this.soir = soir;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getDetail() {
         return detail;
     }
 
     public void setDetail(String detail) {
         this.detail = detail;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
     }
 
     public Ordonnance getOrdonnance() {
@@ -183,9 +165,7 @@ public class OrdoPrescription {
     @Override
     public String toString() {
         return "OrdoPrescription{" +
-                "id=" + id +
                 ", detail='" + detail + '\'' +
-                ", creationDate=" + creationDate +
                 ", ordonnance=" + ordonnance +
                 ", date=" + date +
                 ", medicament=" + medicament +

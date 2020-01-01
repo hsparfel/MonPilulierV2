@@ -4,9 +4,7 @@ import java.util.Date;
 
 public class Rdv {
 
-private int id;
-private String detail;
-private Date creationDate;
+    private String detail;
     private Utilisateur utilisateur;
     private Medecin medecin;
     private Date date;
@@ -23,28 +21,12 @@ private Date creationDate;
         this.cabinet = cabinet;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getDetail() {
         return detail;
     }
 
     public void setDetail(String detail) {
         this.detail = detail;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
     }
 
     public Utilisateur getUtilisateur() {
@@ -82,9 +64,7 @@ private Date creationDate;
     @Override
     public String toString() {
         return "Rdv{" +
-                "id=" + id +
                 ", detail='" + detail + '\'' +
-                ", creationDate=" + creationDate +
                 ", utilisateur=" + utilisateur +
                 ", medecin=" + medecin +
                 ", date='" + date + '\'' +

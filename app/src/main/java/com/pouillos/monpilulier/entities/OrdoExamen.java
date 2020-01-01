@@ -4,10 +4,8 @@ import java.util.Date;
 
 public class OrdoExamen {
 
-    private int id;
     private Examen examen;
     private String detail;
-    private Date creationDate;
     private Ordonnance ordonnance;
     private Cabinet cabinet;
     private Date date;
@@ -21,14 +19,6 @@ public class OrdoExamen {
         this.ordonnance = ordonnance;
         this.cabinet = cabinet;
         this.date = date;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public Examen getExamen() {
@@ -45,14 +35,6 @@ public class OrdoExamen {
 
     public void setDetail(String detail) {
         this.detail = detail;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
     }
 
     public Ordonnance getOrdonnance() {
@@ -82,10 +64,8 @@ public class OrdoExamen {
     @Override
     public String toString() {
         return "OrdoExamen{" +
-                "id=" + id +
                 ", examen=" + examen +
                 ", detail='" + detail + '\'' +
-                ", creationDate=" + creationDate +
                 ", ordonnance=" + ordonnance +
                 ", cabinet=" + cabinet +
                 ", date=" + date +

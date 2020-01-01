@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class NewOrdoAnalyseActivity extends AppCompatActivity {
+public class NewOrdoAnalyseActivity extends AppCompatActivity implements GestionDate{
 
     private ImageButton buttonValider;
     private ImageButton buttonAnnuler;
@@ -122,10 +122,10 @@ public class NewOrdoAnalyseActivity extends AppCompatActivity {
                 String dateMois = ""+(datePicker.getMonth()+1);
                 String dateAnnee = ""+datePicker.getYear();
                 if (datePicker.getDayOfMonth()<10) {
-                    dateJour = "0"+datePicker.getDayOfMonth();
+                    dateJour = "0"+dateJour;
                 }
                 if (datePicker.getMonth()<10) {
-                    dateMois = "0"+datePicker.getMonth();
+                    dateMois = "0"+dateMois;
                 }
                 String dateString = dateJour+"/"+dateMois+"/"+dateAnnee;
                 tv1.setText("date : "+dateString);
@@ -226,7 +226,6 @@ public class NewOrdoAnalyseActivity extends AppCompatActivity {
         Cabinet cabinet = (Cabinet) Cabinet.find(Cabinet.class,"name = ?", spinnerCabinet.getSelectedItem().toString()).get(0);
         if (ordoAnalyseToUpdate.getId()==null) {
             OrdoAnalyse ordoAnalyse = new OrdoAnalyse(analyse, textDescription.getText().toString(), ordonnanceToUpdate, cabinet, date);
-            ordoAnalyse.setCreationDate(new Date());
             ordoAnalyse.save();
         } else {
             OrdoAnalyse ordoAnalyse;

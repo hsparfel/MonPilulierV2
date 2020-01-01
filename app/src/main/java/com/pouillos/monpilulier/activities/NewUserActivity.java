@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.pouillos.monpilulier.R;
+import com.pouillos.monpilulier.abstraite.GestionDate;
 import com.pouillos.monpilulier.entities.Analyse;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.fragments.DatePickerFragment;
@@ -30,7 +32,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class NewUserActivity extends AppCompatActivity {
+public class NewUserActivity extends AppCompatActivity implements GestionDate {
 
     private ImageButton buttonValider;
     private ImageButton buttonAnnuler;
@@ -42,6 +44,7 @@ public class NewUserActivity extends AppCompatActivity {
     private Class<?> pagePrecedente;
     private Intent intent;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +55,7 @@ public class NewUserActivity extends AppCompatActivity {
         textSexe = findViewById(R.id.textSexe);
         textDate = findViewById(R.id.textDate);
         buttonAnnuler= (ImageButton) findViewById(R.id.buttonAnnuler);
+
 
         traiterIntent();
 
@@ -83,6 +87,7 @@ public class NewUserActivity extends AppCompatActivity {
                 //enregistrer en bdd
                 saveToDb(textNom, date, sexe);
 
+
                 //retour
                 retourPagePrecedente();
             }
@@ -101,10 +106,10 @@ public class NewUserActivity extends AppCompatActivity {
                 String dateMois = ""+(datePicker.getMonth()+1);
                 String dateAnnee = ""+datePicker.getYear();
                 if (datePicker.getDayOfMonth()<10) {
-                    dateJour = "0"+datePicker.getDayOfMonth();
+                    dateJour = "0"+dateJour;
                 }
                 if (datePicker.getMonth()<10) {
-                    dateMois = "0"+datePicker.getMonth();
+                    dateMois = "0"+dateMois;
                 }
                 String dateString = dateJour+"/"+dateMois+"/"+dateAnnee;
                 tv1.setText("date de naissance: "+dateString);
@@ -207,7 +212,6 @@ public class NewUserActivity extends AppCompatActivity {
 
     public void saveToDb(TextView textNom, Date date, String sexe) {
         Utilisateur utilisateur = new Utilisateur(textNom.getText().toString(), date, sexe);
-        utilisateur.setCreationDate(new Date());
         utilisateur.setActif(false);
         utilisateur.save();
     }

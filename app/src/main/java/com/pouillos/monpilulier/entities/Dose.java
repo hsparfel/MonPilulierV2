@@ -8,10 +8,8 @@ import java.util.Date;
 @Table
 public class Dose extends SugarRecord implements Serializable, Comparable<Dose>{
 
-private Long id;
 private String name;
 private String detail;
-private Date creationDate;
 
     public Dose() {
     }
@@ -19,14 +17,6 @@ private Date creationDate;
     public Dose(String name, String detail) {
         this.name = name;
         this.detail = detail;
-    }
-    @Override
-    public Long getId() {
-        return id;
-    }
-    @Override
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -45,21 +35,11 @@ private Date creationDate;
         this.detail = detail;
     }
 
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
     @Override
     public String toString() {
         return "Dose{" +
-                "id=" + id +
                 ", name='" + name + '\'' +
                 ", detail='" + detail + '\'' +
-                ", creationDate=" + creationDate +
                 '}';
     }
 

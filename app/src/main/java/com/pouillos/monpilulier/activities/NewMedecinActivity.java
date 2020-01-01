@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -16,11 +17,13 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.pouillos.monpilulier.R;
+import com.pouillos.monpilulier.entities.Association;
 import com.pouillos.monpilulier.entities.Medecin;
+import com.pouillos.monpilulier.entities.Ordonnance;
 import com.pouillos.monpilulier.entities.Specialite;
+import com.pouillos.monpilulier.entities.Utilisateur;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,12 +41,17 @@ public class NewMedecinActivity extends AppCompatActivity {
     private Class<?> pagePrecedente;
     private Medecin medecinToUpdate;
     private Intent intent;
+    private Ordonnance ordonnanceToUpdate;
+    private Medecin medecin;
+    private CheckBox checkBoxAssocier;
+    private Utilisateur utilisateur;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_medecin);
 
+        utilisateur = (new Utilisateur()).findActifUser();
         buttonAddSpecialite = (ImageButton) findViewById(R.id.buttonAddSpecialite);
         buttonValider = (ImageButton) findViewById(R.id.buttonValider);
         buttonAnnuler= (ImageButton) findViewById(R.id.buttonAnnuler);
@@ -52,6 +60,7 @@ public class NewMedecinActivity extends AppCompatActivity {
         spinnerSpecialite = (Spinner) findViewById(R.id.spinnerSpecialite);
         textTelephone = findViewById(R.id.textTelephone);
         textEmail = findViewById(R.id.textEmail);
+        checkBoxAssocier = (CheckBox) findViewById(R.id.checkBoxAssocier);
 
         createSpinnerSpecialite();
 
@@ -68,7 +77,7 @@ public class NewMedecinActivity extends AppCompatActivity {
         buttonAnnuler.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                retourPagePrecedente();
+                retourPagePrecedenteAnnuler(intent);
             }
         });
 
@@ -91,9 +100,13 @@ public class NewMedecinActivity extends AppCompatActivity {
 
                 //enregistrer en bdd
                 saveToDb(textNom, textDescription, textTelephone, textEmail);
-
+                if (checkBoxAssocier.isChecked()) {
+                    saveToDbAssocier();
+                } else {
+                    deleteToDbAssocier();
+                }
                 //retour
-                retourPagePrecedente();
+                retourPagePrecedenteValider(intent);
             }
         });
     }
@@ -123,11 +136,41 @@ public class NewMedecinActivity extends AppCompatActivity {
             textEmail.setText(medecinToUpdate.getEmail());
             spinnerSpecialite.setSelection(getIndex(spinnerSpecialite, medecinToUpdate.getSpecialite().getName()));
         } else {medecinToUpdate = new Medecin();}
+        if (intent.hasExtra("ordonnanceToUpdate")) {
+            ordonnanceToUpdate = (Ordonnance) intent.getSerializableExtra("ordonnanceToUpdate");
+        }
+        if (intent.hasExtra("associe")) {
+            checkBoxAssocier.setChecked(intent.getBooleanExtra("associe",false));
+        }
+
     }
 
-    public void retourPagePrecedente() {
+    public void retourPagePrecedenteAnnuler(Intent intent) {
         Intent nextActivity = new Intent(NewMedecinActivity.this,pagePrecedente);
-        nextActivity.putExtra("precedent", NewMedecinActivity.class);
+        nextActivity.putExtra("medecinToUpdate", medecin);
+        if (intent.hasExtra("ordonnanceToUpdate")) {
+            ordonnanceToUpdate = (Ordonnance) intent.getSerializableExtra("ordonnanceToUpdate");
+            nextActivity.putExtra("ordonnanceToUpdate", ordonnanceToUpdate);
+            nextActivity.putExtra("precedent", ListAllOrdonnanceActivity.class);
+        } else {
+            nextActivity.putExtra("precedent", NewMedecinActivity.class);
+        }
+        startActivity(nextActivity);
+        finish();
+    }
+
+    public void retourPagePrecedenteValider(Intent intent) {
+        Intent nextActivity = new Intent(NewMedecinActivity.this,pagePrecedente);
+        nextActivity.putExtra("medecinToUpdate", medecin);
+        if (intent.hasExtra("ordonnanceToUpdate")) {
+            ordonnanceToUpdate = (Ordonnance) intent.getSerializableExtra("ordonnanceToUpdate");
+            medecin = (Medecin) Medecin.find(Medecin.class,"name = ?", textNom.getText().toString()).get(0);
+            ordonnanceToUpdate.setMedecin(medecin);
+            nextActivity.putExtra("ordonnanceToUpdate", ordonnanceToUpdate);
+            nextActivity.putExtra("precedent", ListAllOrdonnanceActivity.class);
+        } else {
+            nextActivity.putExtra("precedent", NewMedecinActivity.class);
+        }
         startActivity(nextActivity);
         finish();
     }
@@ -139,7 +182,19 @@ public class NewMedecinActivity extends AppCompatActivity {
         medecinToUpdate.setDetail(textDescription.getText().toString());
         medecinToUpdate.setTelephone(textTelephone.getText().toString());
         medecinToUpdate.setEmail(textEmail.getText().toString());
+
+        //TODO rajouter associe
+
+
+
         nextActivity.putExtra("medecinToUpdate", medecinToUpdate);
+
+
+
+        nextActivity.putExtra("associe",checkBoxAssocier.isChecked());
+
+
+
         startActivity(nextActivity);
         finish();
     }
@@ -198,11 +253,9 @@ public class NewMedecinActivity extends AppCompatActivity {
     public void saveToDb(TextView textNom, TextView textDescription, TextView textTelephone, TextView textEmail) {
         Specialite specialite = (Specialite) Specialite.find(Specialite.class,"name = ?", spinnerSpecialite.getSelectedItem().toString()).get(0);
         if (medecinToUpdate==null) {
-            Medecin medecin = new Medecin(textNom.getText().toString(), textDescription.getText().toString(),specialite, textTelephone.getText().toString(), textEmail.getText().toString());
-            medecin.setCreationDate(new Date());
+            medecin = new Medecin(textNom.getText().toString(), textDescription.getText().toString(),specialite, textTelephone.getText().toString(), textEmail.getText().toString());
             medecin.save();
         } else {
-            Medecin medecin;
             if (medecinToUpdate.getId()!=null) {
                 medecin = (Medecin.find(Medecin.class, "id = ?", medecinToUpdate.getId().toString())).get(0);
             } else {
@@ -213,8 +266,19 @@ public class NewMedecinActivity extends AppCompatActivity {
             medecin.setTelephone(textTelephone.getText().toString());
             medecin.setEmail(textEmail.getText().toString());
             medecin.setSpecialite(specialite);
-            medecin.save();
+            medecin.setId(medecin.save());
         }
+    }
+
+    public void saveToDbAssocier() {
+        Association association = new Association(utilisateur, medecin);
+        association.save();
+    }
+
+    public void deleteToDbAssocier() {
+        Association association = Association.find(Association.class,"utilisateur = ? and medecin = ?", utilisateur.getId().toString(), medecin.getId().toString()).get(0);
+
+        association.delete();
     }
 
     public static boolean isEmailAdress(String email){
