@@ -11,7 +11,7 @@
     android:paddingRight="16dp"
     android:paddingBottom="16dp"
 
-    tools:context=".activities.ListAllDoseActivity">
+    tools:context=".activities.listallx.ListAllDoseActivity">
 
 
     <TextView

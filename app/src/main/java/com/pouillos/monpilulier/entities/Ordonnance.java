@@ -2,12 +2,13 @@ package com.pouillos.monpilulier.entities;
 
 import com.orm.SugarRecord;
 import com.orm.dsl.Table;
-import com.pouillos.monpilulier.abstraite.GestionDate;
+import com.pouillos.monpilulier.activities.utils.DateUtils;
+import com.pouillos.monpilulier.interfaces.AfficherDetail;
 
 import java.io.Serializable;
 import java.util.Date;
-@Table
-public class Ordonnance extends SugarRecord implements Serializable, Comparable<Ordonnance>, GestionDate {
+
+public class Ordonnance extends SugarRecord implements Serializable, Comparable<Ordonnance> , AfficherDetail {
 
     private String detail;
     private Utilisateur utilisateur;
@@ -56,23 +57,20 @@ public class Ordonnance extends SugarRecord implements Serializable, Comparable<
         this.date = date;
     }
 
-    @Override
-    public String toString() {
-        return "Ordonnance{" +
-                ", detail='" + detail + '\'' +
-                ", utilisateur=" + utilisateur +
-                ", medecin=" + medecin +
-                ", date=" + date +
-                '}';
-    }
-
-    public String getName() {
-        return "" + medecin.getName() +
-                ", " + date;
-    }
 
     @Override
     public int compareTo(Ordonnance o) {
         return this.getId().compareTo(o.getId());
+    }
+
+    @Override
+    public String afficherTitre() {
+        String reponse = medecin.getName()+" - "+ DateUtils.ecrireDate(date);
+        return null;
+    }
+
+    @Override
+    public String afficherDetail() {
+        return null;
     }
 }

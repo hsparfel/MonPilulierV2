@@ -61,14 +61,5 @@ public class Prise {
         this.effectue = effectue;
     }
 
-    @Override
-    public String toString() {
-        return "Prise{" +
-                ", name='" + name + '\'' +
-                ", detail='" + detail + '\'' +
-                ", prescription=" + prescription +
-                ", date=" + date +
-                ", effectue=" + effectue +
-                '}';
-    }
+
 }

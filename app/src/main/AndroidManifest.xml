@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data android:name="DATABASE" android:value="mon_pilulier.db" />
-        <meta-data android:name="VERSION" android:value="18" />
+        <meta-data android:name="VERSION" android:value="31" />
         <meta-data android:name="QUERY_LOG" android:value="true" />
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.pouillos.monpilulier" />
         <activity android:name=".activities.MainActivity">
@@ -21,29 +21,35 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.NewUserActivity"></activity>
-        <activity android:name=".activities.ListAllUserActivity" />
-        <activity android:name=".activities.NewMedicamentActivity"></activity>
-        <activity android:name=".activities.ListAllMedicamentActivity" />
-        <activity android:name=".activities.NewAnalyseActivity"></activity>
-        <activity android:name=".activities.ListAllAnalyseActivity" />
-        <activity android:name=".activities.NewDoseActivity"></activity>
-        <activity android:name=".activities.ListAllDoseActivity" />
-        <activity android:name=".activities.NewExamenActivity"></activity>
-        <activity android:name=".activities.ListAllExamenActivity" />
-        <activity android:name=".activities.NewSpecialiteActivity"></activity>
-        <activity android:name=".activities.ListAllSpecialiteActivity" />
-        <activity android:name=".activities.NewCabinetActivity"></activity>
-        <activity android:name=".activities.ListAllCabinetActivity" />
-        <activity android:name=".activities.NewDureeActivity"></activity>
-        <activity android:name=".activities.ListAllDureeActivity" />
-        <activity android:name=".activities.NewMedecinActivity"></activity>
-        <activity android:name=".activities.ListAllMedecinActivity" />
-        <activity android:name=".activities.ListMyMedecinActivity" />
-        <activity android:name=".activities.NewOrdonnanceActivity"></activity>
-        <activity android:name=".activities.ListAllOrdonnanceActivity" />
-        <activity android:name=".activities.NewOrdoAnalyseActivity"></activity>
-        <activity android:name=".activities.ListAllOrdoAnalyseActivity" />
+        <activity android:name=".activities.newx.NewUserActivity"></activity>
+        <activity android:name=".activities.listallx.ListAllUserActivity" />
+        <activity android:name=".activities.newx.NewMedicamentActivity"></activity>
+        <activity android:name=".activities.listallx.ListAllMedicamentActivity" />
+        <activity android:name=".activities.newx.NewAnalyseActivity"></activity>
+        <activity android:name=".activities.listallx.ListAllAnalyseActivity" />
+        <activity android:name=".activities.newx.NewDoseActivity"></activity>
+        <activity android:name=".activities.listallx.ListAllDoseActivity" />
+        <activity android:name=".activities.newx.NewExamenActivity"></activity>
+        <activity android:name=".activities.listallx.ListAllExamenActivity" />
+        <activity android:name=".activities.newx.NewSpecialiteActivity"></activity>
+        <activity android:name=".activities.listallx.ListAllSpecialiteActivity" />
+        <activity android:name=".activities.newx.NewCabinetActivity"></activity>
+        <activity android:name=".activities.listallx.ListAllCabinetActivity" />
+        <activity android:name=".activities.newx.NewDureeActivity"></activity>
+        <activity android:name=".activities.listallx.ListAllDureeActivity" />
+        <activity android:name=".activities.newx.NewMedecinActivity"></activity>
+        <activity android:name=".activities.listallx.ListAllMedecinActivity" />
+        <activity android:name=".activities.listmyx.ListMyMedecinActivity" />
+        <activity android:name=".activities.newx.NewRdvActivity"></activity>
+        <activity android:name=".activities.listallx.ListAllRdvActivity" />
+        <activity android:name=".activities.listmyx.ListMyRdvActivity" />
+        <activity android:name=".activities.newx.NewOrdonnanceActivity"></activity>
+        <activity android:name=".activities.listallx.ListAllOrdonnanceActivity" />
+        <activity android:name=".activities.newx.NewOrdoAnalyseActivity"></activity>
+        <activity android:name=".activities.listallx.ListAllOrdoAnalyseActivity" />
+        <activity android:name=".activities.MyProfilActivity" />
+        <activity android:name=".activities.listallx.ListAllProfilActivity" />
+        <activity android:name=".activities.listmyx.ListMyProfilActivity" />
     </application>
 
 </manifest>

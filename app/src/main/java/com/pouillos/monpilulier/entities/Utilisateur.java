@@ -2,13 +2,13 @@ package com.pouillos.monpilulier.entities;
 
 import com.orm.SugarRecord;
 import com.orm.dsl.Table;
-import com.pouillos.monpilulier.abstraite.GestionDate;
+import com.pouillos.monpilulier.interfaces.AfficherDetail;
 
 import java.io.Serializable;
 import java.util.Date;
 
-@Table
-public class Utilisateur extends SugarRecord implements Serializable, Comparable<Utilisateur>, GestionDate {
+
+public class Utilisateur extends SugarRecord implements Serializable, Comparable<Utilisateur>, AfficherDetail {
 
 private String name;
 private Date dateDeNaissance;
@@ -57,15 +57,7 @@ private boolean actif;
         this.actif = actif;
     }
 
-    @Override
-    public String toString() {
-        return "Utilisateur{" +
-                ", name='" + name + '\'' +
-                ", dateDeNaissance=" + dateDeNaissance +
-                ", sexe='" + sexe + '\'' +
-                ", actif=" + actif +
-                '}';
-    }
+
 
     @Override
     public int compareTo(Utilisateur o) {
@@ -79,5 +71,15 @@ private boolean actif;
         } catch (Exception e) {
         }
         return utilisateur;
+    }
+
+    @Override
+    public String afficherTitre() {
+        return name;
+    }
+
+    @Override
+    public String afficherDetail() {
+        return null;
     }
 }

@@ -1,37 +1,38 @@
 package com.pouillos.monpilulier.entities;
 
 import com.orm.SugarRecord;
+import com.orm.dsl.Column;
 import com.orm.dsl.Table;
 
 import java.io.Serializable;
 
-@Table
+
 public class Association extends SugarRecord implements Serializable, Comparable<Association>{
 
-    private Utilisateur utilisateur;
-    private Medecin medecin;
+    private Long utilisateur;
+    private Long medecin;
 
     public Association() {
     }
 
-    public Association(Utilisateur utilisateur, Medecin medecin) {
+    public Association(Long utilisateur, Long medecin) {
         this.utilisateur = utilisateur;
         this.medecin = medecin;
     }
 
-    public Utilisateur getUtilisateur() {
+    public Long getUtilisateur() {
         return utilisateur;
     }
 
-    public void setUtilisateur(Utilisateur utilisateur) {
+    public void setUtilisateur(Long utilisateur) {
         this.utilisateur = utilisateur;
     }
 
-    public Medecin getMedecin() {
+    public Long getMedecin() {
         return medecin;
     }
 
-    public void setMedecin(Medecin medecin) {
+    public void setMedecin(Long medecin) {
         this.medecin = medecin;
     }
 

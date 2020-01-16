@@ -1,12 +1,15 @@
 package com.pouillos.monpilulier.entities;
 
+import com.orm.SugarRecord;
+import com.pouillos.monpilulier.interfaces.AfficherDetail;
+
+import java.io.Serializable;
 import java.util.Date;
 
-public class OrdoPrescription {
+public class OrdoPrescription extends SugarRecord implements Serializable, Comparable<OrdoPrescription>, AfficherDetail {
 
     private String detail;
     private Ordonnance ordonnance;
-    private Date date;
     private Medicament medicament;
     private float nbDose;
     private Dose dose;
@@ -24,10 +27,9 @@ public class OrdoPrescription {
     public OrdoPrescription() {
     }
 
-    public OrdoPrescription(String detail, Ordonnance ordonnance, Date date, Medicament medicament, float nbDose, Dose dose, int nbFrequence, Duree frequence, int nbDuree, Duree duree, Date dateDebut, Date dateFin, boolean matin, boolean midi, boolean soir) {
+    public OrdoPrescription(String detail, Ordonnance ordonnance, Medicament medicament, float nbDose, Dose dose, int nbFrequence, Duree frequence, int nbDuree, Duree duree, Date dateDebut, Date dateFin, boolean matin, boolean midi, boolean soir) {
         this.detail = detail;
         this.ordonnance = ordonnance;
-        this.date = date;
         this.medicament = medicament;
         this.nbDose = nbDose;
         this.dose = dose;
@@ -56,14 +58,6 @@ public class OrdoPrescription {
 
     public void setOrdonnance(Ordonnance ordonnance) {
         this.ordonnance = ordonnance;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     public Medicament getMedicament() {
@@ -163,23 +157,17 @@ public class OrdoPrescription {
     }
 
     @Override
-    public String toString() {
-        return "OrdoPrescription{" +
-                ", detail='" + detail + '\'' +
-                ", ordonnance=" + ordonnance +
-                ", date=" + date +
-                ", medicament=" + medicament +
-                ", nbDose=" + nbDose +
-                ", dose=" + dose +
-                ", nbFrequence=" + nbFrequence +
-                ", frequence=" + frequence +
-                ", nbDuree=" + nbDuree +
-                ", duree=" + duree +
-                ", dateDebut=" + dateDebut +
-                ", dateFin=" + dateFin +
-                ", matin=" + matin +
-                ", midi=" + midi +
-                ", soir=" + soir +
-                '}';
+    public int compareTo(OrdoPrescription o) {
+        return this.getId().compareTo(o.getId());
+    }
+
+    @Override
+    public String afficherTitre() {
+        return medicament.getName();
+    }
+
+    @Override
+    public String afficherDetail() {
+        return detail;
     }
 }

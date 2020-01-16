@@ -11,7 +11,7 @@
     android:paddingRight="16dp"
     android:paddingBottom="16dp"
 
-    tools:context=".activities.ListAllMedecinActivity">
+    tools:context=".activities.listallx.ListAllMedecinActivity">
 
 
     <TextView

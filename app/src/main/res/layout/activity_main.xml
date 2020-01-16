@@ -19,16 +19,23 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:orientation="horizontal">
 
 
+            <Button
+                android:id="@+id/buttonNewUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="+Utilisateur" />
 
             <Button
                 android:id="@+id/buttonListAllUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lister Utilisateurs" />
+                android:layout_weight="1"
+                android:text="Utilisateurs" />
 
             <ImageButton
                 android:id="@+id/buttonDeleteAllUser"
@@ -42,141 +49,269 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:orientation="horizontal">
 
 
+            <Button
+                android:id="@+id/buttonNewMedicament"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="+Medicament" />
 
             <Button
                 android:id="@+id/buttonListAllMedicament"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lister Medicaments" />
+                android:layout_weight="1"
+                android:text="Medicaments" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/buttonNewAnalyse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="+Analyse" />
 
             <Button
                 android:id="@+id/buttonListAllAnalyse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lister Analyses" />
-        </LinearLayout>
+                android:layout_weight="1"
+                android:text="Analyses" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-
+            <Button
+                android:id="@+id/buttonNewDose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="+Dose" />
 
             <Button
                 android:id="@+id/buttonListAllDose"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lister Doses" />
+                android:layout_weight="1"
+                android:text="Doses" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:orientation="horizontal">
+
+
+            <Button
+                android:id="@+id/buttonNewExamen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="+Examen" />
 
             <Button
                 android:id="@+id/buttonListAllExamen"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lister Examens" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-
+                android:layout_weight="1"
+                android:text="Examens" />
 
             <Button
-                android:id="@+id/buttonListAllSpecialite"
+                android:id="@+id/buttonNewMedecin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lister Specialites" />
-
-            <Button
-                android:id="@+id/buttonListAllCabinet"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Lister Cabinets" />
-        </LinearLayout>
-
-        <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-
-            <Button
-            android:id="@+id/buttonListAllDuree"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Lister Durees" />
+                android:layout_weight="1"
+                android:text="+Medecin"
+                android:textSize="10sp" />
 
             <Button
                 android:id="@+id/buttonListAllMedecin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lister Medecins" />
+                android:layout_weight="1"
+                android:text="Medecins"
+                android:textSize="10sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:orientation="horizontal">
+
+
+            <Button
+                android:id="@+id/buttonNewSpecialite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="+Specialite" />
+
+            <Button
+                android:id="@+id/buttonListAllSpecialite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Specialites" />
 
             <Button
                 android:id="@+id/buttonListMyMedecin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Mes Medecins" />
+                android:text="Mes Medecins"
+                android:textSize="10sp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/buttonNewCabinet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="+Cabinet" />
+
+            <Button
+                android:id="@+id/buttonListAllCabinet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Cabinets" />
+
+            <Button
+                android:id="@+id/buttonNewDuree"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="+Duree" />
+
+            <Button
+                android:id="@+id/buttonListAllDuree"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Durees" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/buttonNewRdv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="+Rdv" />
+
+            <Button
+                android:id="@+id/buttonListAllRdv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Rdv" />
+
+            <Button
+                android:id="@+id/buttonListMyRdv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Mes Rdv" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/buttonNewOrdonnance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nouvelle Ordonnance" />
+                android:layout_weight="1"
+                android:text="+Ordonnance" />
 
             <Button
                 android:id="@+id/buttonListAllOrdonnance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lister Ordonnances" />
+                android:layout_weight="1"
+                android:text="Ordonnances" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/buttonListAllOrdoPrescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="OrdoPrescr" />
 
             <Button
                 android:id="@+id/buttonListAllOrdoExamen"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="OrdoExamen" />
 
             <Button
                 android:id="@+id/buttonListAllOrdoAnalyse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="OrdoAnalyse" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"/>
+            android:layout_height="40dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/buttonProfil"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Modif Profil" />
+
+            <Button
+                android:id="@+id/buttonListAllProfil"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Profils" />
+
+            <Button
+                android:id="@+id/buttonListMyProfil"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Mes Profils" />
+
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/buttonRAZ"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="RAZ" />
 
     </LinearLayout>

@@ -2,29 +2,26 @@ package com.pouillos.monpilulier.entities;
 
 import com.orm.SugarRecord;
 import com.orm.dsl.Table;
-import com.pouillos.monpilulier.abstraite.GestionDate;
+import com.pouillos.monpilulier.interfaces.AfficherDetail;
 
 import java.io.Serializable;
-import java.util.Date;
 
-@Table
-public class OrdoAnalyse extends SugarRecord implements Serializable, Comparable<OrdoAnalyse>, GestionDate {
+
+public class OrdoAnalyse extends SugarRecord implements Serializable, Comparable<OrdoAnalyse>, AfficherDetail {
 
     private Analyse analyse;
     private String detail;
     private Ordonnance ordonnance;
     private Cabinet cabinet;
-    private Date date;
 
     public OrdoAnalyse() {
     }
 
-    public OrdoAnalyse(Analyse analyse, String detail, Ordonnance ordonnance, Cabinet cabinet, Date date) {
+    public OrdoAnalyse(Analyse analyse, String detail, Ordonnance ordonnance, Cabinet cabinet) {
         this.analyse = analyse;
         this.detail = detail;
         this.ordonnance = ordonnance;
         this.cabinet = cabinet;
-        this.date = date;
     }
 
     public Analyse getAnalyse() {
@@ -59,33 +56,19 @@ public class OrdoAnalyse extends SugarRecord implements Serializable, Comparable
         this.cabinet = cabinet;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    @Override
-    public String toString() {
-        return "OrdoAnalyse{" +
-                ", analyse=" + analyse +
-                ", detail='" + detail + '\'' +
-                ", ordonnance=" + ordonnance +
-                ", cabinet=" + cabinet +
-                ", date=" + date +
-                '}';
-    }
-
-    public String getName() {
-        return  "analyse=" + analyse.getName() +
-                ", date=" + date +
-                '}';
-    }
 
     @Override
     public int compareTo(OrdoAnalyse o) {
         return this.getId().compareTo(o.getId());
+    }
+
+    @Override
+    public String afficherTitre() {
+        return analyse.getName();
+    }
+
+    @Override
+    public String afficherDetail() {
+        return detail;
     }
 }

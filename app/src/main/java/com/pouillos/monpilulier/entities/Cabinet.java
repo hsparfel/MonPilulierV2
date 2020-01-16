@@ -2,11 +2,12 @@ package com.pouillos.monpilulier.entities;
 
 import com.orm.SugarRecord;
 import com.orm.dsl.Table;
+import com.pouillos.monpilulier.interfaces.AfficherDetail;
 
 import java.io.Serializable;
 import java.util.Date;
-@Table
-public class Cabinet extends SugarRecord implements Serializable, Comparable<Cabinet>{
+
+public class Cabinet extends SugarRecord implements Serializable, Comparable<Cabinet>, AfficherDetail {
 
 
 private String name;
@@ -66,19 +67,21 @@ private String ville;
         this.ville = ville;
     }
 
-    @Override
-    public String toString() {
-        return "Cabinet{" +
-                ", name='" + name + '\'' +
-                ", detail='" + detail + '\'' +
-                ", adresse='" + adresse + '\'' +
-                ", cp='" + cp + '\'' +
-                ", ville='" + ville + '\'' +
-                '}';
-    }
+
 
     @Override
     public int compareTo(Cabinet o) {
         return this.name.compareTo(o.name);
+    }
+
+    @Override
+    public String afficherTitre() {
+        return name;
+    }
+
+    @Override
+    public String afficherDetail() {
+        String reponse = adresse+" - "+cp+" - "+ville;
+        return reponse;
     }
 }

@@ -1,24 +1,26 @@
 package com.pouillos.monpilulier.entities;
 
+import com.orm.SugarRecord;
+import com.pouillos.monpilulier.interfaces.AfficherDetail;
+
+import java.io.Serializable;
 import java.util.Date;
 
-public class OrdoExamen {
+public class OrdoExamen extends SugarRecord implements Serializable, Comparable<OrdoExamen>, AfficherDetail {
 
     private Examen examen;
     private String detail;
     private Ordonnance ordonnance;
     private Cabinet cabinet;
-    private Date date;
 
     public OrdoExamen() {
     }
 
-    public OrdoExamen(Examen examen, String detail, Ordonnance ordonnance, Cabinet cabinet, Date date) {
+    public OrdoExamen(Examen examen, String detail, Ordonnance ordonnance, Cabinet cabinet) {
         this.examen = examen;
         this.detail = detail;
         this.ordonnance = ordonnance;
         this.cabinet = cabinet;
-        this.date = date;
     }
 
     public Examen getExamen() {
@@ -53,22 +55,18 @@ public class OrdoExamen {
         this.cabinet = cabinet;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
+    @Override
+    public int compareTo(OrdoExamen o) {
+        return this.getId().compareTo(o.getId());
     }
 
     @Override
-    public String toString() {
-        return "OrdoExamen{" +
-                ", examen=" + examen +
-                ", detail='" + detail + '\'' +
-                ", ordonnance=" + ordonnance +
-                ", cabinet=" + cabinet +
-                ", date=" + date +
-                '}';
+    public String afficherTitre() {
+        return examen.getName();
+    }
+
+    @Override
+    public String afficherDetail() {
+        return detail;
     }
 }

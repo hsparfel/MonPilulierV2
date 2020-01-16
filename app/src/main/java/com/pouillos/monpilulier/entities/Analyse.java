@@ -2,11 +2,12 @@ package com.pouillos.monpilulier.entities;
 
 import com.orm.SugarRecord;
 import com.orm.dsl.Table;
+import com.pouillos.monpilulier.interfaces.AfficherDetail;
 
 import java.io.Serializable;
 import java.util.Date;
-@Table
-public class Analyse extends SugarRecord implements Serializable, Comparable<Analyse>{
+
+public class Analyse extends SugarRecord implements Serializable, Comparable<Analyse>, AfficherDetail {
 
 private String name;
 private String detail;
@@ -38,5 +39,15 @@ private String detail;
     @Override
     public int compareTo(Analyse o) {
         return this.name.compareTo(o.name);
+    }
+
+    @Override
+    public String afficherTitre() {
+        return name;
+    }
+
+    @Override
+    public String afficherDetail() {
+        return detail;
     }
 }
