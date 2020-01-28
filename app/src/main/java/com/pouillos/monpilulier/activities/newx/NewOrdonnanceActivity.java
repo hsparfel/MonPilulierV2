@@ -2,10 +2,12 @@ package com.pouillos.monpilulier.activities.newx;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -19,12 +21,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.listallx.ListAllOrdoAnalyseActivity;
+import com.pouillos.monpilulier.activities.listallx.ListAllOrdoExamenActivity;
+import com.pouillos.monpilulier.activities.listallx.ListAllOrdoPrescriptionActivity;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.Ordonnance;
 import com.pouillos.monpilulier.entities.Medecin;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
+import com.pouillos.monpilulier.interfaces.BasicUtils;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,7 +40,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class NewOrdonnanceActivity extends AppCompatActivity {
+public class NewOrdonnanceActivity extends AppCompatActivity implements Serializable, BasicUtils {
 
     private ImageButton buttonValider;
     private ImageButton buttonAnnuler;
@@ -70,24 +76,26 @@ public class NewOrdonnanceActivity extends AppCompatActivity {
         spinnerMedecin = (Spinner) findViewById(R.id.spinnerMedecin);
         textDate = findViewById(R.id.textDate);
 
-        createSpinnerMedecin();
+        //masquer les 3 boutons
+        afficherBoutons(false);
+
+        createSpinners();
 
         traiterIntent();
 
-        //masquer les 3 boutons
-        afficherBoutons(false);
+
 
         buttonOrdoPrescription.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //ouvrirActivityOrdoPrescription();
+                ouvrirActivityListAllOrdoPrescription();
             }
         });
 
         buttonOrdoExamen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // ouvrirActivityOrdoExamen();
+               ouvrirActivityListAllOrdoExamen();
             }
         });
 
@@ -101,7 +109,7 @@ public class NewOrdonnanceActivity extends AppCompatActivity {
         buttonAddMedecin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ouvrirActivityAdd();
+                //ouvrirActivityAdd();
             }
         });
 
@@ -116,6 +124,9 @@ public class NewOrdonnanceActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //rediger les verifs de remplissage des champs
+                if (!isRempli(spinnerMedecin)){
+                    return;
+                }
 
                 if (!isRempli(textDate, date)) {
                     return;
@@ -125,19 +136,19 @@ public class NewOrdonnanceActivity extends AppCompatActivity {
                 saveToDb(textDescription);
 
                 afficherBoutons(true);
-                //retour
-                //retourPagePrecedente();
+
             }
         });
     }
 
+    @Override
     public void showDatePickerDialog(View v) {
         DatePickerFragmentDateJour newFragment = new DatePickerFragmentDateJour();
         newFragment.show(getSupportFragmentManager(), "buttonDate");
         newFragment.setOnDateClickListener(new DatePickerFragmentDateJour.onDateClickListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-                //datePicker.setMaxDate(new Date().getTime());
+                datePicker.setMaxDate(new Date().getTime());
                 TextView tv1= (TextView) findViewById(R.id.textDate);
                 String dateJour = ""+datePicker.getDayOfMonth();
                 String dateMois = ""+(datePicker.getMonth()+1);
@@ -145,7 +156,7 @@ public class NewOrdonnanceActivity extends AppCompatActivity {
                 if (datePicker.getDayOfMonth()<10) {
                     dateJour = "0"+dateJour;
                 }
-                if (datePicker.getMonth()<10) {
+                if (datePicker.getMonth()+1<10) {
                     dateMois = "0"+dateMois;
                 }
                 String dateString = dateJour+"/"+dateMois+"/"+dateAnnee;
@@ -175,35 +186,46 @@ public class NewOrdonnanceActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(ev);
     }
 
+    @Override
     public void traiterIntent() {
         Intent intent = getIntent();
         activitySource = (Class<?>) intent.getSerializableExtra("activitySource");
-        //TODO recuperer le new medecin
-        if (intent.hasExtra("ordonnanceAModif")) {
+
+        if (intent.hasExtra("ordonnanceSauvegardeId")) {
+            Long ordonnanceSauvegardeId = intent.getLongExtra("ordonnanceSauvegardeId",0);
+            ordonnanceSauvegarde = Ordonnance.findById(Ordonnance.class,ordonnanceSauvegardeId);
+            textDescription.setText(ordonnanceSauvegarde.getDetail());
+            medecin = ordonnanceSauvegarde.getMedecin();
+            date = ordonnanceSauvegarde.getDate();
+            textDate.setText(new DateUtils().ecrireDate(ordonnanceSauvegarde.getDate()));
+            spinnerMedecin.setSelection(getIndex(spinnerMedecin, medecin.getName()));
+            afficherBoutons(true);
+        }
+
+
+
+
+
+        if (intent.hasExtra("ordonnanceAModifId")) {
 
             Long ordonnanceAModifId = intent.getLongExtra("ordonnanceAModifId",0);
             ordonnanceAModif = Ordonnance.findById(Ordonnance.class,ordonnanceAModifId);
-
-
-
-
+            ordonnanceSauvegarde = ordonnanceAModif;
             textDescription.setText(ordonnanceAModif.getDetail());
             medecin = ordonnanceAModif.getMedecin();
             date = ordonnanceAModif.getDate();
             textDate.setText(new DateUtils().ecrireDate(ordonnanceAModif.getDate()));
             spinnerMedecin.setSelection(getIndex(spinnerMedecin, medecin.getName()));
+            afficherBoutons(true);
         } else {
             ordonnanceAModif = new Ordonnance();}
         if (intent.hasExtra("medecinToUpdate")) {
             medecin = (Medecin) intent.getSerializableExtra("medecinToUpdate");
             spinnerMedecin.setSelection(getIndex(spinnerMedecin, medecin.getName()));
         }
-
-
-
-
     }
 
+    @Override
     public void retourPagePrecedente() {
         Intent nextActivity = new Intent(NewOrdonnanceActivity.this, activitySource);
         nextActivity.putExtra("activitySource", NewOrdonnanceActivity.class);
@@ -216,103 +238,77 @@ public class NewOrdonnanceActivity extends AppCompatActivity {
             buttonOrdoPrescription.setVisibility(View.VISIBLE);
             buttonOrdoExamen.setVisibility(View.VISIBLE);
             buttonOrdoAnalyse.setVisibility(View.VISIBLE);
-            //buttonValider.setVisibility(View.INVISIBLE);
-            //buttonAnnuler.setVisibility(View.INVISIBLE);
         } else {
             buttonOrdoPrescription.setVisibility(View.INVISIBLE);
             buttonOrdoExamen.setVisibility(View.INVISIBLE);
             buttonOrdoAnalyse.setVisibility(View.INVISIBLE);
-            //buttonValider.setVisibility(View.VISIBLE);
-            //buttonAnnuler.setVisibility(View.VISIBLE);
         }
     }
 
-    public void ouvrirActivityAdd() {
 
-    }
 
-    public void ouvrirActivityListAllOrdoAnalyse() {
-        Intent nextActivity = new Intent(NewOrdonnanceActivity.this, ListAllOrdoAnalyseActivity.class);
+    public void ouvrirActivityListAllOrdoExamen() {
+        Intent nextActivity = new Intent(NewOrdonnanceActivity.this, ListAllOrdoExamenActivity.class);
         nextActivity.putExtra("activitySource", NewOrdonnanceActivity.class);
-        //ordonnanceAModif.setDetail(textDescription.getText().toString());
-        //ordonnanceAModif.setMedecin(medecin);
-        //ordonnanceAModif.setDate(date);
+        ordonnanceSauvegarde.setDetail(textDescription.getText().toString());
+        ordonnanceSauvegarde.setMedecin(medecin);
+        ordonnanceSauvegarde.setDate(date);
+        ordonnanceSauvegarde.setId(ordonnanceSauvegarde.save());
         nextActivity.putExtra("ordonnanceSauvegardeId", ordonnanceSauvegarde.getId());
         startActivity(nextActivity);
         finish();
     }
 
-    //creer les classes puis enlever commentaires
-   /* public void ouvrirActivityOrdoExamen() {
-        Intent nextActivity = new Intent(NewOrdonnanceActivity.this,NewOrdoExamenActivity.class);
-        nextActivity.putExtra("precedent", NewOrdonnanceActivity.class);
-        ordonnanceAModif.setDetail(textDescription.getText().toString());
-        ordonnanceAModif.setMedecin(medecin);
-        ordonnanceAModif.setDate(date);
-        nextActivity.putExtra("ordonnanceAModif", ordonnanceAModif);
+    public void ouvrirActivityListAllOrdoAnalyse() {
+        Intent nextActivity = new Intent(NewOrdonnanceActivity.this, ListAllOrdoAnalyseActivity.class);
+        nextActivity.putExtra("activitySource", NewOrdonnanceActivity.class);
+        ordonnanceSauvegarde.setDetail(textDescription.getText().toString());
+        ordonnanceSauvegarde.setMedecin(medecin);
+        ordonnanceSauvegarde.setDate(date);
+        ordonnanceSauvegarde.setId(ordonnanceSauvegarde.save());
+        nextActivity.putExtra("ordonnanceSauvegardeId", ordonnanceSauvegarde.getId());
         startActivity(nextActivity);
         finish();
+
     }
 
-    public void ouvrirActivityOrdoPrescription() {
-        Intent nextActivity = new Intent(NewOrdonnanceActivity.this,NewOrdoPrescriptionActivity.class);
-        nextActivity.putExtra("precedent", NewOrdonnanceActivity.class);
-        ordonnanceAModif.setDetail(textDescription.getText().toString());
-        ordonnanceAModif.setMedecin(medecin);
-        ordonnanceAModif.setDate(date);
-        nextActivity.putExtra("ordonnanceAModif", ordonnanceAModif);
+    public void ouvrirActivityListAllOrdoPrescription() {
+        Intent nextActivity = new Intent(NewOrdonnanceActivity.this, ListAllOrdoPrescriptionActivity.class);
+        nextActivity.putExtra("activitySource", NewOrdonnanceActivity.class);
+        ordonnanceSauvegarde.setDetail(textDescription.getText().toString());
+        ordonnanceSauvegarde.setMedecin(medecin);
+        ordonnanceSauvegarde.setDate(date);
+        ordonnanceSauvegarde.setId(ordonnanceSauvegarde.save());
+        nextActivity.putExtra("ordonnanceSauvegardeId", ordonnanceSauvegarde.getId());
         startActivity(nextActivity);
         finish();
-    }*/
 
-    public boolean isExistant(TextView textView) {
-        boolean reponse = false;
-        List<Ordonnance> listAllOrdonnance = Ordonnance.listAll(Ordonnance.class);
-        for (Ordonnance ordonnance : listAllOrdonnance) {
-            if (ordonnanceAModif == null) {
-               /* if (textView.getText().toString().equals(ordonnance.getName())) {
-                    textView.requestFocus();
-                    textView.setError("l'ordonnance existe déjà");
-                    reponse = true;
-                }
-            } else {
-                if (!ordonnanceAModif.getName().equals(ordonnance.getName()) && textView.getText().toString().equals(ordonnance.getName())) {
-                    textView.requestFocus();
-                    textView.setError("l'ordonnance existe déjà");
-                    reponse = true;
-                }*/
-            }
-        }
-        return reponse;
     }
 
-    public boolean isRempli(TextView textView) {
-        if (TextUtils.isEmpty(textView.getText())) {
-            textView.requestFocus();
-            textView.setError("Saisie Obligatoire");
-            return false;
-        } else {
-            return true;
-        }
+
+
+
+
+
+
+
+    public void alertOnSpinners() {
+        TextView errorText = (TextView)spinnerMedecin.getSelectedView();
+        errorText.setTextColor(Color.RED);
     }
 
-    public boolean isRempli(TextView textView, Date date) {
-        if (date == null) {
-            textView.setError("Sélection Obligatoire");
-            return false;
-        } else {
-            return true;
-        }
+    public void alertOffSpinners() {
+        TextView errorText = (TextView)spinnerMedecin.getSelectedView();
+        errorText.setTextColor(Color.BLACK);
     }
 
-    public void saveToDb(TextView textDescription) {
+    @Override
+    public void saveToDb(TextView... args) {
         medecin = (Medecin) Medecin.find(Medecin.class,"name = ?", spinnerMedecin.getSelectedItem().toString()).get(0);
         if (ordonnanceAModif.getId() == null) {
-            Ordonnance ordonnance = new Ordonnance(textDescription.getText().toString(), utilisateur, medecin, date);
-            //Long Id = ordonnance.save();
+            Ordonnance ordonnance = new Ordonnance(args[0].getText().toString(), utilisateur, medecin, date);
             ordonnanceSauvegarde = ordonnance;
             ordonnanceSauvegarde.setId(ordonnance.save());
-            //ordonnanceSauvegarde = (Ordonnance) Ordonnance.find(Ordonnance.class,"id = ?", Id.toString()).get(0);
         } else {
             Ordonnance ordonnance;
             if (ordonnanceAModif.getId()!=null) {
@@ -320,7 +316,7 @@ public class NewOrdonnanceActivity extends AppCompatActivity {
             } else {
                 ordonnance = new Ordonnance();
             }
-            ordonnance.setDetail(textDescription.getText().toString());
+            ordonnance.setDetail(args[0].getText().toString());
             ordonnance.setMedecin(medecin);
             ordonnance.setDate(date);
             Long Id = ordonnance.save();
@@ -328,29 +324,38 @@ public class NewOrdonnanceActivity extends AppCompatActivity {
         }
     }
 
-    public static boolean isEmailAdress(String email){
-        Pattern p = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$");
-        Matcher m = p.matcher(email.toUpperCase());
-        return m.matches();
-    }
 
-    //private method of your class
-    private int getIndex(Spinner spinner, String myString){
-        for (int i=0;i<spinner.getCount();i++){
-            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)){
-                return i;
-            }
-        }
-        return 0;
-    }
-
-    public void createSpinnerMedecin() {
+    @Override
+    public void createSpinners() {
         List<Medecin> listAllMedecin = Medecin.listAll(Medecin.class,"name");
         List<String> listMedecinName = new ArrayList<String>();
+        listMedecinName.add("sélectionner");
         for (Medecin medecin : listAllMedecin) {
             listMedecinName.add(medecin.getName());
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listMedecinName);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listMedecinName) {
+            @Override
+            public boolean isEnabled(int position) {
+                if (position == 0) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            @Override
+            public View getDropDownView(int position, View convertView,
+                                        ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                TextView tv = (TextView) view;
+                if(position==0) {
+                    tv.setTextColor(Color.GRAY);
+                }
+                else {
+                    tv.setTextColor(Color.BLACK);
+                }
+                return view;
+            }
+        };
         //Le layout par défaut est android.R.layout.simple_spinner_dropdown_item
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerMedecin.setAdapter(adapter);

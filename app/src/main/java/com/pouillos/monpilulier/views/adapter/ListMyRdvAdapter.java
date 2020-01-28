@@ -31,13 +31,8 @@ public class ListMyRdvAdapter extends RecyclerView.Adapter<ListAllRdvViewHolder>
         // CONSTRUCTOR
         public ListMyRdvAdapter( ) {
             this.utilisateur  = (new Utilisateur()).findActifUser();
-         //   listAllAssociation = Association.find(Association.class,"utilisateur = ?", utilisateur.getId().toString());
-         //   for (Association association : listAllAssociation) {
-           //     if (association.getUtilisateur().getId() == utilisateur.getId()) {
-                    this.listMyRdv = Rdv.find(Rdv.class,"utilisateur = ?",utilisateur.getId().toString(),"date");
-           ///     }
-          //  }
-          //  Collections.sort(this.listMyRdv);
+            //TODO revoir requete personnalisé à la place avec order by date et date > aujourd'hui
+                    this.listMyRdv = Rdv.find(Rdv.class,"utilisateur = ?",utilisateur.getId().toString());
         }
 
         @Override

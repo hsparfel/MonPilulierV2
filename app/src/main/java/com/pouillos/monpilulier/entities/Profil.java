@@ -92,7 +92,7 @@ public class Profil extends SugarRecord implements Serializable, Comparable<Prof
 
     @Override
     public String afficherTitre() {
-        String reponse = utilisateur.getName()+" - "+new DateUtils().ecrireDate(date);
+        String reponse = utilisateur.getName()+" - "+DateUtils.ecrireDate(date);
         return reponse;
     }
 

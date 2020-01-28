@@ -26,13 +26,15 @@ import com.pouillos.monpilulier.entities.Ordonnance;
 import com.pouillos.monpilulier.entities.Rdv;
 import com.pouillos.monpilulier.entities.Specialite;
 import com.pouillos.monpilulier.entities.Utilisateur;
+import com.pouillos.monpilulier.interfaces.BasicUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class NewMedecinActivity extends AppCompatActivity {
+public class NewMedecinActivity extends AppCompatActivity implements BasicUtils {
 
     private ImageButton buttonValider;
     private ImageButton buttonAnnuler;
@@ -45,11 +47,9 @@ public class NewMedecinActivity extends AppCompatActivity {
     private Class<?> activitySource;
     private Medecin medecinAModif;
     private Intent intent;
-
     private Medecin medecin;
     private CheckBox checkBoxAssocier;
     private Utilisateur utilisateur;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +67,7 @@ public class NewMedecinActivity extends AppCompatActivity {
         textEmail = findViewById(R.id.textEmail);
         checkBoxAssocier = (CheckBox) findViewById(R.id.checkBoxAssocier);
 
-        createSpinnerSpecialite();
+        createSpinners();
 
         traiterIntent();
 
@@ -140,14 +140,13 @@ public class NewMedecinActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(ev);
     }
 
+    @Override
     public void traiterIntent() {
         intent = getIntent();
         activitySource = (Class<?>) intent.getSerializableExtra("activitySource");
         if (intent.hasExtra("medecinAModifId")) {
-
             Long medecinAModifId = intent.getLongExtra("medecinAModifId",0);
             medecinAModif = Medecin.findById(Medecin.class,medecinAModifId);
-
             textNom.setText(medecinAModif.getName());
             textDescription.setText(medecinAModif.getDetail());
             textTelephone.setText(medecinAModif.getTelephone());
@@ -155,54 +154,32 @@ public class NewMedecinActivity extends AppCompatActivity {
             spinnerSpecialite.setSelection(getIndex(spinnerSpecialite, medecinAModif.getSpecialite().getName()));
         } else {
             medecinAModif = new Medecin();}
-
         if (intent.hasExtra("associe")) {
             checkBoxAssocier.setChecked(intent.getBooleanExtra("associe",false));
         }
-
-
     }
 
+    @Override
+    public void showDatePickerDialog(View v) {
+    }
+
+    @Override
     public void retourPagePrecedente(Intent intent) {
         Intent nextActivity = new Intent(NewMedecinActivity.this,activitySource);
         nextActivity.putExtra("activitySource", NewMedecinActivity.class);
         startActivity(nextActivity);
         finish();
     }
-    /*public void retourPagePrecedenteAnnuler(Intent intent) {
-        Intent nextActivity = new Intent(NewMedecinActivity.this, activitySource);
-        nextActivity.putExtra("medecinAModif", medecin);
-        if (intent.hasExtra("ordonnanceToUpdate")) {
-            ordonnanceToUpdate = (Ordonnance) intent.getSerializableExtra("ordonnanceToUpdate");
-            nextActivity.putExtra("ordonnanceToUpdate", ordonnanceToUpdate);
-            nextActivity.putExtra("activitySource", ListAllOrdonnanceActivity.class);
-        } else {
-            nextActivity.putExtra("activitySource", NewMedecinActivity.class);
-        }
-        startActivity(nextActivity);
-        finish();
-    }*/
 
-    /*public void retourPagePrecedenteValider(Intent intent) {
-        Intent nextActivity = new Intent(NewMedecinActivity.this, activitySource);
-        nextActivity.putExtra("medecinAModif", medecin);
-        if (intent.hasExtra("ordonnanceToUpdate")) {
-            ordonnanceToUpdate = (Ordonnance) intent.getSerializableExtra("ordonnanceToUpdate");
-            medecin = (Medecin) Medecin.find(Medecin.class,"name = ?", textNom.getText().toString()).get(0);
-            ordonnanceToUpdate.setMedecin(medecin);
-            nextActivity.putExtra("ordonnanceToUpdate", ordonnanceToUpdate);
-            nextActivity.putExtra("activitySource", ListAllOrdonnanceActivity.class);
-        } else {
-            nextActivity.putExtra("activitySource", NewMedecinActivity.class);
-        }
-        startActivity(nextActivity);
-        finish();
-    }*/
-
-    public void ouvrirActivityAdd() {
+    @Override
+    public void retourPagePrecedente() {
 
     }
 
+    public void ouvrirActivityAdd() {
+    }
+
+    @Override
     public boolean isExistant(TextView textView) {
         boolean reponse = false;
         List<Medecin> listAllMedecin = Medecin.listAll(Medecin.class);
@@ -224,6 +201,7 @@ public class NewMedecinActivity extends AppCompatActivity {
         return reponse;
     }
 
+    @Override
     public boolean isRempli(TextView textView) {
         if (TextUtils.isEmpty(textView.getText())) {
             textView.requestFocus();
@@ -234,8 +212,19 @@ public class NewMedecinActivity extends AppCompatActivity {
         }
     }
 
-    public boolean isRempli(Spinner spinnerSpecialite) {
-        if (spinnerSpecialite.getSelectedItem().toString().equals("sélectionner")) {
+    @Override
+    public boolean isRempli(TextView textView, Date date) {
+        return false;
+    }
+
+    @Override
+    public boolean isRempli(TextView textView, String string) {
+        return false;
+    }
+
+    @Override
+    public boolean isRempli(Spinner... args) {
+        if (args[0].getSelectedItem().toString().equals("sélectionner")) {
             alertOnSpinners();
             return false;
         } else {
@@ -243,48 +232,9 @@ public class NewMedecinActivity extends AppCompatActivity {
         }
     }
 
-    public boolean isValidTel(TextView textView) {
-        if (!TextUtils.isEmpty(textView.getText()) && textView.getText().length() <10) {
-            textView.requestFocus();
-            textView.setError("Saisie Non Valide  (10 chiffres)");
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public boolean isValidEmail(TextView textView) {
-        if (!TextUtils.isEmpty(textView.getText()) && !isEmailAdress(textView.getText().toString())) {
-            textView.requestFocus();
-            textView.setError("Saisie Non Valide (email)");
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public void saveToDb(TextView textNom, TextView textDescription, TextView textTelephone, TextView textEmail) {
-        Specialite specialite = (Specialite) Specialite.find(Specialite.class,"name = ?", spinnerSpecialite.getSelectedItem().toString()).get(0);
-        if (medecinAModif ==null) {
-            medecin = new Medecin(textNom.getText().toString(), textDescription.getText().toString(),specialite, textTelephone.getText().toString(), textEmail.getText().toString());
-            medecin.setId(medecin.save());
-        } else {
-            if (medecinAModif.getId()!=null) {
-                medecin = (Medecin.find(Medecin.class, "id = ?", medecinAModif.getId().toString())).get(0);
-            } else {
-                medecin = new Medecin();
-            }
-            medecin.setName(textNom.getText().toString());
-            medecin.setDetail(textDescription.getText().toString());
-            medecin.setTelephone(textTelephone.getText().toString());
-            medecin.setEmail(textEmail.getText().toString());
-            medecin.setSpecialite(specialite);
-            medecin.setId(medecin.save());
-        }
-
-
-
-
+    @Override
+    public boolean isValid(TextView textView) {
+        return false;
     }
 
     public void saveToDbAssocier() {
@@ -305,23 +255,45 @@ public class NewMedecinActivity extends AppCompatActivity {
         }
     }
 
-    public static boolean isEmailAdress(String email){
-        Pattern p = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$");
-        Matcher m = p.matcher(email.toUpperCase());
-        return m.matches();
+    @Override
+    public void alertOnSpinners() {
+        TextView errorText = (TextView)spinnerSpecialite.getSelectedView();
+        errorText.setTextColor(Color.RED);
     }
 
-    //private method of your class
-    private int getIndex(Spinner spinner, String myString){
-        for (int i=0;i<spinner.getCount();i++){
-            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)){
-                return i;
+    @Override
+    public void alertOffSpinners() {
+        TextView errorText = (TextView)spinnerSpecialite.getSelectedView();
+        errorText.setTextColor(Color.BLACK);
+    }
+
+    @Override
+    public void saveToDb(TextView... args) {
+        Specialite specialite = (Specialite) Specialite.find(Specialite.class,"name = ?", spinnerSpecialite.getSelectedItem().toString()).get(0);
+        if (medecinAModif ==null) {
+            medecin = new Medecin(args[0].getText().toString(), args[1].getText().toString(),specialite, args[2].getText().toString(), args[3].getText().toString());
+            medecin.setId(medecin.save());
+        } else {
+            if (medecinAModif.getId()!=null) {
+                medecin = (Medecin.find(Medecin.class, "id = ?", medecinAModif.getId().toString())).get(0);
+            } else {
+                medecin = new Medecin();
             }
+            medecin.setName(args[0].getText().toString());
+            medecin.setDetail(args[1].getText().toString());
+            medecin.setTelephone(args[2].getText().toString());
+            medecin.setEmail(args[3].getText().toString());
+            medecin.setSpecialite(specialite);
+            medecin.setId(medecin.save());
         }
-        return 0;
     }
 
-    public void createSpinnerSpecialite() {
+    @Override
+    public void saveToDb(TextView textNom, Date date, String sexe) {
+    }
+
+    @Override
+    public void createSpinners() {
         List<Specialite> listAllSpecialite = Specialite.listAll(Specialite.class,"name");
         List<String> listSpecialiteName = new ArrayList<String>();
         listSpecialiteName.add("sélectionner");
@@ -354,14 +326,5 @@ public class NewMedecinActivity extends AppCompatActivity {
         //Le layout par défaut est android.R.layout.simple_spinner_dropdown_item
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerSpecialite.setAdapter(adapter);
-    }
-    private void alertOnSpinners() {
-        TextView errorText = (TextView)spinnerSpecialite.getSelectedView();
-        errorText.setTextColor(Color.RED);
-    }
-
-    private void alertOffSpinners() {
-        TextView errorText = (TextView)spinnerSpecialite.getSelectedView();
-        errorText.setTextColor(Color.BLACK);
     }
 }

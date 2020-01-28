@@ -21,6 +21,7 @@ import com.pouillos.monpilulier.activities.listallx.ListAllExamenActivity;
 import com.pouillos.monpilulier.activities.listallx.ListAllMedecinActivity;
 import com.pouillos.monpilulier.activities.listallx.ListAllMedicamentActivity;
 import com.pouillos.monpilulier.activities.listallx.ListAllOrdoAnalyseActivity;
+import com.pouillos.monpilulier.activities.listallx.ListAllOrdoExamenActivity;
 import com.pouillos.monpilulier.activities.listallx.ListAllOrdonnanceActivity;
 import com.pouillos.monpilulier.activities.listallx.ListAllProfilActivity;
 import com.pouillos.monpilulier.activities.listallx.ListAllSpecialiteActivity;
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         Button buttonNewOrdonnance = (Button) findViewById(R.id.buttonNewOrdonnance);
         Button buttonListAllOrdonnance = (Button) findViewById(R.id.buttonListAllOrdonnance);
         Button buttonListAllOrdoAnalyse = (Button) findViewById(R.id.buttonListAllOrdoAnalyse);
+        Button buttonListAllOrdoExamen = (Button) findViewById(R.id.buttonListAllOrdoExamen);
         ImageButton buttonDeleteAllUser = (ImageButton) findViewById(R.id.buttonDeleteAllUser);
         Button buttonRAZ = (Button) findViewById(R.id.buttonRAZ);
         Button buttonNewRdv = (Button) findViewById(R.id.buttonNewRdv);
@@ -303,6 +305,12 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             Intent listAllOrdoAnalyseActivity = new Intent(MainActivity.this, ListAllOrdoAnalyseActivity.class);
             listAllOrdoAnalyseActivity.putExtra("activitySource", MainActivity.class);
             startActivity(listAllOrdoAnalyseActivity);
+        });
+
+        buttonListAllOrdoExamen.setOnClickListener(v -> {
+            Intent listAllOrdoExamenActivity = new Intent(MainActivity.this, ListAllOrdoExamenActivity.class);
+            listAllOrdoExamenActivity.putExtra("activitySource", MainActivity.class);
+            startActivity(listAllOrdoExamenActivity);
         });
     }
 

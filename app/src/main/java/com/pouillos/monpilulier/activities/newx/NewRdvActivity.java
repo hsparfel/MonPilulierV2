@@ -29,6 +29,7 @@ import com.pouillos.monpilulier.entities.Ordonnance;
 import com.pouillos.monpilulier.entities.Rdv;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
+import com.pouillos.monpilulier.interfaces.BasicUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -37,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class NewRdvActivity extends AppCompatActivity {
+public class NewRdvActivity extends AppCompatActivity implements BasicUtils {
 
     private ImageButton buttonValider;
     private ImageButton buttonAnnuler;
@@ -83,13 +84,8 @@ public class NewRdvActivity extends AppCompatActivity {
 
         textDate = findViewById(R.id.textDate);
 
-        createSpinnerMedecin();
-        createSpinnerCabinet();
-        createSpinnerAnalyse();
-        createSpinnerExamen();
+        createSpinners();
         traiterIntent();
-
-        //spinnerMedecin.setOnItemClickListener(new View.OnClickListener());
 
         spinnerMedecin.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -122,7 +118,6 @@ public class NewRdvActivity extends AppCompatActivity {
                 return false;
             }
         });
-
 
         buttonAddMedecin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,7 +166,7 @@ public class NewRdvActivity extends AppCompatActivity {
                 }
 
                 //enregistrer en bdd
-                saveToDb(textDescription, textDate);
+                saveToDb(textDescription);
 
                 //retour
                 retourPagePrecedente();
@@ -193,6 +188,7 @@ public class NewRdvActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(ev);
     }
 
+    @Override
     public void traiterIntent() {
         intent = getIntent();
         activitySource = (Class<?>) intent.getSerializableExtra("activitySource");
@@ -220,6 +216,11 @@ public class NewRdvActivity extends AppCompatActivity {
             rdvAModif = new Rdv();}
     }
 
+    @Override
+    public void retourPagePrecedente(Intent intent) {
+    }
+
+    @Override
     public void retourPagePrecedente() {
         Intent nextActivity = new Intent(NewRdvActivity.this, activitySource);
         nextActivity.putExtra("activitySource", NewRdvActivity.class);
@@ -228,30 +229,13 @@ public class NewRdvActivity extends AppCompatActivity {
         finish();
     }
 
-    /*public void retourPagePrecedenteAnnuler(Intent intent) {
-        Intent nextActivity = new Intent(NewRdvActivity.this,activitySource);
-        nextActivity.putExtra("rdvAModif", rdv);
-        if (intent.hasExtra("ordonnanceToUpdate")) {
-         //   ordonnanceToUpdate = (Ordonnance) intent.getSerializableExtra("ordonnanceToUpdate");
-          //  nextActivity.putExtra("ordonnanceToUpdate", ordonnanceToUpdate);
-            nextActivity.putExtra("activitySource", ListAllOrdonnanceActivity.class);
-        } else {
-            nextActivity.putExtra("activitySource", NewRdvActivity.class);
-        }
-        startActivity(nextActivity);
-        finish();
+    @Override
+    public boolean isExistant(TextView textView) {
+        return false;
     }
 
-    public void retourPagePrecedenteValider(Intent intent) {
-        Intent nextActivity = new Intent(NewRdvActivity.this,activitySource);
-        nextActivity.putExtra("rdvAModif", rdv);
-
-        startActivity(nextActivity);
-        finish();
-    }*/
 
     public void ouvrirActivityAddMedecin() {
-
     }
 
     public void ouvrirActivityAddCabinet() {
@@ -266,6 +250,7 @@ public class NewRdvActivity extends AppCompatActivity {
 
     }
 
+    @Override
     public boolean isRempli(TextView textView) {
         if (TextUtils.isEmpty(textView.getText())) {
             textView.requestFocus();
@@ -276,6 +261,7 @@ public class NewRdvActivity extends AppCompatActivity {
         }
     }
 
+    @Override
     public boolean isRempli(TextView textView, Date date) {
         if (date == null) {
             textView.setError("Sélection Obligatoire");
@@ -285,12 +271,17 @@ public class NewRdvActivity extends AppCompatActivity {
         }
     }
 
-    public boolean isRempli(Spinner spinnerMedecin, Spinner spinnerCabinet, Spinner spinnerAnalyse, Spinner spinnerExamen) {
-        if (spinnerMedecin.getSelectedItem().toString().equals("sélectionner")
-                && spinnerCabinet.getSelectedItem().toString().equals("sélectionner")
-                && spinnerAnalyse.getSelectedItem().toString().equals("sélectionner")
-                && spinnerExamen.getSelectedItem().toString().equals("sélectionner")) {
+    @Override
+    public boolean isRempli(TextView textView, String string) {
+        return false;
+    }
 
+    @Override
+    public boolean isRempli(Spinner... args) {
+        if (args[0].getSelectedItem().toString().equals("sélectionner")
+                && args[1].getSelectedItem().toString().equals("sélectionner")
+                && args[2].getSelectedItem().toString().equals("sélectionner")
+                && args[3].getSelectedItem().toString().equals("sélectionner")) {
             alertOnSpinners();
             return false;
         } else {
@@ -298,196 +289,12 @@ public class NewRdvActivity extends AppCompatActivity {
         }
     }
 
-    public void saveToDb(TextView textDescription, TextView textDate) {
-        List<Medecin> listMedecin = Medecin.find(Medecin.class, "name = ?", spinnerMedecin.getSelectedItem().toString());
-        if (listMedecin.size() !=0) {
-            medecin = listMedecin.get(0);
-        }
-        List<Cabinet> listCabinet = Cabinet.find(Cabinet.class, "name = ?", spinnerCabinet.getSelectedItem().toString());
-        if (listCabinet.size() !=0) {
-            cabinet = listCabinet.get(0);
-        }
-
-        List<Analyse> listAnalyse = Analyse.find(Analyse.class, "name = ?", spinnerAnalyse.getSelectedItem().toString());
-        if (listAnalyse.size() !=0) {
-            analyse = listAnalyse.get(0);
-        }
-
-        List<Examen> listExamen = Examen.find(Examen.class, "name = ?", spinnerExamen.getSelectedItem().toString());
-        if (listExamen.size() !=0) {
-            examen = listExamen.get(0);
-        }
-
-        if (rdvAModif ==null) {
-            rdv = new Rdv(textDescription.getText().toString(),utilisateur, medecin, analyse, examen, cabinet, date);
-            rdv.setId(rdv.save());
-        } else {
-            if (rdvAModif.getId()!=null) {
-                rdv = (Rdv.find(Rdv.class, "id = ?", rdvAModif.getId().toString())).get(0);
-            } else {
-                rdv = new Rdv();
-            }
-            rdv.setDetail(textDescription.getText().toString());
-            rdv.setMedecin(medecin);
-            rdv.setDate(date);
-            rdv.setCabinet(cabinet);
-            rdv.setExamen(examen);
-            rdv.setAnalyse(analyse);
-            rdv.setUtilisateur(utilisateur);
-            rdv.setId(rdv.save());
-        }
+    @Override
+    public boolean isValid(TextView textView) {
+        return false;
     }
 
-    //private method of your class
-    private int getIndex(Spinner spinner, String myString){
-        for (int i=0;i<spinner.getCount();i++){
-            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)){
-                return i;
-            }
-        }
-        return 0;
-    }
-
-    public void createSpinnerMedecin() {
-        List<Medecin> listAllMedecin = Medecin.listAll(Medecin.class,"name");
-        List<String> listMedecinName = new ArrayList<String>();
-        listMedecinName.add("sélectionner");
-        for (Medecin medecin : listAllMedecin) {
-            listMedecinName.add(medecin.getName());
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listMedecinName) {
-            @Override
-            public boolean isEnabled(int position) {
-                if (position == 0) {
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-            @Override
-            public View getDropDownView(int position, View convertView,
-                                        ViewGroup parent) {
-                View view = super.getDropDownView(position, convertView, parent);
-                TextView tv = (TextView) view;
-                if(position==0) {
-                    tv.setTextColor(Color.GRAY);
-                }
-                else {
-                    tv.setTextColor(Color.BLACK);
-                }
-                return view;
-            }
-        };
-        //Le layout par défaut est android.R.layout.simple_spinner_dropdown_item
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerMedecin.setAdapter(adapter);
-    }
-
-    public void createSpinnerCabinet() {
-        List<Cabinet> listAllCabinet = Cabinet.listAll(Cabinet.class,"name");
-        List<String> listCabinetName = new ArrayList<String>();
-        listCabinetName.add("sélectionner");
-        for (Cabinet cabinet : listAllCabinet) {
-            listCabinetName.add(cabinet.getName());
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listCabinetName) {
-            @Override
-            public boolean isEnabled(int position) {
-                if (position == 0) {
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-            @Override
-            public View getDropDownView(int position, View convertView,
-                                        ViewGroup parent) {
-                View view = super.getDropDownView(position, convertView, parent);
-                TextView tv = (TextView) view;
-                if(position==0) {
-                    tv.setTextColor(Color.GRAY);
-                }
-                else {
-                    tv.setTextColor(Color.BLACK);
-                }
-                return view;
-            }
-        };
-        //Le layout par défaut est android.R.layout.simple_spinner_dropdown_item
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCabinet.setAdapter(adapter);
-    }
-
-    public void createSpinnerAnalyse() {
-        List<Analyse> listAllAnalyse = Analyse.listAll(Analyse.class,"name");
-        List<String> listAnalyseName = new ArrayList<String>();
-        listAnalyseName.add("sélectionner");
-        for (Analyse analyse : listAllAnalyse) {
-            listAnalyseName.add(analyse.getName());
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listAnalyseName) {
-            @Override
-            public boolean isEnabled(int position) {
-                if (position == 0) {
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-            @Override
-            public View getDropDownView(int position, View convertView,
-                                        ViewGroup parent) {
-                View view = super.getDropDownView(position, convertView, parent);
-                TextView tv = (TextView) view;
-                if(position==0) {
-                    tv.setTextColor(Color.GRAY);
-                }
-                else {
-                    tv.setTextColor(Color.BLACK);
-                }
-                return view;
-            }
-        };
-        //Le layout par défaut est android.R.layout.simple_spinner_dropdown_item
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerAnalyse.setAdapter(adapter);
-    }
-
-    public void createSpinnerExamen() {
-        List<Examen> listAllExamen = Examen.listAll(Examen.class,"name");
-        List<String> listExamenName = new ArrayList<String>();
-        listExamenName.add("sélectionner");
-        for (Examen examen : listAllExamen) {
-            listExamenName.add(examen.getName());
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listExamenName) {
-            @Override
-            public boolean isEnabled(int position) {
-                if (position == 0) {
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-            @Override
-            public View getDropDownView(int position, View convertView,
-                                        ViewGroup parent) {
-                View view = super.getDropDownView(position, convertView, parent);
-                TextView tv = (TextView) view;
-                if(position==0) {
-                    tv.setTextColor(Color.GRAY);
-                }
-                else {
-                    tv.setTextColor(Color.BLACK);
-                }
-                return view;
-            }
-        };
-        //Le layout par défaut est android.R.layout.simple_spinner_dropdown_item
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerExamen.setAdapter(adapter);
-    }
-
+    @Override
     public void showDatePickerDialog(View v) {
         DatePickerFragmentDateJour newFragment = new DatePickerFragmentDateJour();
         newFragment.show(getSupportFragmentManager(), "buttonDate");
@@ -518,7 +325,8 @@ public class NewRdvActivity extends AppCompatActivity {
         });
     }
 
-    private void alertOnSpinners() {
+    @Override
+    public void alertOnSpinners() {
         TextView errorText = (TextView)spinnerMedecin.getSelectedView();
         errorText.setTextColor(Color.RED);
         errorText = (TextView)spinnerCabinet.getSelectedView();
@@ -529,7 +337,8 @@ public class NewRdvActivity extends AppCompatActivity {
         errorText.setTextColor(Color.RED);
     }
 
-    private void alertOffSpinners() {
+    @Override
+    public void alertOffSpinners() {
         TextView errorText = (TextView)spinnerMedecin.getSelectedView();
         errorText.setTextColor(Color.BLACK);
         errorText = (TextView)spinnerCabinet.getSelectedView();
@@ -538,6 +347,187 @@ public class NewRdvActivity extends AppCompatActivity {
         errorText.setTextColor(Color.BLACK);
         errorText = (TextView)spinnerExamen.getSelectedView();
         errorText.setTextColor(Color.BLACK);
+    }
+
+    @Override
+    public void saveToDb(TextView... args) {
+        List<Medecin> listMedecin = Medecin.find(Medecin.class, "name = ?", spinnerMedecin.getSelectedItem().toString());
+        if (listMedecin.size() !=0) {
+            medecin = listMedecin.get(0);
+        }
+        List<Cabinet> listCabinet = Cabinet.find(Cabinet.class, "name = ?", spinnerCabinet.getSelectedItem().toString());
+        if (listCabinet.size() !=0) {
+            cabinet = listCabinet.get(0);
+        }
+
+        List<Analyse> listAnalyse = Analyse.find(Analyse.class, "name = ?", spinnerAnalyse.getSelectedItem().toString());
+        if (listAnalyse.size() !=0) {
+            analyse = listAnalyse.get(0);
+        }
+
+        List<Examen> listExamen = Examen.find(Examen.class, "name = ?", spinnerExamen.getSelectedItem().toString());
+        if (listExamen.size() !=0) {
+            examen = listExamen.get(0);
+        }
+
+        if (rdvAModif ==null) {
+            rdv = new Rdv(args[0].getText().toString(),utilisateur, medecin, analyse, examen, cabinet, date);
+            rdv.setId(rdv.save());
+        } else {
+            if (rdvAModif.getId()!=null) {
+                rdv = (Rdv.find(Rdv.class, "id = ?", rdvAModif.getId().toString())).get(0);
+            } else {
+                rdv = new Rdv();
+            }
+            rdv.setDetail(args[0].getText().toString());
+            rdv.setMedecin(medecin);
+            rdv.setDate(date);
+            rdv.setCabinet(cabinet);
+            rdv.setExamen(examen);
+            rdv.setAnalyse(analyse);
+            rdv.setUtilisateur(utilisateur);
+            rdv.setId(rdv.save());
+        }
+    }
+
+    @Override
+    public void saveToDb(TextView textNom, Date date, String sexe) {
+    }
+
+    @Override
+    public void createSpinners() {
+        List<Medecin> listAllMedecin = Medecin.listAll(Medecin.class,"name");
+        List<String> listMedecinName = new ArrayList<String>();
+        listMedecinName.add("sélectionner");
+        for (Medecin medecin : listAllMedecin) {
+            listMedecinName.add(medecin.getName());
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listMedecinName) {
+            /*@Override
+            public boolean isEnabled(int position) {
+                if (position == 0) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }*/
+            @Override
+            public View getDropDownView(int position, View convertView,
+                                        ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                TextView tv = (TextView) view;
+                if(position==0) {
+                    tv.setTextColor(Color.GRAY);
+                }
+                else {
+                    tv.setTextColor(Color.BLACK);
+                }
+                return view;
+            }
+        };
+        //Le layout par défaut est android.R.layout.simple_spinner_dropdown_item
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerMedecin.setAdapter(adapter);
+
+        List<Cabinet> listAllCabinet = Cabinet.listAll(Cabinet.class,"name");
+        List<String> listCabinetName = new ArrayList<String>();
+        listCabinetName.add("sélectionner");
+        for (Cabinet cabinet : listAllCabinet) {
+            listCabinetName.add(cabinet.getName());
+        }
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listCabinetName) {
+            @Override
+            public boolean isEnabled(int position) {
+                if (position == 0) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            @Override
+            public View getDropDownView(int position, View convertView,
+                                        ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                TextView tv = (TextView) view;
+                if(position==0) {
+                    tv.setTextColor(Color.GRAY);
+                }
+                else {
+                    tv.setTextColor(Color.BLACK);
+                }
+                return view;
+            }
+        };
+        //Le layout par défaut est android.R.layout.simple_spinner_dropdown_item
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCabinet.setAdapter(adapter);
+
+        List<Analyse> listAllAnalyse = Analyse.listAll(Analyse.class,"name");
+        List<String> listAnalyseName = new ArrayList<String>();
+        listAnalyseName.add("sélectionner");
+        for (Analyse analyse : listAllAnalyse) {
+            listAnalyseName.add(analyse.getName());
+        }
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listAnalyseName) {
+            @Override
+            public boolean isEnabled(int position) {
+                if (position == 0) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            @Override
+            public View getDropDownView(int position, View convertView,
+                                        ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                TextView tv = (TextView) view;
+                if(position==0) {
+                    tv.setTextColor(Color.GRAY);
+                }
+                else {
+                    tv.setTextColor(Color.BLACK);
+                }
+                return view;
+            }
+        };
+        //Le layout par défaut est android.R.layout.simple_spinner_dropdown_item
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAnalyse.setAdapter(adapter);
+
+        List<Examen> listAllExamen = Examen.listAll(Examen.class,"name");
+        List<String> listExamenName = new ArrayList<String>();
+        listExamenName.add("sélectionner");
+        for (Examen examen : listAllExamen) {
+            listExamenName.add(examen.getName());
+        }
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listExamenName) {
+            @Override
+            public boolean isEnabled(int position) {
+                if (position == 0) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            @Override
+            public View getDropDownView(int position, View convertView,
+                                        ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                TextView tv = (TextView) view;
+                if(position==0) {
+                    tv.setTextColor(Color.GRAY);
+                }
+                else {
+                    tv.setTextColor(Color.BLACK);
+                }
+                return view;
+            }
+        };
+        //Le layout par défaut est android.R.layout.simple_spinner_dropdown_item
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerExamen.setAdapter(adapter);
+
     }
 
 }

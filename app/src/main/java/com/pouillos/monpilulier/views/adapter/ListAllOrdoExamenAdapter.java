@@ -11,54 +11,54 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pouillos.monpilulier.R;
-import com.pouillos.monpilulier.activities.listallx.ListAllOrdoAnalyseActivity;
-import com.pouillos.monpilulier.activities.newx.NewOrdoAnalyseActivity;
-import com.pouillos.monpilulier.entities.OrdoAnalyse;
+import com.pouillos.monpilulier.activities.listallx.ListAllOrdoExamenActivity;
+import com.pouillos.monpilulier.activities.newx.NewOrdoExamenActivity;
+import com.pouillos.monpilulier.entities.OrdoExamen;
 import com.pouillos.monpilulier.entities.Ordonnance;
-import com.pouillos.monpilulier.views.viewholder.ListAllOrdoAnalyseViewHolder;
+import com.pouillos.monpilulier.views.viewholder.ListAllOrdoExamenViewHolder;
 
 import java.util.Collections;
 import java.util.List;
 
-public class ListAllOrdoAnalyseAdapter extends RecyclerView.Adapter<ListAllOrdoAnalyseViewHolder>{
+public class ListAllOrdoExamenAdapter extends RecyclerView.Adapter<ListAllOrdoExamenViewHolder>{
 
         // FOR DATA
-        private List<OrdoAnalyse> listAllOrdoAnalyse;
+        private List<OrdoExamen> listAllOrdoExamen;
         private Ordonnance ordonnance;
 
         // CONSTRUCTOR
-        public ListAllOrdoAnalyseAdapter(Ordonnance ordonnance ) {
+        public ListAllOrdoExamenAdapter(Ordonnance ordonnance ) {
             this.ordonnance = ordonnance;
 
-            this.listAllOrdoAnalyse = OrdoAnalyse.find(OrdoAnalyse.class, "ordonnance = ?", ordonnance.getId().toString());
-            Collections.sort(this.listAllOrdoAnalyse);
+            this.listAllOrdoExamen = OrdoExamen.find(OrdoExamen.class, "ordonnance = ?", ordonnance.getId().toString());
+            Collections.sort(this.listAllOrdoExamen);
         }
 
         @Override
         public int getItemCount() {
-            return listAllOrdoAnalyse.size();
+            return listAllOrdoExamen.size();
         }
 
         @Override
-        public ListAllOrdoAnalyseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ListAllOrdoExamenViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             View view = inflater.inflate(R.layout.activity_list_all_x_item, parent, false);
-            return new ListAllOrdoAnalyseViewHolder(view);
+            return new ListAllOrdoExamenViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(ListAllOrdoAnalyseViewHolder holder, int position) {
-            OrdoAnalyse ordoAnalyse = listAllOrdoAnalyse.get(position);
-            holder.display(ordoAnalyse);
+        public void onBindViewHolder(ListAllOrdoExamenViewHolder holder, int position) {
+            OrdoExamen ordoExamen = listAllOrdoExamen.get(position);
+            holder.display(ordoExamen);
 
             holder.itemView.findViewById(R.id.buttonModify).setOnClickListener(
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent newOrdoAnalyseActivity = new Intent(v.getContext(), NewOrdoAnalyseActivity.class);
-                            newOrdoAnalyseActivity.putExtra("activitySource", ListAllOrdoAnalyseActivity.class);
-                            newOrdoAnalyseActivity.putExtra("ordoAnalyseAModifId", ordoAnalyse.getId());
-                            v.getContext().startActivity(newOrdoAnalyseActivity);
+                            Intent newOrdoExamenActivity = new Intent(v.getContext(), NewOrdoExamenActivity.class);
+                            newOrdoExamenActivity.putExtra("activitySource", ListAllOrdoExamenActivity.class);
+                            newOrdoExamenActivity.putExtra("ordoExamenAModifId", ordoExamen.getId());
+                            v.getContext().startActivity(newOrdoExamenActivity);
                             ((Activity)v.getContext()).finish();
                         }
                     }
@@ -70,16 +70,16 @@ public class ListAllOrdoAnalyseAdapter extends RecyclerView.Adapter<ListAllOrdoA
                         public void onClick(View v) {
                             new AlertDialog.Builder(v.getContext())
                                     .setIcon(android.R.drawable.ic_dialog_alert)
-                                    .setTitle("Suppression OrdoAnalyse")
-                                    .setMessage("Etes vous sûr de vouloir supprimer le ordoAnalyse "+ordoAnalyse.afficherTitre()+" ?")
+                                    .setTitle("Suppression OrdoExamen")
+                                    .setMessage("Etes vous sûr de vouloir supprimer le ordoExamen "+ordoExamen.afficherTitre()+" ?")
                                     .setPositiveButton("Oui", new DialogInterface.OnClickListener()
                                     {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            ordoAnalyse.delete();
-                                            listAllOrdoAnalyse = OrdoAnalyse.find(OrdoAnalyse.class, "ordonnance = ?", new String[]{ordonnance.getId().toString()});
-                                            Collections.sort(listAllOrdoAnalyse);
-                                          //  Collections.sort(listAllOrdoAnalyse);
+                                            ordoExamen.delete();
+                                            listAllOrdoExamen = OrdoExamen.find(OrdoExamen.class, "ordonnance = ?", new String[]{ordonnance.getId().toString()});
+                                            Collections.sort(listAllOrdoExamen);
+                                          //  Collections.sort(listAllOrdoExamen);
                                             notifyDataSetChanged();
                                         }
                                     })
@@ -93,8 +93,8 @@ public class ListAllOrdoAnalyseAdapter extends RecyclerView.Adapter<ListAllOrdoA
                 @Override
                 public void onClick(View view) {
                     new AlertDialog.Builder(holder.itemView.getContext())
-                            .setTitle(ordoAnalyse.afficherTitre())
-                            .setMessage(ordoAnalyse.afficherDetail())
+                            .setTitle(ordoExamen.afficherTitre())
+                            .setMessage(ordoExamen.afficherDetail())
                             .show();
                 }
             });

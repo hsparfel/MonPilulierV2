@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,10 +18,12 @@ import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.listallx.ListAllMedecinActivity;
 import com.pouillos.monpilulier.entities.Medecin;
 import com.pouillos.monpilulier.entities.Specialite;
+import com.pouillos.monpilulier.interfaces.BasicUtils;
 
+import java.util.Date;
 import java.util.List;
 
-public class NewSpecialiteActivity extends AppCompatActivity {
+public class NewSpecialiteActivity extends AppCompatActivity implements BasicUtils {
     private ImageButton buttonValider;
     private ImageButton buttonAnnuler;
     private TextView textNom;
@@ -46,7 +49,7 @@ public class NewSpecialiteActivity extends AppCompatActivity {
         buttonAnnuler.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                retourPagePrecedenteAnnuler(intent);
+                retourPagePrecedente();
             }
         });
 
@@ -66,7 +69,7 @@ public class NewSpecialiteActivity extends AppCompatActivity {
                 saveToDb(textNom, textDescription);
 
                 //retour
-                retourPagePrecedenteValider(intent);
+                retourPagePrecedente();
             }
         });
     }
@@ -108,37 +111,52 @@ public class NewSpecialiteActivity extends AppCompatActivity {
 
     }
 
-    public void retourPagePrecedenteAnnuler(Intent intent) {
-        //boolean medecinIsChecked = (boolean) intent.getBooleanExtra("associe",false);
-        Intent nextActivity = new Intent(NewSpecialiteActivity.this, activitySource);
-        if (intent.hasExtra("medecinToUpdate")) {
-            medecinToUpdate = (Medecin) intent.getSerializableExtra("medecinToUpdate");
-            nextActivity.putExtra("medecinToUpdate", medecinToUpdate);
-            nextActivity.putExtra("activitySource", ListAllMedecinActivity.class);
+    @Override
+    public void showDatePickerDialog(View v) {
+    }
+
+    @Override
+    public void alertOnSpinners() {
+    }
+
+    @Override
+    public void alertOffSpinners() {
+    }
+
+    @Override
+    public void saveToDb(TextView... args) {
+        if (specialiteAModif ==null) {
+            Specialite specialite = new Specialite(args[0].getText().toString(), args[1].getText().toString());
+            specialite.save();
         } else {
-            nextActivity.putExtra("activitySource", NewSpecialiteActivity.class);
+            Specialite specialite = (Specialite.find(Specialite.class,"id = ?", specialiteAModif.getId().toString())).get(0);
+            specialite.setName(args[0].getText().toString());
+            specialite.setDetail(args[1].getText().toString());
+            specialite.save();
         }
-        nextActivity.putExtra("associe", associe);
+    }
+
+    @Override
+    public void saveToDb(TextView textNom, Date date, String sexe) {
+    }
+
+    @Override
+    public void createSpinners() {
+    }
+
+    @Override
+    public void retourPagePrecedente(Intent intent) {
+    }
+
+    @Override
+    public void retourPagePrecedente() {
+        Intent nextActivity = new Intent(NewSpecialiteActivity.this, activitySource);
+        nextActivity.putExtra("activitySource", NewSpecialiteActivity.class);
         startActivity(nextActivity);
         finish();
     }
 
-    public void retourPagePrecedenteValider(Intent intent) {
-        Intent nextActivity = new Intent(NewSpecialiteActivity.this, activitySource);
-        if (intent.hasExtra("medecinToUpdate")) {
-            medecinToUpdate = (Medecin) intent.getSerializableExtra("medecinToUpdate");
-            Specialite specialite = (Specialite) Specialite.find(Specialite.class,"name = ?", textNom.getText().toString()).get(0);
-            medecinToUpdate.setSpecialite(specialite);
-            nextActivity.putExtra("medecinToUpdate", medecinToUpdate);
-            nextActivity.putExtra("activitySource", ListAllMedecinActivity.class);
-        } else {
-            nextActivity.putExtra("activitySource", NewSpecialiteActivity.class);
-        }
-        nextActivity.putExtra("associe", associe);
-        startActivity(nextActivity);
-        finish();
-    }
-
+    @Override
     public boolean isExistant(TextView textView) {
         boolean reponse = false;
         List<Specialite> listAllSpecialite = Specialite.listAll(Specialite.class);
@@ -160,6 +178,7 @@ public class NewSpecialiteActivity extends AppCompatActivity {
         return reponse;
     }
 
+    @Override
     public boolean isRempli(TextView textView) {
         if (TextUtils.isEmpty(textView.getText())) {
             textView.requestFocus();
@@ -170,15 +189,24 @@ public class NewSpecialiteActivity extends AppCompatActivity {
         }
     }
 
-    public void saveToDb(TextView textNom, TextView textDescription) {
-        if (specialiteAModif ==null) {
-            Specialite specialite = new Specialite(textNom.getText().toString(), textDescription.getText().toString());
-            specialite.save();
-        } else {
-            Specialite specialite = (Specialite.find(Specialite.class,"id = ?", specialiteAModif.getId().toString())).get(0);
-            specialite.setName(textNom.getText().toString());
-            specialite.setDetail(textDescription.getText().toString());
-            specialite.save();
-        }
+    @Override
+    public boolean isRempli(TextView textView, Date date) {
+        return false;
     }
+
+    @Override
+    public boolean isRempli(TextView textView, String string) {
+        return false;
+    }
+
+    @Override
+    public boolean isRempli(Spinner... args) {
+        return false;
+    }
+
+    @Override
+    public boolean isValid(TextView textView) {
+        return false;
+    }
+
 }

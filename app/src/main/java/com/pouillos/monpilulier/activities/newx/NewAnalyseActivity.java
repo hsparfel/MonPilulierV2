@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,10 +17,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.entities.Analyse;
 import com.pouillos.monpilulier.entities.Rdv;
+import com.pouillos.monpilulier.interfaces.BasicUtils;
 
+import java.util.Date;
 import java.util.List;
 
-public class NewAnalyseActivity extends AppCompatActivity {
+public class NewAnalyseActivity extends AppCompatActivity implements BasicUtils {
 
     private ImageButton buttonValider;
     private ImageButton buttonAnnuler;
@@ -84,6 +87,7 @@ public class NewAnalyseActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(ev);
     }
 
+    @Override
     public void traiterIntent() {
         intent = getIntent();
         activitySource = (Class<?>) intent.getSerializableExtra("activitySource");
@@ -98,6 +102,43 @@ public class NewAnalyseActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void showDatePickerDialog(View v) {
+    }
+
+    @Override
+    public void alertOnSpinners() {
+    }
+
+    @Override
+    public void alertOffSpinners() {
+    }
+
+    @Override
+    public void saveToDb(TextView... args) {
+        if (analyseAModif ==null) {
+            Analyse analyse = new Analyse(args[0].getText().toString(), args[1].getText().toString());
+            analyse.setId(analyse.save());
+        } else {
+            analyseAModif.setName(args[0].getText().toString());
+            analyseAModif.setDetail(args[1].getText().toString());
+            analyseAModif.save();
+        }
+    }
+
+    @Override
+    public void saveToDb(TextView textNom, Date date, String sexe) {
+    }
+
+    @Override
+    public void createSpinners() {
+    }
+
+    @Override
+    public void retourPagePrecedente(Intent intent) {
+    }
+
+    @Override
     public void retourPagePrecedente() {
         Intent nextActivity = new Intent(NewAnalyseActivity.this,activitySource);
         nextActivity.putExtra("activitySource", NewAnalyseActivity.class);
@@ -106,6 +147,7 @@ public class NewAnalyseActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
     public boolean isExistant(TextView textView) {
         boolean reponse = false;
         List<Analyse> listAllAnalyse = Analyse.listAll(Analyse.class);
@@ -127,6 +169,7 @@ public class NewAnalyseActivity extends AppCompatActivity {
         return reponse;
     }
 
+    @Override
     public boolean isRempli(TextView textView) {
         if (TextUtils.isEmpty(textView.getText())) {
             textView.requestFocus();
@@ -137,18 +180,24 @@ public class NewAnalyseActivity extends AppCompatActivity {
         }
     }
 
-    public void saveToDb(TextView textNom, TextView textDescription) {
-        if (analyseAModif ==null) {
-            Analyse analyse = new Analyse(textNom.getText().toString(), textDescription.getText().toString());
-            analyse.setId(analyse.save());
-        } else {
-            /*Analyse analyse = (Analyse.find(Analyse.class,"id = ?",analyseToUpdate.getId().toString())).get(0);
-            analyse.setName(textNom.getText().toString());
-            analyse.setDetail(textDescription.getText().toString());
-            analyse.save();*/
-            analyseAModif.setName(textNom.getText().toString());
-            analyseAModif.setDetail(textDescription.getText().toString());
-            analyseAModif.save();
-        }
+    @Override
+    public boolean isRempli(TextView textView, Date date) {
+        return false;
     }
+
+    @Override
+    public boolean isRempli(TextView textView, String string) {
+        return false;
+    }
+
+    @Override
+    public boolean isRempli(Spinner... args) {
+        return false;
+    }
+
+    @Override
+    public boolean isValid(TextView textView) {
+        return false;
+    }
+
 }

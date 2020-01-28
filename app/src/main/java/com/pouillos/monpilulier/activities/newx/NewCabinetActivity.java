@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,10 +18,12 @@ import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.entities.Analyse;
 import com.pouillos.monpilulier.entities.Cabinet;
 import com.pouillos.monpilulier.entities.Rdv;
+import com.pouillos.monpilulier.interfaces.BasicUtils;
 
+import java.util.Date;
 import java.util.List;
 
-public class NewCabinetActivity extends AppCompatActivity {
+public class NewCabinetActivity extends AppCompatActivity implements BasicUtils {
 
     private ImageButton buttonValider;
     private ImageButton buttonAnnuler;
@@ -103,6 +106,7 @@ public class NewCabinetActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(ev);
     }
 
+    @Override
     public void traiterIntent() {
         intent = getIntent();
         activitySource = (Class<?>) intent.getSerializableExtra("activitySource");
@@ -121,6 +125,47 @@ public class NewCabinetActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void showDatePickerDialog(View v) {
+    }
+
+    @Override
+    public void alertOnSpinners() {
+    }
+
+    @Override
+    public void alertOffSpinners() {
+    }
+
+    @Override
+    public void saveToDb(TextView... args) {
+        if (cabinetAModif ==null) {
+            Cabinet cabinet = new Cabinet(args[0].getText().toString(), args[1].getText().toString(), args[2].getText().toString(), args[3].getText().toString(), args[4].getText().toString());
+            cabinet.save();
+        } else {
+            Cabinet cabinet = (Cabinet.find(Cabinet.class,"id = ?", cabinetAModif.getId().toString())).get(0);
+            cabinet.setName(args[0].getText().toString());
+            cabinet.setDetail(args[1].getText().toString());
+            cabinet.setAdresse(args[2].getText().toString());
+            cabinet.setCp(args[3].getText().toString());
+            cabinet.setVille(args[4].getText().toString());
+            cabinet.save();
+        }
+    }
+
+    @Override
+    public void saveToDb(TextView textNom, Date date, String sexe) {
+    }
+
+    @Override
+    public void createSpinners() {
+    }
+
+    @Override
+    public void retourPagePrecedente(Intent intent) {
+    }
+
+    @Override
     public void retourPagePrecedente() {
         Intent nextActivity = new Intent(NewCabinetActivity.this,activitySource);
         nextActivity.putExtra("activitySource", NewCabinetActivity.class);
@@ -129,6 +174,7 @@ public class NewCabinetActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
     public boolean isExistant(TextView textView) {
         boolean reponse = false;
         List<Cabinet> listAllCabinet = Cabinet.listAll(Cabinet.class);
@@ -150,6 +196,7 @@ public class NewCabinetActivity extends AppCompatActivity {
         return reponse;
     }
 
+    @Override
     public boolean isRempli(TextView textView) {
         if (TextUtils.isEmpty(textView.getText())) {
             textView.requestFocus();
@@ -160,6 +207,22 @@ public class NewCabinetActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean isRempli(TextView textView, Date date) {
+        return false;
+    }
+
+    @Override
+    public boolean isRempli(TextView textView, String string) {
+        return false;
+    }
+
+    @Override
+    public boolean isRempli(Spinner... args) {
+        return false;
+    }
+
+    @Override
     public boolean isValid(TextView textView) {
         if (textView.getText().length() <5) {
             textView.requestFocus();
@@ -170,18 +233,4 @@ public class NewCabinetActivity extends AppCompatActivity {
         }
     }
 
-    public void saveToDb(TextView textNom, TextView textDescription, TextView textAdresse, TextView textCP, TextView textVille) {
-        if (cabinetAModif ==null) {
-            Cabinet cabinet = new Cabinet(textNom.getText().toString(), textDescription.getText().toString(), textAdresse.getText().toString(), textCP.getText().toString(), textVille.getText().toString());
-            cabinet.save();
-        } else {
-            Cabinet cabinet = (Cabinet.find(Cabinet.class,"id = ?", cabinetAModif.getId().toString())).get(0);
-            cabinet.setName(textNom.getText().toString());
-            cabinet.setDetail(textDescription.getText().toString());
-            cabinet.setAdresse(textAdresse.getText().toString());
-            cabinet.setCp(textCP.getText().toString());
-            cabinet.setVille(textVille.getText().toString());
-            cabinet.save();
-        }
-    }
 }

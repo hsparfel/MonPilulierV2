@@ -9,16 +9,19 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.entities.Dose;
+import com.pouillos.monpilulier.interfaces.BasicUtils;
 
+import java.util.Date;
 import java.util.List;
 
-public class NewDoseActivity extends AppCompatActivity {
+public class NewDoseActivity extends AppCompatActivity implements BasicUtils {
     private ImageButton buttonValider;
     private ImageButton buttonAnnuler;
     private TextView textNom;
@@ -93,6 +96,44 @@ public class NewDoseActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void showDatePickerDialog(View v) {
+    }
+
+    @Override
+    public void alertOnSpinners() {
+    }
+
+    @Override
+    public void alertOffSpinners() {
+    }
+
+    @Override
+    public void saveToDb(TextView... args) {
+        if (doseAModif ==null) {
+            Dose dose = new Dose(args[0].getText().toString(), args[1].getText().toString());
+            dose.save();
+        } else {
+            Dose dose = (Dose.find(Dose.class,"id = ?", doseAModif.getId().toString())).get(0);
+            dose.setName(args[0].getText().toString());
+            dose.setDetail(args[1].getText().toString());
+            dose.save();
+        }
+    }
+
+    @Override
+    public void saveToDb(TextView textNom, Date date, String sexe) {
+    }
+
+    @Override
+    public void createSpinners() {
+    }
+
+    @Override
+    public void retourPagePrecedente(Intent intent) {
+    }
+
+    @Override
     public void retourPagePrecedente() {
         Intent nextActivity = new Intent(NewDoseActivity.this, activitySource);
         nextActivity.putExtra("activitySource", NewDoseActivity.class);
@@ -100,6 +141,7 @@ public class NewDoseActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
     public boolean isExistant(TextView textView) {
         boolean reponse = false;
         List<Dose> listAllDose = Dose.listAll(Dose.class);
@@ -121,6 +163,7 @@ public class NewDoseActivity extends AppCompatActivity {
         return reponse;
     }
 
+    @Override
     public boolean isRempli(TextView textView) {
         if (TextUtils.isEmpty(textView.getText())) {
             textView.requestFocus();
@@ -131,15 +174,24 @@ public class NewDoseActivity extends AppCompatActivity {
         }
     }
 
-    public void saveToDb(TextView textNom, TextView textDescription) {
-        if (doseAModif ==null) {
-            Dose dose = new Dose(textNom.getText().toString(), textDescription.getText().toString());
-            dose.save();
-        } else {
-            Dose dose = (Dose.find(Dose.class,"id = ?", doseAModif.getId().toString())).get(0);
-            dose.setName(textNom.getText().toString());
-            dose.setDetail(textDescription.getText().toString());
-            dose.save();
-        }
+    @Override
+    public boolean isRempli(TextView textView, Date date) {
+        return false;
     }
+
+    @Override
+    public boolean isRempli(TextView textView, String string) {
+        return false;
+    }
+
+    @Override
+    public boolean isRempli(Spinner... args) {
+        return false;
+    }
+
+    @Override
+    public boolean isValid(TextView textView) {
+        return false;
+    }
+
 }

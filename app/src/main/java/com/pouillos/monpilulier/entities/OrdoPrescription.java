@@ -22,12 +22,14 @@ public class OrdoPrescription extends SugarRecord implements Serializable, Compa
     private boolean matin;
     private boolean midi;
     private boolean soir;
-
+    private boolean repasAvant;
+    private boolean repasPendant;
+    private boolean repasApres;
 
     public OrdoPrescription() {
     }
 
-    public OrdoPrescription(String detail, Ordonnance ordonnance, Medicament medicament, float nbDose, Dose dose, int nbFrequence, Duree frequence, int nbDuree, Duree duree, Date dateDebut, Date dateFin, boolean matin, boolean midi, boolean soir) {
+    public OrdoPrescription(String detail, Ordonnance ordonnance, Medicament medicament, float nbDose, Dose dose, int nbFrequence, Duree frequence, int nbDuree, Duree duree, Date dateDebut, Date dateFin, boolean matin, boolean midi, boolean soir, boolean repasAvant, boolean repasPendant, boolean repasApres) {
         this.detail = detail;
         this.ordonnance = ordonnance;
         this.medicament = medicament;
@@ -42,6 +44,9 @@ public class OrdoPrescription extends SugarRecord implements Serializable, Compa
         this.matin = matin;
         this.midi = midi;
         this.soir = soir;
+        this.repasAvant = repasAvant;
+        this.repasPendant = repasPendant;
+        this.repasApres = repasApres;
     }
 
     public String getDetail() {
@@ -132,7 +137,7 @@ public class OrdoPrescription extends SugarRecord implements Serializable, Compa
         this.dateFin = dateFin;
     }
 
-    public boolean getMatin() {
+    public boolean isMatin() {
         return matin;
     }
 
@@ -140,7 +145,7 @@ public class OrdoPrescription extends SugarRecord implements Serializable, Compa
         this.matin = matin;
     }
 
-    public boolean getMidi() {
+    public boolean isMidi() {
         return midi;
     }
 
@@ -148,12 +153,36 @@ public class OrdoPrescription extends SugarRecord implements Serializable, Compa
         this.midi = midi;
     }
 
-    public boolean getSoir() {
+    public boolean isSoir() {
         return soir;
     }
 
     public void setSoir(boolean soir) {
         this.soir = soir;
+    }
+
+    public boolean isRepasAvant() {
+        return repasAvant;
+    }
+
+    public void setRepasAvant(boolean repasAvant) {
+        this.repasAvant = repasAvant;
+    }
+
+    public boolean isRepasPendant() {
+        return repasPendant;
+    }
+
+    public void setRepasPendant(boolean repasPendant) {
+        this.repasPendant = repasPendant;
+    }
+
+    public boolean isRepasApres() {
+        return repasApres;
+    }
+
+    public void setRepasApres(boolean repasApres) {
+        this.repasApres = repasApres;
     }
 
     @Override

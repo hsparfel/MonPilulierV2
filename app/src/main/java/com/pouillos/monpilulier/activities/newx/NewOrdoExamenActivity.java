@@ -18,57 +18,57 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.pouillos.monpilulier.R;
-import com.pouillos.monpilulier.activities.utils.DateUtils;
-import com.pouillos.monpilulier.entities.Cabinet;
 import com.pouillos.monpilulier.entities.Examen;
-import com.pouillos.monpilulier.entities.OrdoAnalyse;
-import com.pouillos.monpilulier.entities.Analyse;
+import com.pouillos.monpilulier.entities.Examen;
+import com.pouillos.monpilulier.entities.Cabinet;
+import com.pouillos.monpilulier.entities.Medecin;
 import com.pouillos.monpilulier.entities.OrdoExamen;
 import com.pouillos.monpilulier.entities.Ordonnance;
+import com.pouillos.monpilulier.entities.Rdv;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class NewOrdoAnalyseActivity extends AppCompatActivity implements BasicUtils {
+public class NewOrdoExamenActivity extends AppCompatActivity implements BasicUtils {
 
     private ImageButton buttonValider;
     private ImageButton buttonAnnuler;
-    private ImageButton buttonAddAnalyse;
+    private ImageButton buttonAddExamen;
     private ImageButton buttonAddCabinet;
     private TextView textDescription;
-    private Spinner spinnerAnalyse;
+    private Spinner spinnerExamen;
     private Spinner spinnerCabinet;
     private Class<?> activitySource;
-    private OrdoAnalyse ordoAnalyseAModif;
-    private OrdoAnalyse ordoAnalyse;
+    private OrdoExamen ordoExamenAModif;
+    private OrdoExamen ordoExamen;
     private Intent intent;
-    private Analyse analyse;
+    private Examen examen;
     private Cabinet cabinet;
     private Ordonnance ordonnanceSauvegarde;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_ordo_analyse);
+        setContentView(R.layout.activity_new_ordo_examen);
 
         buttonValider = (ImageButton) findViewById(R.id.buttonValider);
         buttonAnnuler= (ImageButton) findViewById(R.id.buttonAnnuler);
-        buttonAddAnalyse = (ImageButton) findViewById(R.id.buttonAddAnalyse);
+        buttonAddExamen = (ImageButton) findViewById(R.id.buttonAddExamen);
         buttonAddCabinet = (ImageButton) findViewById(R.id.buttonAddCabinet);
         textDescription = findViewById(R.id.textDescription);
-        spinnerAnalyse = (Spinner) findViewById(R.id.spinnerAnalyse);
+        spinnerExamen = (Spinner) findViewById(R.id.spinnerExamen);
         spinnerCabinet = (Spinner) findViewById(R.id.spinnerCabinet);
 
         createSpinners();
 
         traiterIntent();
 
-        buttonAddAnalyse.setOnClickListener(new View.OnClickListener() {
+        buttonAddExamen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //ouvrirActivityAddAnalyse();
+                //ouvrirActivityAddExamen();
             }
         });
 
@@ -112,20 +112,20 @@ public class NewOrdoAnalyseActivity extends AppCompatActivity implements BasicUt
             Long ordonnanceSauvegardeId = intent.getLongExtra("ordonnanceSauvegardeId", 0);
             ordonnanceSauvegarde = Ordonnance.findById(Ordonnance.class, ordonnanceSauvegardeId);
         }
-        if (intent.hasExtra("ordoAnalyseAModifId")) {
-            Long ordoAnalyseAModifId = intent.getLongExtra("ordoAnalyseAModifId", 0);
-            ordoAnalyseAModif = OrdoAnalyse.findById(OrdoAnalyse.class, ordoAnalyseAModifId);
-            ordonnanceSauvegarde = Ordonnance.findById(Ordonnance.class, ordoAnalyseAModif.getOrdonnance().getId());
-            textDescription.setText(ordoAnalyseAModif.getDetail());
-            spinnerCabinet.setSelection(getIndex(spinnerCabinet, ordoAnalyseAModif.getCabinet().getName()));
-            spinnerAnalyse.setSelection(getIndex(spinnerAnalyse, ordoAnalyseAModif.getAnalyse().getName()));
+        if (intent.hasExtra("ordoExamenAModifId")) {
+            Long ordoExamenAModifId = intent.getLongExtra("ordoExamenAModifId", 0);
+            ordoExamenAModif = OrdoExamen.findById(OrdoExamen.class, ordoExamenAModifId);
+            ordonnanceSauvegarde = Ordonnance.findById(Ordonnance.class, ordoExamenAModif.getOrdonnance().getId());
+            textDescription.setText(ordoExamenAModif.getDetail());
+            spinnerCabinet.setSelection(getIndex(spinnerCabinet, ordoExamenAModif.getCabinet().getName()));
+            spinnerExamen.setSelection(getIndex(spinnerExamen, ordoExamenAModif.getExamen().getName()));
         }
     }
 
     @Override
     public void retourPagePrecedente() {
-        Intent nextActivity = new Intent(NewOrdoAnalyseActivity.this, NewOrdonnanceActivity.class);
-        nextActivity.putExtra("activitySource", NewOrdoAnalyseActivity.class);
+        Intent nextActivity = new Intent(NewOrdoExamenActivity.this, NewOrdonnanceActivity.class);
+        nextActivity.putExtra("activitySource", NewOrdoExamenActivity.class);
         nextActivity.putExtra("ordonnanceSauvegardeId", ordonnanceSauvegarde.getId());
         startActivity(nextActivity);
         finish();
@@ -133,20 +133,20 @@ public class NewOrdoAnalyseActivity extends AppCompatActivity implements BasicUt
 
     @Override
     public void saveToDb(TextView... args) {
-        analyse = (Analyse) Analyse.find(Analyse.class,"name = ?", spinnerAnalyse.getSelectedItem().toString()).get(0);
+        examen = (Examen) Examen.find(Examen.class,"name = ?", spinnerExamen.getSelectedItem().toString()).get(0);
         cabinet = (Cabinet) Cabinet.find(Cabinet.class,"name = ?", spinnerCabinet.getSelectedItem().toString()).get(0);
-        if (ordoAnalyseAModif != null) {
-            ordoAnalyseAModif.setCabinet(cabinet);
-            ordoAnalyseAModif.setAnalyse(analyse);
-            ordoAnalyseAModif.setDetail(textDescription.getText().toString());
-            ordoAnalyseAModif.save();
+        if (ordoExamenAModif != null) {
+            ordoExamenAModif.setCabinet(cabinet);
+            ordoExamenAModif.setExamen(examen);
+            ordoExamenAModif.setDetail(textDescription.getText().toString());
+            ordoExamenAModif.save();
         } else {
-            ordoAnalyse = new OrdoAnalyse();
-            ordoAnalyse.setCabinet(cabinet);
-            ordoAnalyse.setAnalyse(analyse);
-            ordoAnalyse.setDetail(textDescription.getText().toString());
-            ordoAnalyse.setOrdonnance(ordonnanceSauvegarde);
-            ordoAnalyse.setId(ordoAnalyse.save());
+            ordoExamen = new OrdoExamen();
+            ordoExamen.setCabinet(cabinet);
+            ordoExamen.setExamen(examen);
+            ordoExamen.setDetail(textDescription.getText().toString());
+            ordoExamen.setOrdonnance(ordonnanceSauvegarde);
+            ordoExamen.setId(ordoExamen.save());
         }
     }
 
@@ -155,13 +155,13 @@ public class NewOrdoAnalyseActivity extends AppCompatActivity implements BasicUt
     @Override
     public void createSpinners() {
         //Examen
-        List<Analyse> listAllAnalyse = Analyse.listAll(Analyse.class,"name");
-        List<String> listAnalyseName = new ArrayList<String>();
-        listAnalyseName.add("sélectionner");
-        for (Analyse analyse : listAllAnalyse) {
-            listAnalyseName.add(analyse.getName());
+        List<Examen> listAllExamen = Examen.listAll(Examen.class,"name");
+        List<String> listExamenName = new ArrayList<String>();
+        listExamenName.add("sélectionner");
+        for (Examen examen : listAllExamen) {
+            listExamenName.add(examen.getName());
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listAnalyseName) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listExamenName) {
             @Override
             public boolean isEnabled(int position) {
                 if (position == 0) {
@@ -186,7 +186,7 @@ public class NewOrdoAnalyseActivity extends AppCompatActivity implements BasicUt
         };
         //Le layout par défaut est android.R.layout.simple_spinner_dropdown_item
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerAnalyse.setAdapter(adapter);
+        spinnerExamen.setAdapter(adapter);
 
         //Cabinet
         List<Cabinet> listAllCabinet = Cabinet.listAll(Cabinet.class,"name");
@@ -222,5 +222,4 @@ public class NewOrdoAnalyseActivity extends AppCompatActivity implements BasicUt
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCabinet.setAdapter(adapter);
     }
-
 }

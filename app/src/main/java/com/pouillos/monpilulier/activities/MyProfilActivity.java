@@ -298,9 +298,9 @@ public class MyProfilActivity extends AppCompatActivity {
             // convert calendar to date
             Date dateEnCours = c.getTime();
 
-            if (listMyProfil.get(compt).getDate().equals(dateEnCours)) {
+            if (compt<listMyProfil.size() && listMyProfil.get(compt).getDate().equals(dateEnCours)) {
                 tailleMap.put(i,listMyProfil.get(compt).getTaille());
-                dateMap.put(i,new DateUtils().ecrireDate(listMyProfil.get(compt).getDate()));
+                dateMap.put(i,DateUtils.ecrireDate(listMyProfil.get(compt).getDate()));
                 compt++;
             }
         }
@@ -463,7 +463,7 @@ public class MyProfilActivity extends AppCompatActivity {
             // convert calendar to date
             Date dateEnCours = c.getTime();
 
-            if (listMyProfil.get(compt).getDate().equals(dateEnCours)) {
+            if (compt<listMyProfil.size() && listMyProfil.get(compt).getDate().equals(dateEnCours)) {
                 imcMap.put(i,listMyProfil.get(compt).getImcArrondi());
                 dateMap.put(i,new DateUtils().ecrireDate(listMyProfil.get(compt).getDate()));
                 compt++;
@@ -628,7 +628,7 @@ public class MyProfilActivity extends AppCompatActivity {
             // convert calendar to date
             Date dateEnCours = c.getTime();
 
-            if (listMyProfil.get(compt).getDate().equals(dateEnCours)) {
+            if (compt<listMyProfil.size() && listMyProfil.get(compt).getDate().equals(dateEnCours)) {
                 poidsMap.put(i,listMyProfil.get(compt).getPoids());
                 dateMap.put(i,new DateUtils().ecrireDate(listMyProfil.get(compt).getDate()));
                 compt++;

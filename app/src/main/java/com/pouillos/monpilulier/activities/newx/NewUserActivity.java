@@ -12,6 +12,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.fragments.DatePickerFragment;
+import com.pouillos.monpilulier.interfaces.BasicUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -27,7 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class NewUserActivity extends AppCompatActivity {
+public class NewUserActivity extends AppCompatActivity implements BasicUtils {
 
     private ImageButton buttonValider;
     private ImageButton buttonAnnuler;
@@ -39,7 +41,6 @@ public class NewUserActivity extends AppCompatActivity {
     private Class<?> activitySource;
     private Intent intent;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +51,6 @@ public class NewUserActivity extends AppCompatActivity {
         textSexe = findViewById(R.id.textSexe);
         textDate = findViewById(R.id.textDate);
         buttonAnnuler= (ImageButton) findViewById(R.id.buttonAnnuler);
-
 
         traiterIntent();
 
@@ -82,13 +82,13 @@ public class NewUserActivity extends AppCompatActivity {
                 //enregistrer en bdd
                 saveToDb(textNom, date, sexe);
 
-
                 //retour
                 retourPagePrecedente();
             }
         });
     }
 
+    @Override
     public void showDatePickerDialog(View v) {
         DatePickerFragment newFragment = new DatePickerFragment();
         newFragment.show(getSupportFragmentManager(), "buttonDate");
@@ -103,7 +103,7 @@ public class NewUserActivity extends AppCompatActivity {
                 if (datePicker.getDayOfMonth()<10) {
                     dateJour = "0"+dateJour;
                 }
-                if (datePicker.getMonth()<10) {
+                if (datePicker.getMonth()+1<10) {
                     dateMois = "0"+dateMois;
                 }
                 String dateString = dateJour+"/"+dateMois+"/"+dateAnnee;
@@ -117,6 +117,18 @@ public class NewUserActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void alertOnSpinners() {
+    }
+
+    @Override
+    public void alertOffSpinners() {
+    }
+
+    @Override
+    public void saveToDb(TextView... args) {
     }
 
     @Override
@@ -152,11 +164,17 @@ public class NewUserActivity extends AppCompatActivity {
         }
     }
 
+    @Override
     public void traiterIntent() {
         intent = getIntent();
         activitySource = (Class<?>) intent.getSerializableExtra("activitySource");
     }
 
+    @Override
+    public void retourPagePrecedente(Intent intent) {
+    }
+
+    @Override
     public void retourPagePrecedente() {
         Intent nextActivity = new Intent(NewUserActivity.this, activitySource);
         nextActivity.putExtra("activitySource", NewUserActivity.class);
@@ -164,6 +182,7 @@ public class NewUserActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
     public boolean isRempli(TextView textView) {
         if (TextUtils.isEmpty(textView.getText())) {
             textView.requestFocus();
@@ -174,6 +193,7 @@ public class NewUserActivity extends AppCompatActivity {
         }
     }
 
+    @Override
     public boolean isRempli(TextView textView, String string) {
         if (TextUtils.isEmpty(string)) {
             textView.setError("");
@@ -183,6 +203,17 @@ public class NewUserActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean isRempli(Spinner... args) {
+        return false;
+    }
+
+    @Override
+    public boolean isValid(TextView textView) {
+        return false;
+    }
+
+    @Override
     public boolean isRempli(TextView textView, Date date) {
         if (date == null) {
             textView.setError("Sélection Obligatoire");
@@ -192,6 +223,7 @@ public class NewUserActivity extends AppCompatActivity {
         }
     }
 
+    @Override
     public boolean isExistant(TextView textView) {
         List<Utilisateur> listAllUtilisateur = Utilisateur.listAll(Utilisateur.class);
         boolean reponse = false;
@@ -205,10 +237,15 @@ public class NewUserActivity extends AppCompatActivity {
         return reponse;
     }
 
+    @Override
     public void saveToDb(TextView textNom, Date date, String sexe) {
         Utilisateur utilisateur = new Utilisateur(textNom.getText().toString(), date, sexe);
         utilisateur.setActif(false);
         utilisateur.save();
+    }
+
+    @Override
+    public void createSpinners() {
     }
 
 }

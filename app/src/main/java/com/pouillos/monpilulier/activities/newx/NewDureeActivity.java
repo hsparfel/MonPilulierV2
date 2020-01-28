@@ -9,16 +9,19 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.entities.Duree;
+import com.pouillos.monpilulier.interfaces.BasicUtils;
 
+import java.util.Date;
 import java.util.List;
 
-public class NewDureeActivity extends AppCompatActivity {
+public class NewDureeActivity extends AppCompatActivity implements BasicUtils {
 
     private ImageButton buttonValider;
     private ImageButton buttonAnnuler;
@@ -92,6 +95,43 @@ public class NewDureeActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void showDatePickerDialog(View v) {
+    }
+
+    @Override
+    public void alertOnSpinners() {
+    }
+
+    @Override
+    public void alertOffSpinners() {
+    }
+
+    @Override
+    public void saveToDb(TextView... args) {
+        if (dureeAModif ==null) {
+            Duree duree = new Duree(args[0].getText().toString());
+            duree.save();
+        } else {
+            Duree duree = (Duree.find(Duree.class,"id = ?", dureeAModif.getId().toString())).get(0);
+            duree.setName(args[0].getText().toString());
+            duree.save();
+        }
+    }
+
+    @Override
+    public void saveToDb(TextView textNom, Date date, String sexe) {
+    }
+
+    @Override
+    public void createSpinners() {
+    }
+
+    @Override
+    public void retourPagePrecedente(Intent intent) {
+    }
+
+    @Override
     public void retourPagePrecedente() {
         Intent nextActivity = new Intent(NewDureeActivity.this, activitySource);
         nextActivity.putExtra("precedent", NewDureeActivity.class);
@@ -99,6 +139,7 @@ public class NewDureeActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
     public boolean isExistant(TextView textView) {
         boolean reponse = false;
         List<Duree> listAllDuree = Duree.listAll(Duree.class);
@@ -120,6 +161,7 @@ public class NewDureeActivity extends AppCompatActivity {
         return reponse;
     }
 
+    @Override
     public boolean isRempli(TextView textView) {
         if (TextUtils.isEmpty(textView.getText())) {
             textView.requestFocus();
@@ -130,15 +172,24 @@ public class NewDureeActivity extends AppCompatActivity {
         }
     }
 
-    public void saveToDb(TextView textNom) {
-        if (dureeAModif ==null) {
-            Duree duree = new Duree(textNom.getText().toString());
-            duree.save();
-        } else {
-            Duree duree = (Duree.find(Duree.class,"id = ?", dureeAModif.getId().toString())).get(0);
-            duree.setName(textNom.getText().toString());
-            duree.save();
-        }
+    @Override
+    public boolean isRempli(TextView textView, Date date) {
+        return false;
+    }
+
+    @Override
+    public boolean isRempli(TextView textView, String string) {
+        return false;
+    }
+
+    @Override
+    public boolean isRempli(Spinner... args) {
+        return false;
+    }
+
+    @Override
+    public boolean isValid(TextView textView) {
+        return false;
     }
 
 }

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,10 +17,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.entities.Examen;
 import com.pouillos.monpilulier.entities.Rdv;
+import com.pouillos.monpilulier.interfaces.BasicUtils;
 
+import java.util.Date;
 import java.util.List;
 
-public class NewExamenActivity extends AppCompatActivity {
+public class NewExamenActivity extends AppCompatActivity implements BasicUtils {
 
     private ImageButton buttonValider;
     private ImageButton buttonAnnuler;
@@ -84,6 +87,7 @@ public class NewExamenActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(ev);
     }
 
+    @Override
     public void traiterIntent() {
         intent = getIntent();
         activitySource = (Class<?>) intent.getSerializableExtra("activitySource");
@@ -98,6 +102,44 @@ public class NewExamenActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void showDatePickerDialog(View v) {
+    }
+
+    @Override
+    public void alertOnSpinners() {
+    }
+
+    @Override
+    public void alertOffSpinners() {
+    }
+
+    @Override
+    public void saveToDb(TextView... args) {
+        if (examenAModif ==null) {
+            Examen examen = new Examen(args[0].getText().toString(), args[1].getText().toString());
+            examen.save();
+        } else {
+            Examen examen = (Examen.find(Examen.class,"id = ?", examenAModif.getId().toString())).get(0);
+            examen.setName(args[0].getText().toString());
+            examen.setDetail(args[1].getText().toString());
+            examen.save();
+        }
+    }
+
+    @Override
+    public void saveToDb(TextView textNom, Date date, String sexe) {
+    }
+
+    @Override
+    public void createSpinners() {
+    }
+
+    @Override
+    public void retourPagePrecedente(Intent intent) {
+    }
+
+    @Override
     public void retourPagePrecedente() {
         Intent nextActivity = new Intent(NewExamenActivity.this, activitySource);
         nextActivity.putExtra("activitySource", NewExamenActivity.class);
@@ -106,6 +148,7 @@ public class NewExamenActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
     public boolean isExistant(TextView textView) {
         boolean reponse = false;
         List<Examen> listAllExamen = Examen.listAll(Examen.class);
@@ -127,6 +170,7 @@ public class NewExamenActivity extends AppCompatActivity {
         return reponse;
     }
 
+    @Override
     public boolean isRempli(TextView textView) {
         if (TextUtils.isEmpty(textView.getText())) {
             textView.requestFocus();
@@ -137,15 +181,24 @@ public class NewExamenActivity extends AppCompatActivity {
         }
     }
 
-    public void saveToDb(TextView textNom, TextView textDescription) {
-        if (examenAModif ==null) {
-            Examen examen = new Examen(textNom.getText().toString(), textDescription.getText().toString());
-            examen.save();
-        } else {
-            Examen examen = (Examen.find(Examen.class,"id = ?", examenAModif.getId().toString())).get(0);
-            examen.setName(textNom.getText().toString());
-            examen.setDetail(textDescription.getText().toString());
-            examen.save();
-        }
+    @Override
+    public boolean isRempli(TextView textView, Date date) {
+        return false;
     }
+
+    @Override
+    public boolean isRempli(TextView textView, String string) {
+        return false;
+    }
+
+    @Override
+    public boolean isRempli(Spinner... args) {
+        return false;
+    }
+
+    @Override
+    public boolean isValid(TextView textView) {
+        return false;
+    }
+
 }

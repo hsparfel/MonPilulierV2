@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data android:name="DATABASE" android:value="mon_pilulier.db" />
-        <meta-data android:name="VERSION" android:value="31" />
+        <meta-data android:name="VERSION" android:value="32" />
         <meta-data android:name="QUERY_LOG" android:value="true" />
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.pouillos.monpilulier" />
         <activity android:name=".activities.MainActivity">
@@ -47,6 +47,10 @@
         <activity android:name=".activities.listallx.ListAllOrdonnanceActivity" />
         <activity android:name=".activities.newx.NewOrdoAnalyseActivity"></activity>
         <activity android:name=".activities.listallx.ListAllOrdoAnalyseActivity" />
+        <activity android:name=".activities.newx.NewOrdoPrescriptionActivity"></activity>
+        <activity android:name=".activities.listallx.ListAllOrdoPrescriptionActivity" />
+        <activity android:name=".activities.newx.NewOrdoExamenActivity"></activity>
+        <activity android:name=".activities.listallx.ListAllOrdoExamenActivity" />
         <activity android:name=".activities.MyProfilActivity" />
         <activity android:name=".activities.listallx.ListAllProfilActivity" />
         <activity android:name=".activities.listmyx.ListMyProfilActivity" />

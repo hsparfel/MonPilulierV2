@@ -66,7 +66,7 @@ public class Ordonnance extends SugarRecord implements Serializable, Comparable<
     @Override
     public String afficherTitre() {
         String reponse = medecin.getName()+" - "+ DateUtils.ecrireDate(date);
-        return null;
+        return reponse;
     }
 
     @Override

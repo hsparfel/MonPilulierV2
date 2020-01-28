@@ -9,16 +9,19 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.entities.Medicament;
+import com.pouillos.monpilulier.interfaces.BasicUtils;
 
+import java.util.Date;
 import java.util.List;
 
-public class NewMedicamentActivity extends AppCompatActivity {
+public class NewMedicamentActivity extends AppCompatActivity implements BasicUtils {
     private ImageButton buttonValider;
     private ImageButton buttonAnnuler;
     private TextView textNom;
@@ -81,6 +84,7 @@ public class NewMedicamentActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(ev);
     }
 
+    @Override
     public void traiterIntent() {
         intent = getIntent();
         activitySource = (Class<?>) intent.getSerializableExtra("activitySource");
@@ -98,6 +102,43 @@ public class NewMedicamentActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void showDatePickerDialog(View v) {
+    }
+
+    @Override
+    public void alertOnSpinners() {
+    }
+
+    @Override
+    public void alertOffSpinners() {
+    }
+
+    @Override
+    public void saveToDb(TextView... args) {
+        if (medicamentAModif ==null) {
+            Medicament medicament = new Medicament(args[0].getText().toString(), args[1].getText().toString());
+            medicament.setId(medicament.save());
+        } else {
+            medicamentAModif.setName(args[0].getText().toString());
+            medicamentAModif.setDetail(args[1].getText().toString());
+            medicamentAModif.save();
+        }
+    }
+
+    @Override
+    public void saveToDb(TextView textNom, Date date, String sexe) {
+    }
+
+    @Override
+    public void createSpinners() {
+    }
+
+    @Override
+    public void retourPagePrecedente(Intent intent) {
+    }
+
+    @Override
     public void retourPagePrecedente() {
         Intent nextActivity = new Intent(NewMedicamentActivity.this,activitySource);
         nextActivity.putExtra("activitySource", NewMedicamentActivity.class);
@@ -105,6 +146,7 @@ public class NewMedicamentActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
     public boolean isExistant(TextView textView) {
         boolean reponse = false;
         List<Medicament> listAllMedicament = Medicament.listAll(Medicament.class);
@@ -126,6 +168,7 @@ public class NewMedicamentActivity extends AppCompatActivity {
         return reponse;
     }
 
+    @Override
     public boolean isRempli(TextView textView) {
         if (TextUtils.isEmpty(textView.getText())) {
             textView.requestFocus();
@@ -136,16 +179,24 @@ public class NewMedicamentActivity extends AppCompatActivity {
         }
     }
 
-    public void saveToDb(TextView textNom, TextView textDescription) {
-        if (medicamentAModif ==null) {
-            Medicament medicament = new Medicament(textNom.getText().toString(), textDescription.getText().toString());
-            medicament.setId(medicament.save());
-
-        } else {
-
-            medicamentAModif.setName(textNom.getText().toString());
-            medicamentAModif.setDetail(textDescription.getText().toString());
-            medicamentAModif.save();
-        }
+    @Override
+    public boolean isRempli(TextView textView, Date date) {
+        return false;
     }
+
+    @Override
+    public boolean isRempli(TextView textView, String string) {
+        return false;
+    }
+
+    @Override
+    public boolean isRempli(Spinner... args) {
+        return false;
+    }
+
+    @Override
+    public boolean isValid(TextView textView) {
+        return false;
+    }
+
 }
