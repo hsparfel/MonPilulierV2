@@ -5,6 +5,7 @@ import com.pouillos.monpilulier.interfaces.AfficherDetail;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class OrdoPrescription extends SugarRecord implements Serializable, Comparable<OrdoPrescription>, AfficherDetail {
 
@@ -199,4 +200,6 @@ public class OrdoPrescription extends SugarRecord implements Serializable, Compa
     public String afficherDetail() {
         return detail;
     }
+
+
 }

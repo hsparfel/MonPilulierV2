@@ -50,7 +50,7 @@ public class NewOrdoPrescriptionActivity extends AppCompatActivity implements Ba
     private ImageButton buttonAddDose;
     private Spinner spinnerNbFrequence;
     private Spinner spinnerFrequence;
-    private ImageButton buttonAddFrequence;
+
 
     private CheckBox checkBoxMatin;
     private CheckBox checkBoxMidi;
@@ -63,7 +63,7 @@ public class NewOrdoPrescriptionActivity extends AppCompatActivity implements Ba
 
     private Spinner spinnerNbDuree;
     private Spinner spinnerDuree;
-    private ImageButton buttonAddDuree;
+
     private TextView textDate;
     private Date date;
 
@@ -75,6 +75,9 @@ public class NewOrdoPrescriptionActivity extends AppCompatActivity implements Ba
     private OrdoPrescription ordoPrescription;
     private Intent intent;
     private Medicament medicament;
+    private Dose dose;
+    private Duree frequence;
+    private Duree duree;
     private Ordonnance ordonnanceSauvegarde;
 
     @Override
@@ -92,7 +95,7 @@ public class NewOrdoPrescriptionActivity extends AppCompatActivity implements Ba
         buttonAddDose = (ImageButton) findViewById(R.id.buttonAddDose);
         spinnerNbFrequence = (Spinner) findViewById(R.id.spinnerNbFrequence);
         spinnerFrequence = (Spinner) findViewById(R.id.spinnerFrequence);
-        buttonAddFrequence = (ImageButton) findViewById(R.id.buttonAddFrequence);
+
 
         checkBoxMatin = (CheckBox) findViewById(R.id.checkBoxMatin);
         checkBoxMidi = (CheckBox) findViewById(R.id.checkBoxMidi);
@@ -103,7 +106,7 @@ public class NewOrdoPrescriptionActivity extends AppCompatActivity implements Ba
         radioButtonRepasApres = (RadioButton) findViewById(R.id.radioButtonRepasApres);
         spinnerNbDuree = (Spinner) findViewById(R.id.spinnerNbDuree);
         spinnerDuree = (Spinner) findViewById(R.id.spinnerDuree);
-        buttonAddDuree = (ImageButton) findViewById(R.id.buttonAddDuree);
+
         textDate = findViewById(R.id.textDate);
 
         textDescription = findViewById(R.id.textDescription);
@@ -127,19 +130,9 @@ public class NewOrdoPrescriptionActivity extends AppCompatActivity implements Ba
             }
         });
 
-        buttonAddFrequence.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //ouvrirActivityAddFrequence();
-            }
-        });
 
-        buttonAddDuree.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //ouvrirActivityAddDuree();
-            }
-        });
+
+
 
         buttonAnnuler.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,6 +176,22 @@ public class NewOrdoPrescriptionActivity extends AppCompatActivity implements Ba
             textDescription.setText(ordoPrescriptionAModif.getDetail());
 
             spinnerMedicament.setSelection(getIndex(spinnerMedicament, ordoPrescriptionAModif.getMedicament().getName()));
+            spinnerNbDose.setSelection(getIndex(spinnerNbDose, String.valueOf(ordoPrescriptionAModif.getNbDose())));
+            spinnerDose.setSelection(getIndex(spinnerDose, ordoPrescriptionAModif.getDose().getName()));
+            spinnerNbFrequence.setSelection(getIndex(spinnerNbFrequence, String.valueOf(ordoPrescriptionAModif.getNbFrequence())));
+            spinnerFrequence.setSelection(getIndex(spinnerFrequence, ordoPrescriptionAModif.getFrequence().getName()));
+            spinnerNbDuree.setSelection(getIndex(spinnerNbDuree, String.valueOf(ordoPrescriptionAModif.getNbDuree())));
+            spinnerDuree.setSelection(getIndex(spinnerDuree, ordoPrescriptionAModif.getDuree().getName()));
+
+            checkBoxMatin.setChecked(ordoPrescriptionAModif.isMatin());
+            checkBoxMidi.setChecked(ordoPrescriptionAModif.isMidi());
+            checkBoxSoir.setChecked(ordoPrescriptionAModif.isSoir());
+
+            radioButtonRepasAvant.setChecked(ordoPrescriptionAModif.isRepasAvant());
+            radioButtonRepasPendant.setChecked(ordoPrescriptionAModif.isRepasPendant());
+            radioButtonRepasApres.setChecked(ordoPrescriptionAModif.isRepasApres());
+
+            textDate.setText(DateUtils.ecrireDate(ordoPrescriptionAModif.getDateDebut()));
         }
     }
 
@@ -198,18 +207,52 @@ public class NewOrdoPrescriptionActivity extends AppCompatActivity implements Ba
     @Override
     public void saveToDb(TextView... args) {
         medicament = (Medicament) Medicament.find(Medicament.class,"name = ?", spinnerMedicament.getSelectedItem().toString()).get(0);
+        dose = (Dose) Dose.find(Dose.class,"name = ?", spinnerDose.getSelectedItem().toString()).get(0);
+        frequence = (Duree) Duree.find(Duree.class,"name = ?", spinnerFrequence.getSelectedItem().toString()).get(0);
+        duree = (Duree) Duree.find(Duree.class,"name = ?", spinnerDuree.getSelectedItem().toString()).get(0);
 
         if (ordoPrescriptionAModif != null) {
 
             ordoPrescriptionAModif.setMedicament(medicament);
             ordoPrescriptionAModif.setDetail(textDescription.getText().toString());
-            ordoPrescriptionAModif.save();
+            ordoPrescriptionAModif.setDateDebut(date);
+            ordoPrescriptionAModif.setDose(dose);
+            ordoPrescriptionAModif.setNbDose(Float.parseFloat(spinnerNbDose.getSelectedItem().toString()));
+            ordoPrescriptionAModif.setFrequence(frequence);
+            ordoPrescriptionAModif.setNbFrequence(Integer.parseInt(spinnerNbFrequence.getSelectedItem().toString()));
+            ordoPrescriptionAModif.setDuree(duree);
+            ordoPrescriptionAModif.setNbDuree(Integer.parseInt(spinnerNbDuree.getSelectedItem().toString()));
+            ordoPrescriptionAModif.setMatin(checkBoxMatin.isChecked());
+            ordoPrescriptionAModif.setMidi(checkBoxMidi.isChecked());
+            ordoPrescriptionAModif.setSoir(checkBoxSoir.isChecked());
+            ordoPrescriptionAModif.setRepasAvant(radioButtonRepasAvant.isChecked());
+            ordoPrescriptionAModif.setRepasPendant(radioButtonRepasPendant.isChecked());
+            ordoPrescriptionAModif.setRepasApres(radioButtonRepasApres.isChecked());
+            ordoPrescriptionAModif.setDateFin(DateUtils.calculerDateFin(ordoPrescriptionAModif.getDateDebut(),ordoPrescriptionAModif.getNbDuree(),ordoPrescriptionAModif.getDuree()));
+
+            ordoPrescriptionAModif.setId(ordoPrescriptionAModif.save());
         } else {
             ordoPrescription = new OrdoPrescription();
 
+            ordoPrescription.setOrdonnance(ordonnanceSauvegarde);
+
             ordoPrescription.setMedicament(medicament);
             ordoPrescription.setDetail(textDescription.getText().toString());
-            ordoPrescription.setOrdonnance(ordonnanceSauvegarde);
+            ordoPrescription.setDateDebut(date);
+            ordoPrescription.setDose(dose);
+            ordoPrescription.setNbDose(Float.parseFloat(spinnerNbDose.getSelectedItem().toString()));
+            ordoPrescription.setFrequence(frequence);
+            ordoPrescription.setNbFrequence(Integer.parseInt(spinnerNbFrequence.getSelectedItem().toString()));
+            ordoPrescription.setDuree(duree);
+            ordoPrescription.setNbDuree(Integer.parseInt(spinnerNbDuree.getSelectedItem().toString()));
+            ordoPrescription.setMatin(checkBoxMatin.isChecked());
+            ordoPrescription.setMidi(checkBoxMidi.isChecked());
+            ordoPrescription.setSoir(checkBoxSoir.isChecked());
+            ordoPrescription.setRepasAvant(radioButtonRepasAvant.isChecked());
+            ordoPrescription.setRepasPendant(radioButtonRepasPendant.isChecked());
+            ordoPrescription.setRepasApres(radioButtonRepasApres.isChecked());
+            ordoPrescription.setDateFin(DateUtils.calculerDateFin(ordoPrescription.getDateDebut(),ordoPrescription.getNbDuree(),ordoPrescription.getDuree()));
+
             ordoPrescription.setId(ordoPrescription.save());
         }
     }
@@ -256,26 +299,26 @@ public class NewOrdoPrescriptionActivity extends AppCompatActivity implements Ba
         //List<Medicament> listAllMedicament = Medicament.listAll(Medicament.class,"name");
         List<String> listNbDoseName = new ArrayList<String>();
         listNbDoseName.add("sélectionner");
-        listNbDoseName.add("0,5");
-        listNbDoseName.add("1");
-        listNbDoseName.add("1,5");
-        listNbDoseName.add("2");
-        listNbDoseName.add("2,5");
-        listNbDoseName.add("3");
-        listNbDoseName.add("3,5");
-        listNbDoseName.add("4");
-        listNbDoseName.add("4,5");
-        listNbDoseName.add("5");
-        listNbDoseName.add("5,5");
-        listNbDoseName.add("6");
-        listNbDoseName.add("6,5");
-        listNbDoseName.add("7");
-        listNbDoseName.add("7,5");
-        listNbDoseName.add("8");
-        listNbDoseName.add("8,5");
-        listNbDoseName.add("9");
-        listNbDoseName.add("9,5");
-        listNbDoseName.add("10");
+        listNbDoseName.add("0.5");
+        listNbDoseName.add("1.0");
+        listNbDoseName.add("1.5");
+        listNbDoseName.add("2.0");
+        listNbDoseName.add("2.5");
+        listNbDoseName.add("3.0");
+        listNbDoseName.add("3.5");
+        listNbDoseName.add("4.0");
+        listNbDoseName.add("4.5");
+        listNbDoseName.add("5.0");
+        listNbDoseName.add("5.5");
+        listNbDoseName.add("6.0");
+        listNbDoseName.add("6.5");
+        listNbDoseName.add("7.0");
+        listNbDoseName.add("7.5");
+        listNbDoseName.add("8.0");
+        listNbDoseName.add("8.5");
+        listNbDoseName.add("9.0");
+        listNbDoseName.add("9.5");
+        listNbDoseName.add("10.0");
 
         //for (Medicament medicament : listAllMedicament) {
           //  listMedicamentName.add(medicament.getName());
@@ -510,7 +553,7 @@ public class NewOrdoPrescriptionActivity extends AppCompatActivity implements Ba
         newFragment.setOnDateClickListener(new DatePickerFragmentDateJour.onDateClickListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-                datePicker.setMinDate(date.getTime());
+                datePicker.setMinDate(ordonnanceSauvegarde.getDate().getTime());
                 TextView tv1= (TextView) findViewById(R.id.textDate);
                 String dateJour = ""+datePicker.getDayOfMonth();
                 String dateMois = ""+(datePicker.getMonth()+1);
