@@ -1,8 +1,13 @@
 package com.pouillos.monpilulier.entities;
 
+import com.orm.SugarRecord;
+import com.pouillos.monpilulier.activities.utils.DateUtils;
+import com.pouillos.monpilulier.interfaces.AfficherDetail;
+
+import java.io.Serializable;
 import java.util.Date;
 
-public class Prise {
+public class Prise extends SugarRecord implements Serializable, Comparable<Ordonnance> , AfficherDetail {
 
     private String name;
     private String detail;
@@ -62,4 +67,19 @@ public class Prise {
     }
 
 
+    @Override
+    public String afficherTitre() {
+        String reponse = prescription.getMedicament().getName()+" - "+ DateUtils.ecrireDateHeure(date);
+        return reponse;
+    }
+
+    @Override
+    public String afficherDetail() {
+        return null;
+    }
+
+    @Override
+    public int compareTo(Ordonnance o) {
+        return this.getId().compareTo(o.getId());
+    }
 }

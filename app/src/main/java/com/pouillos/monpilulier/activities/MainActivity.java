@@ -1,20 +1,21 @@
 package com.pouillos.monpilulier.activities;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.core.app.NotificationCompat;
 
 import com.facebook.stetho.Stetho;
-import com.google.android.material.navigation.NavigationView;
 import com.orm.SchemaGenerator;
 import com.orm.SugarContext;
 import com.orm.SugarDb;
@@ -33,6 +34,7 @@ import com.pouillos.monpilulier.activities.listallx.ListAllProfilActivity;
 import com.pouillos.monpilulier.activities.listallx.ListAllSpecialiteActivity;
 import com.pouillos.monpilulier.activities.listallx.ListAllUserActivity;
 import com.pouillos.monpilulier.activities.listmyx.ListMyMedecinActivity;
+import com.pouillos.monpilulier.activities.listmyx.ListMyPriseActivity;
 import com.pouillos.monpilulier.activities.listmyx.ListMyProfilActivity;
 import com.pouillos.monpilulier.activities.newx.NewAnalyseActivity;
 import com.pouillos.monpilulier.activities.newx.NewCabinetActivity;
@@ -45,6 +47,7 @@ import com.pouillos.monpilulier.activities.newx.NewOrdonnanceActivity;
 import com.pouillos.monpilulier.activities.newx.NewRdvActivity;
 import com.pouillos.monpilulier.activities.newx.NewSpecialiteActivity;
 import com.pouillos.monpilulier.activities.newx.NewUserActivity;
+import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.Analyse;
 import com.pouillos.monpilulier.entities.Cabinet;
 import com.pouillos.monpilulier.entities.Dose;
@@ -61,11 +64,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements Serializable {
 
-    /*//FOR DESIGN
-    private Toolbar toolbar;
-    private DrawerLayout drawerLayout;
-    private NavigationView navigationView;*/
-
+    private NotificationCompat.Builder notBuilder;
+    private static final int MY_NOTIFICATION_ID = 12345;
+    private static final int MY_REQUEST_CODE = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +105,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         Button buttonProfil = (Button) findViewById(R.id.buttonProfil);
         Button buttonListAllProfil = (Button) findViewById(R.id.buttonListAllProfil);
         Button buttonListMyProfil = (Button) findViewById(R.id.buttonListMyProfil);
+        Button buttonListMyPrise = (Button) findViewById(R.id.buttonListMyPrise);
+        Button buttonCreerNotification = (Button) findViewById(R.id.buttonCreerNotification);
 
         //remplir BD avec valeur par defaut
         remplirDefaultBD();
@@ -117,13 +120,65 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             textUser.setText(utilisateur.getName());
         }
 
-       /* // 6 - Configure all views
+        //notification
+        //creation du channel
+        createNotificationChannel();
 
-        this.configureToolBar();
 
-        this.configureDrawerLayout();
+        this.notBuilder = new NotificationCompat.Builder(this, "notifTest");
+        // The message will automatically be canceled when the user clicks on Panel
+        this.notBuilder.setAutoCancel(true);
 
-        this.configureNavigationView();*/
+        buttonCreerNotification.setOnClickListener(v -> {
+
+            // --------------------------
+            // Prepare a notification
+            // --------------------------
+
+            this.notBuilder.setSmallIcon(R.mipmap.ic_launcher);
+            this.notBuilder.setTicker("This is a ticker");
+            this.notBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+
+            // Set the time that the event occurred.
+            // Notifications in the panel are sorted by this time.
+
+            Date dateJour = new Date();
+
+
+
+            this.notBuilder.setWhen(new DateUtils().ajouterHeure(dateJour, 1).getTime() + 10*1000);
+
+            this.notBuilder.setWhen(System.currentTimeMillis()+ 300* 1000);
+            this.notBuilder.setShowWhen(false);
+            this.notBuilder.setContentTitle("This is title");
+            this.notBuilder.setContentText("This is content text ....");
+
+
+            // Create Intent
+            Intent intent = new Intent(this, MainActivity.class);
+
+            // PendingIntent.getActivity(..) will start an Activity, and returns PendingIntent object.
+            // It is equivalent to calling Context.startActivity(Intent).
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, MY_REQUEST_CODE,
+                    intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+            this.notBuilder.setContentIntent(pendingIntent);
+
+
+
+            // Get a notification service (A service available on the system).
+            NotificationManager notificationService  =
+                    (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+
+            // Builds notification and issue it
+
+            Notification notification =  notBuilder.build();
+            notificationService.notify(MY_NOTIFICATION_ID, notification);
+
+        });
 
         buttonNewDuree.setOnClickListener(v -> {
             Intent myProfilActivity = new Intent(MainActivity.this, NewDureeActivity.class);
@@ -332,64 +387,13 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             listAllOrdoExamenActivity.putExtra("activitySource", MainActivity.class);
             startActivity(listAllOrdoExamenActivity);
         });
+
+        buttonListMyPrise.setOnClickListener(v -> {
+            Intent listMyPriseActivity = new Intent(MainActivity.this, ListMyPriseActivity.class);
+            listMyPriseActivity.putExtra("activitySource", MainActivity.class);
+            startActivity(listMyPriseActivity);
+        });
     }
-/*
-    @Override
-    public void onBackPressed() {
-        // 5 - Handle back click to close menu
-        if (this.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            this.drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-
-        // 4 - Handle Navigation Item Click
-        int id = item.getItemId();
-
-        switch (id){
-            case R.id.activity_main_drawer_accueil :
-                break;
-            case R.id.activity_main_drawer_medicament:
-                break;
-            case R.id.activity_main_drawer_analyse:
-                break;
-            default:
-                break;
-        }
-
-        this.drawerLayout.closeDrawer(GravityCompat.START);
-
-        return true;
-    }
-
-    // ---------------------
-    // CONFIGURATION
-    // ---------------------
-
-    // 1 - Configure Toolbar
-    private void configureToolBar(){
-        this.toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
-        setSupportActionBar(toolbar);
-    }
-
-    // 2 - Configure Drawer Layout
-    private void configureDrawerLayout(){
-        this.drawerLayout = (DrawerLayout) findViewById(R.id.activity_main_drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-    }
-
-    // 3 - Configure NavigationView
-    private void configureNavigationView(){
-        this.navigationView = (NavigationView) findViewById(R.id.activity_main_nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-    }*/
 
     public void remplirDefaultBD() {
         List<Dose> listDose = Dose.listAll(Dose.class);
@@ -461,5 +465,23 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             new Medecin("dr charles","desc charles", Specialite.findById(Specialite.class,3), "3333333333","email3@email3.fr").save();
         }
 
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //CharSequence name = getString(R.string.channel_name);
+            CharSequence name = "channelName";
+            //String description = getString(R.string.channel_description);
+            String description = "channelDescription";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("notifTest", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }

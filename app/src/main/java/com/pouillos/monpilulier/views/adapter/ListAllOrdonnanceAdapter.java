@@ -16,7 +16,6 @@ import com.pouillos.monpilulier.activities.newx.NewOrdonnanceActivity;
 import com.pouillos.monpilulier.entities.Medecin;
 import com.pouillos.monpilulier.entities.OrdoAnalyse;
 import com.pouillos.monpilulier.entities.OrdoExamen;
-import com.pouillos.monpilulier.entities.OrdoPrescription;
 import com.pouillos.monpilulier.entities.Ordonnance;
 import com.pouillos.monpilulier.views.viewholder.ListAllOrdonnanceViewHolder;
 
@@ -80,7 +79,7 @@ public class ListAllOrdonnanceAdapter extends RecyclerView.Adapter<ListAllOrdonn
                                             ordonnance.delete();
                                             OrdoAnalyse.deleteAll(OrdoAnalyse.class,"ordonnance = ?",ordonnance.getId().toString());
                                             OrdoExamen.deleteAll(OrdoExamen.class,"ordonnance = ?",ordonnance.getId().toString());
-                                            OrdoPrescription.deleteAll(OrdoPrescription.class,"ordonnance = ?",ordonnance.getId().toString());
+
 
                                             listAllOrdonnance = Ordonnance.listAll(Ordonnance.class,"date desc");
                                           //  Collections.sort(listAllOrdonnance);
