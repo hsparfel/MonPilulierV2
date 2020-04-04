@@ -13,6 +13,7 @@ public class Utilisateur extends SugarRecord implements Serializable, Comparable
 private String name;
 private Date dateDeNaissance;
 private String sexe;
+private Departement departement;
 private boolean actif;
 
 
@@ -21,8 +22,15 @@ private boolean actif;
 
     public Utilisateur(String name, Date dateDeNaissance, String sexe) {
         this.name = name;
-        this.sexe = sexe;
         this.dateDeNaissance = dateDeNaissance;
+        this.sexe = sexe;
+    }
+
+    public Utilisateur(String name, Date dateDeNaissance, String sexe, Departement departement) {
+        this.name = name;
+        this.dateDeNaissance = dateDeNaissance;
+        this.sexe = sexe;
+        this.departement = departement;
     }
 
     public String getName() {
@@ -57,7 +65,13 @@ private boolean actif;
         this.actif = actif;
     }
 
+    public Departement getDepartement() {
+        return departement;
+    }
 
+    public void setDepartement(Departement departement) {
+        this.departement = departement;
+    }
 
     @Override
     public int compareTo(Utilisateur o) {

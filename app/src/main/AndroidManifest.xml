@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data android:name="DATABASE" android:value="mon_pilulier.db" />
-        <meta-data android:name="VERSION" android:value="33" />
+        <meta-data android:name="VERSION" android:value="39" />
         <meta-data android:name="QUERY_LOG" android:value="true" />
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.pouillos.monpilulier" />
         <activity android:name=".activities.MainActivity">
@@ -55,6 +55,7 @@
         <activity android:name=".activities.listallx.ListAllProfilActivity" />
         <activity android:name=".activities.listmyx.ListMyProfilActivity" />
         <activity android:name=".activities.listmyx.ListMyPriseActivity" />
+        <activity android:name=".activities.recherche.ChercherMedecinOfficielActivity" />
     </application>
 
 </manifest>
