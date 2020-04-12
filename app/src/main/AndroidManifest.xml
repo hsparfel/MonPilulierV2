@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data android:name="DATABASE" android:value="mon_pilulier.db" />
-        <meta-data android:name="VERSION" android:value="39" />
+        <meta-data android:name="VERSION" android:value="42" />
         <meta-data android:name="QUERY_LOG" android:value="true" />
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.pouillos.monpilulier" />
         <activity android:name=".activities.MainActivity">
@@ -23,39 +23,14 @@
         </activity>
         <activity android:name=".activities.newx.NewUserActivity"></activity>
         <activity android:name=".activities.listallx.ListAllUserActivity" />
-        <activity android:name=".activities.newx.NewMedicamentActivity"></activity>
-        <activity android:name=".activities.listallx.ListAllMedicamentActivity" />
         <activity android:name=".activities.newx.NewAnalyseActivity"></activity>
-        <activity android:name=".activities.listallx.ListAllAnalyseActivity" />
-        <activity android:name=".activities.newx.NewDoseActivity"></activity>
-        <activity android:name=".activities.listallx.ListAllDoseActivity" />
         <activity android:name=".activities.newx.NewExamenActivity"></activity>
-        <activity android:name=".activities.listallx.ListAllExamenActivity" />
-        <activity android:name=".activities.newx.NewSpecialiteActivity"></activity>
-        <activity android:name=".activities.listallx.ListAllSpecialiteActivity" />
-        <activity android:name=".activities.newx.NewCabinetActivity"></activity>
-        <activity android:name=".activities.listallx.ListAllCabinetActivity" />
-        <activity android:name=".activities.newx.NewDureeActivity"></activity>
-        <activity android:name=".activities.listallx.ListAllDureeActivity" />
-        <activity android:name=".activities.newx.NewMedecinActivity"></activity>
-        <activity android:name=".activities.listallx.ListAllMedecinActivity" />
-        <activity android:name=".activities.listmyx.ListMyMedecinActivity" />
-        <activity android:name=".activities.newx.NewRdvActivity"></activity>
-        <activity android:name=".activities.listallx.ListAllRdvActivity" />
-        <activity android:name=".activities.listmyx.ListMyRdvActivity" />
-        <activity android:name=".activities.newx.NewOrdonnanceActivity"></activity>
-        <activity android:name=".activities.listallx.ListAllOrdonnanceActivity" />
-        <activity android:name=".activities.newx.NewOrdoAnalyseActivity"></activity>
-        <activity android:name=".activities.listallx.ListAllOrdoAnalyseActivity" />
-        <activity android:name=".activities.newx.NewOrdoPrescriptionActivity"></activity>
-        <activity android:name=".activities.listallx.ListAllOrdoPrescriptionActivity" />
-        <activity android:name=".activities.newx.NewOrdoExamenActivity"></activity>
-        <activity android:name=".activities.listallx.ListAllOrdoExamenActivity" />
         <activity android:name=".activities.MyProfilActivity" />
         <activity android:name=".activities.listallx.ListAllProfilActivity" />
         <activity android:name=".activities.listmyx.ListMyProfilActivity" />
-        <activity android:name=".activities.listmyx.ListMyPriseActivity" />
         <activity android:name=".activities.recherche.ChercherMedecinOfficielActivity" />
+        <activity android:name=".activities.enregistrer.EnregistrerRdvMedecinOfficielActivity" />
+        <activity android:name=".activities.enregistrer.EnregistrerRdvMedecinOfficielActivity" />
     </application>
 
 </manifest>

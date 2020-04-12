@@ -2,23 +2,16 @@ package com.pouillos.monpilulier.activities.recherche;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
@@ -28,19 +21,17 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.MainActivity;
-import com.pouillos.monpilulier.entities.Association;
+import com.pouillos.monpilulier.activities.enregistrer.EnregistrerRdvMedecinOfficielActivity;
+import com.pouillos.monpilulier.entities.AssociationOfficielle;
 import com.pouillos.monpilulier.entities.Departement;
-import com.pouillos.monpilulier.entities.Medecin;
 import com.pouillos.monpilulier.entities.MedecinOfficiel;
 import com.pouillos.monpilulier.entities.Profession;
 import com.pouillos.monpilulier.entities.Region;
 import com.pouillos.monpilulier.entities.SavoirFaire;
-import com.pouillos.monpilulier.entities.Specialite;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class ChercherMedecinOfficielActivity extends AppCompatActivity implements BasicUtils, AdapterView.OnItemClickListener  {
@@ -62,29 +53,30 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
     private List<Region> listRegion;
     private Departement utilisateurDepartement;
     private Region utilisateurRegion;
-    AutoCompleteTextView textRechercheIntervenant;
-    MedecinOfficiel medecinOfficielSelectionne;
+    private AutoCompleteTextView textRechercheIntervenant;
+    private MedecinOfficiel medecinOfficielSelectionne;
+    private Button buttonAssocier;
+    private Button buttonRdv;
+    private AutoCompleteTextView selectionMesIntervenants;
     //TextView tvDisplay;
+
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chercher_medecin_officiel);
+
+
         utilisateur = (new Utilisateur()).findActifUser();
-        //List<Departement> listUserDepartement = Departement.find(Departement.class,"nom = ?", utilisateur.getDepartement().getNom());
-        //utilisateurDepartement = listUserDepartement.get(0);
         utilisateurDepartement = utilisateur.getDepartement();
-        //List<Region> listUserRegion = Region.find(Region.class,"nom = ?", utilisateur.getDepartement().getRegion().getNom());
-        //utilisateurRegion = listUserRegion.get(0);
         utilisateurRegion = utilisateur.getDepartement().getRegion();
-
-
 
         Chip chipMesIntervenants = (Chip) findViewById(R.id.chipMesIntervenants);
         Chip chipMedecin = (Chip) findViewById(R.id.chipMedecin);
         Chip chipAutre = (Chip) findViewById(R.id.chipAutre);
-        //Chip chipGeneraliste = (Chip) findViewById(R.id.chipGeneraliste);
         Chip chipSpecialite = (Chip) findViewById(R.id.chipSpecialite);
         Chip chipActivite = (Chip) findViewById(R.id.chipActivite);
         Chip chipDepartement = (Chip) findViewById(R.id.chipDepartement);
@@ -96,6 +88,11 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
         TextInputLayout listMetier = (TextInputLayout) findViewById(R.id.listMetier);
         AutoCompleteTextView selectionGeo = (AutoCompleteTextView) findViewById(R.id.selectionGeo);
         TextInputLayout listGeo = (TextInputLayout) findViewById(R.id.listGeo);
+        buttonAssocier = (Button) findViewById(R.id.buttonAssocier);
+        buttonRdv = (Button) findViewById(R.id.buttonRdv);
+        TextInputLayout listMesIntervenants = (TextInputLayout) findViewById(R.id.listMesIntervenants);
+        selectionMesIntervenants = (AutoCompleteTextView) findViewById(R.id.selectionMesIntervenants);
+
 
         listProfession = Profession.listAll(Profession.class);
         listSavoirFaire = SavoirFaire.listAll(SavoirFaire.class);
@@ -103,8 +100,24 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
         listRegion = Region.listAll(Region.class);
 
 
-//TODO lors du clic appliquer filtre bloquer ou masquer tout le reste
-        //TODO creer bouton RAZ pr nouvelle recherche
+
+
+        buttonRdv.setOnClickListener(v -> {
+            //TODO ouvrir nouvelle activite rdv
+            ouvrirActiviteSuivante(EnregistrerRdvMedecinOfficielActivity.class, "medecinOfficiel", medecinOfficielSelectionne.getId());
+        });
+
+        buttonAssocier.setOnClickListener(v -> {
+            if (medecinOfficielSelectionne != null) {
+                AssociationOfficielle associationOfficielle = new AssociationOfficielle(utilisateur, medecinOfficielSelectionne);
+                if (!associationOfficielle.isExistante()) {
+                    associationOfficielle.save();
+                }
+                Toast toast = Toast.makeText(ChercherMedecinOfficielActivity.this, utilisateur.getName()+" & "+medecinOfficielSelectionne.getNom()+" ont été associés", Toast.LENGTH_LONG);
+                toast.show();
+                ouvrirActiviteSuivante(MainActivity.class);
+            }
+        });
 
         chipMesIntervenants.setOnClickListener(v -> {
             if (chipMesIntervenants.isCheckable()) {
@@ -277,7 +290,7 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
         });
 
         buttonAppliquerFiltre.setOnClickListener(v -> {
-            textRechercheIntervenant.setVisibility(View.VISIBLE);
+
             booleanMesIntervenants=chipMesIntervenants.isChecked();
             booleanMedecin=chipMedecin.isChecked();
             booleanAutre=chipAutre.isChecked();
@@ -289,10 +302,90 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
 
             String requete = "";
 
+            List<MedecinOfficiel> listMedecinOfficiel = new ArrayList<>();
+
             if (booleanMesIntervenants) {
-                //TODO (creer la table des associations) puis requete dessus
-                //proposer un menu deroualnt avec la liste recuperee depuis la requete
+
+                listMesIntervenants.setVisibility(View.VISIBLE);
+                requete += "SELECT * FROM MEDECIN_OFFICIEL AS MO INNER JOIN ASSOCIATION_OFFICIELLE AS AO ON MO.ID = AO.MEDECIN_OFFICIEL WHERE AO.UTILISATEUR = "+utilisateur.getId().toString();
+                if (booleanMedecin) {
+                    requete += "AND MO.CODE_CIVILITE <>\"\" ";
+                    chipMedecin.setCheckable(false);
+                }
+                if (booleanAutre) {
+                    requete += "AND MO.CODE_CIVILITE =\"\" ";
+                    chipAutre.setCheckable(false);
+                }
+                if (booleanSpecialite) {
+                    requete += "AND MO.SAVOIR_FAIRE = ";
+                    String metier = selectionMetier.getText().toString();
+                    SavoirFaire savoirFaire = SavoirFaire.find(SavoirFaire.class, "name = ?", metier).get(0);
+                    requete += savoirFaire.getId().toString();
+                    chipSpecialite.setCheckable(false);
+                    listMetier.setClickable(false);
+                }
+                if (booleanActivite) {
+                    requete += "AND MO.PROFESSION = ";
+                    String metier = selectionMetier.getText().toString();
+                    Profession profession = Profession.find(Profession.class, "name = ?", metier).get(0);
+                    requete += profession.getId().toString();
+                    chipActivite.setCheckable(false);
+                    listMetier.setClickable(false);
+                }
+                if (booleanDepartement) {
+                    requete += " AND MO.DEPARTEMENT = ";
+                    String departement = selectionGeo.getText().toString();
+                    departement = departement.substring(departement.length() - 3, departement.length() - 1);
+                    Departement dep = Departement.find(Departement.class, "numero = ?", departement).get(0);
+                    requete += dep.getId().toString();
+                    chipDepartement.setCheckable(false);
+                    listGeo.setClickable(false);
+                }
+                if (booleanRegion) {
+                    requete += " AND MO.REGION = ";
+                    String region = selectionGeo.getText().toString();
+                    Region reg = Region.find(Region.class, "nom = ?", region).get(0);
+                    requete += reg.getId().toString();
+                    chipRegion.setCheckable(false);
+                    listGeo.setClickable(false);
+                }
+
+                listMedecinOfficiel = MedecinOfficiel.findWithQuery(MedecinOfficiel.class, requete);
+                if (listMedecinOfficiel.size() == 0) {
+                    Toast toast = Toast.makeText(ChercherMedecinOfficielActivity.this, "Aucune correspondance, modifier puis appliquer filtre", Toast.LENGTH_LONG);
+                    toast.show();
+                    listMesIntervenants.setVisibility(View.GONE);
+                } else {
+
+                    List<String> listMedecinOfficielString = new ArrayList<>();
+                    String[] listDeroulanteMedecinOfficiel = new String[listMedecinOfficiel.size()];
+                    for (MedecinOfficiel medecinOfficiel : listMedecinOfficiel) {
+                        String affichageMedecinOfficiel = "";
+                        affichageMedecinOfficiel += medecinOfficiel.getNom() + ", " + medecinOfficiel.getPrenom() + " (";
+
+                        if (medecinOfficiel.getSavoirFaire() != null) {
+                            affichageMedecinOfficiel += medecinOfficiel.getSavoirFaire() + ") * ";
+                        } else {
+                            affichageMedecinOfficiel += medecinOfficiel.getProfession().getName() + ") * ";
+                        }
+                        affichageMedecinOfficiel += medecinOfficiel.getVille();
+                        listMedecinOfficielString.add(affichageMedecinOfficiel);
+                    }
+                    listMedecinOfficielString.toArray(listDeroulanteMedecinOfficiel);
+                    //selectionMetier.setText("Infirmier", false);
+                    //selectionMesIntervenants.setText(listDeroulanteMedecinOfficiel[0], false);
+                    ArrayAdapter adapter = new ArrayAdapter(this, R.layout.list_item, listDeroulanteMedecinOfficiel);
+                    selectionMesIntervenants.setAdapter(adapter);
+                    //textRechercheIntervenant.setOnItemClickListener(this);
+                    //textRechercheIntervenant.setOnItemClickListener((AdapterView.OnItemClickListener) this);
+                    // Set the minimum number of characters, to show suggestions
+                    //textRechercheIntervenant.setThreshold(3);
+                    //TODO revoir le clic sur liste
+                    selectionMesIntervenants.setOnItemClickListener(this);
+                }
+
             } else {
+                textRechercheIntervenant.setVisibility(View.VISIBLE);
                 requete += "SELECT * FROM MEDECIN_OFFICIEL ";
                 if (booleanMedecin) {
                     requete += "WHERE CODE_CIVILITE <>\"\" ";
@@ -305,7 +398,7 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
                 if (booleanSpecialite) {
                     requete += "AND SAVOIR_FAIRE = ";
                     String metier = selectionMetier.getText().toString();
-                    SavoirFaire savoirFaire = SavoirFaire.find(SavoirFaire.class,"name = ?", metier).get(0);
+                    SavoirFaire savoirFaire = SavoirFaire.find(SavoirFaire.class, "name = ?", metier).get(0);
                     requete += savoirFaire.getId().toString();
                     chipSpecialite.setCheckable(false);
                     listMetier.setClickable(false);
@@ -313,7 +406,7 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
                 if (booleanActivite) {
                     requete += "AND PROFESSION = ";
                     String metier = selectionMetier.getText().toString();
-                    Profession profession = Profession.find(Profession.class,"name = ?", metier).get(0);
+                    Profession profession = Profession.find(Profession.class, "name = ?", metier).get(0);
                     requete += profession.getId().toString();
                     chipActivite.setCheckable(false);
                     listMetier.setClickable(false);
@@ -321,7 +414,7 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
                 if (booleanDepartement) {
                     requete += " AND DEPARTEMENT = ";
                     String departement = selectionGeo.getText().toString();
-                    departement = departement.substring(departement.length()-3,departement.length()-1);
+                    departement = departement.substring(departement.length() - 3, departement.length() - 1);
                     Departement dep = Departement.find(Departement.class, "numero = ?", departement).get(0);
                     requete += dep.getId().toString();
                     chipDepartement.setCheckable(false);
@@ -335,53 +428,51 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
                     chipRegion.setCheckable(false);
                     listGeo.setClickable(false);
                 }
-            }
-            List<MedecinOfficiel> listMedecinOfficiel = MedecinOfficiel.findWithQuery(MedecinOfficiel.class, requete);
-            //TODO si requete vide afficher toast alerte puis masquer l'edittext autocompleté
-            if (listMedecinOfficiel.size()==0) {
-                Toast toast = Toast.makeText(ChercherMedecinOfficielActivity.this, "Aucune correspondance, modifier puis appliquer filtre", Toast.LENGTH_LONG);
-                toast.show();
-                textRechercheIntervenant.setVisibility(View.GONE);
-            }
 
-
-            List<String> listMedecinOfficielString = new ArrayList<>();
-            String[] listAutocompletion = new String[listMedecinOfficiel.size()];
-            for (MedecinOfficiel medecinOfficiel : listMedecinOfficiel){
-                String affichageMedecinOfficiel = "";
-                affichageMedecinOfficiel += medecinOfficiel.getNom()+", "+medecinOfficiel.getPrenom()+" (";
-                if (booleanMedecin){
-                    affichageMedecinOfficiel += medecinOfficiel.getSavoirFaire()+") - ";
+                listMedecinOfficiel = MedecinOfficiel.findWithQuery(MedecinOfficiel.class, requete);
+                if (listMedecinOfficiel.size() == 0) {
+                    Toast toast = Toast.makeText(ChercherMedecinOfficielActivity.this, "Aucune correspondance, modifier puis appliquer filtre", Toast.LENGTH_LONG);
+                    toast.show();
+                    textRechercheIntervenant.setVisibility(View.GONE);
                 }
-                if (booleanAutre){
-                    affichageMedecinOfficiel += medecinOfficiel.getProfession().getName()+") - ";
-                }
-                affichageMedecinOfficiel += medecinOfficiel.getVille();
-                listMedecinOfficielString.add(affichageMedecinOfficiel);
-            }
-            listMedecinOfficielString.toArray(listAutocompletion);
-            ArrayAdapter adapterMedecins = new ArrayAdapter(this,android.R.layout.simple_list_item_1,listAutocompletion);
-            textRechercheIntervenant.setAdapter(adapterMedecins);
-            textRechercheIntervenant.setOnItemClickListener(this);
-            //textRechercheIntervenant.setOnItemClickListener((AdapterView.OnItemClickListener) this);
-            // Set the minimum number of characters, to show suggestions
-            textRechercheIntervenant.setThreshold(3);
 
+
+                List<String> listMedecinOfficielString = new ArrayList<>();
+                String[] listAutocompletion = new String[listMedecinOfficiel.size()];
+                for (MedecinOfficiel medecinOfficiel : listMedecinOfficiel) {
+                    String affichageMedecinOfficiel = "";
+                    affichageMedecinOfficiel += medecinOfficiel.getNom() + ", " + medecinOfficiel.getPrenom() + " (";
+                    if (medecinOfficiel.getSavoirFaire() !=null) {
+                        affichageMedecinOfficiel += medecinOfficiel.getSavoirFaire() + ") * ";
+                    } else {
+                        affichageMedecinOfficiel += medecinOfficiel.getProfession().getName() + ") * ";
+                    }
+                    affichageMedecinOfficiel += medecinOfficiel.getVille();
+                    listMedecinOfficielString.add(affichageMedecinOfficiel);
+                }
+                listMedecinOfficielString.toArray(listAutocompletion);
+                ArrayAdapter adapterMedecins = new ArrayAdapter(this, android.R.layout.simple_list_item_1, listAutocompletion);
+                textRechercheIntervenant.setAdapter(adapterMedecins);
+                textRechercheIntervenant.setOnItemClickListener(this);
+                //textRechercheIntervenant.setOnItemClickListener((AdapterView.OnItemClickListener) this);
+                // Set the minimum number of characters, to show suggestions
+                textRechercheIntervenant.setThreshold(3);
+            }
             //Masquer & raz tout le reste
             if (listMedecinOfficiel.size()!=0) {
-                booleanMesIntervenants = false;
+                //booleanMesIntervenants = false;
                 chipMesIntervenants.setVisibility(View.GONE);
-                booleanMedecin = false;
+                //booleanMedecin = false;
                 chipMedecin.setVisibility(View.GONE);
-                booleanAutre = false;
+                //booleanAutre = false;
                 chipMesIntervenants.setVisibility(View.GONE);
-                booleanSpecialite = false;
+                //booleanSpecialite = false;
                 chipSpecialite.setVisibility(View.GONE);
-                booleanActivite = false;
+                //booleanActivite = false;
                 chipActivite.setVisibility(View.GONE);
-                booleanDepartement = false;
+                //booleanDepartement = false;
                 chipDepartement.setVisibility(View.GONE);
-                booleanRegion = false;
+                //booleanRegion = false;
                 chipRegion.setVisibility(View.GONE);
             }
 
@@ -438,26 +529,67 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
         //MedecinOfficiel medecinOfficiel = (MedecinOfficiel) parent.getItemAtPosition((position));
 
         // create Toast with user selected value
-        Toast.makeText(ChercherMedecinOfficielActivity.this, "Selected Item is: \t" + item, Toast.LENGTH_LONG).show();
+        Toast.makeText(ChercherMedecinOfficielActivity.this, "Selected : \t" + item, Toast.LENGTH_SHORT).show();
         //Toast.makeText(ChercherMedecinOfficielActivity.this, "Selected Item2 is: \t" + medecinOfficiel.getPrenom()+medecinOfficiel.getNom(), Toast.LENGTH_LONG).show();
         // set user selected value to the TextView
         //tvDisplay.setText(item);
-        textRechercheIntervenant.setFocusable(false);
-        int positionVirgule = textRechercheIntervenant.getText().toString().indexOf(",");
-        int positionParentheseOuverte = textRechercheIntervenant.getText().toString().indexOf("(");
-        int positionParentheseFermee = textRechercheIntervenant.getText().toString().indexOf(")");
-        int positionTiret = textRechercheIntervenant.getText().toString().indexOf("-");
 
-        String nom = textRechercheIntervenant.getText().toString().substring(0,positionVirgule);
-        String prenom = textRechercheIntervenant.getText().toString().substring(positionVirgule+2,positionParentheseOuverte-1);
-        String metier = textRechercheIntervenant.getText().toString().substring(positionParentheseOuverte+1,positionParentheseFermee);
-        String ville = textRechercheIntervenant.getText().toString().substring(positionTiret+2);
-        //TODO prevoir les 2 cas de figures medecin ou autre
-        if (booleanAutre) {
-            Profession profession = Profession.find(Profession.class, "name = ?", metier).get(0);
-            medecinOfficielSelectionne = MedecinOfficiel.find(MedecinOfficiel.class, "nom = ? and prenom = ? and profession = ? and ville = ?", nom, prenom, profession.getId().toString(), ville).get(0);
-            Toast.makeText(ChercherMedecinOfficielActivity.this, "Selected Item is: \t" + medecinOfficielSelectionne.getPrenom() + medecinOfficielSelectionne.getNom(), Toast.LENGTH_LONG).show();
+
+        if (!booleanMesIntervenants) {
+            textRechercheIntervenant.setFocusable(false);
+            int positionVirgule = textRechercheIntervenant.getText().toString().indexOf(",");
+            int positionParentheseOuverte = textRechercheIntervenant.getText().toString().indexOf("(");
+            int positionParentheseFermee = textRechercheIntervenant.getText().toString().indexOf(")");
+            int positionEtoile = textRechercheIntervenant.getText().toString().indexOf("*");
+
+            String nom = textRechercheIntervenant.getText().toString().substring(0, positionVirgule);
+            String prenom = textRechercheIntervenant.getText().toString().substring(positionVirgule + 2, positionParentheseOuverte - 1);
+            String metier = textRechercheIntervenant.getText().toString().substring(positionParentheseOuverte + 1, positionParentheseFermee);
+            String ville = textRechercheIntervenant.getText().toString().substring(positionEtoile + 2);
+
+            if (booleanAutre) {
+                Profession profession = Profession.find(Profession.class, "name = ?", metier).get(0);
+                medecinOfficielSelectionne = MedecinOfficiel.find(MedecinOfficiel.class, "nom = ? and prenom = ? and profession = ? and ville = ?", nom, prenom, profession.getId().toString(), ville).get(0);
+                Toast.makeText(ChercherMedecinOfficielActivity.this, "Selected Item is: \t" + medecinOfficielSelectionne.getPrenom() + medecinOfficielSelectionne.getNom(), Toast.LENGTH_LONG).show();
+            } else if (booleanMedecin) {
+                SavoirFaire savoirFaire = SavoirFaire.find(SavoirFaire.class, "name = ?", metier).get(0);
+                medecinOfficielSelectionne = MedecinOfficiel.find(MedecinOfficiel.class, "nom = ? and prenom = ? and savoir_faire = ? and ville = ?", nom, prenom, savoirFaire.getId().toString(), ville).get(0);
+                Toast.makeText(ChercherMedecinOfficielActivity.this, "Selected Item is: \t" + medecinOfficielSelectionne.getPrenom() + medecinOfficielSelectionne.getNom(), Toast.LENGTH_LONG).show();
+
+            }
+
+
+            buttonAssocier.setVisibility(View.VISIBLE);
+        } else {
+            //TODO
+            selectionMesIntervenants.setFocusable(false);
+            int positionVirgule = selectionMesIntervenants.getText().toString().indexOf(",");
+            int positionParentheseOuverte = selectionMesIntervenants.getText().toString().indexOf("(");
+            int positionParentheseFermee = selectionMesIntervenants.getText().toString().indexOf(")");
+            int positionEtoile = selectionMesIntervenants.getText().toString().indexOf("*");
+
+            String nom = selectionMesIntervenants.getText().toString().substring(0, positionVirgule);
+            String prenom = selectionMesIntervenants.getText().toString().substring(positionVirgule + 2, positionParentheseOuverte - 1);
+            String metier = selectionMesIntervenants.getText().toString().substring(positionParentheseOuverte + 1, positionParentheseFermee);
+            String ville = selectionMesIntervenants.getText().toString().substring(positionEtoile + 2);
+
+
+            List <Profession> listProfession = Profession.find(Profession.class, "name = ?", metier);
+            List <SavoirFaire> listSavoirFaire = SavoirFaire.find(SavoirFaire.class, "name = ?", metier);
+            if (listProfession.size() !=0) {
+                Profession profession = listProfession.get(0);
+                medecinOfficielSelectionne = MedecinOfficiel.find(MedecinOfficiel.class, "nom = ? and prenom = ? and profession = ? and ville = ?", nom, prenom, profession.getId().toString(), ville).get(0);
+                Toast.makeText(ChercherMedecinOfficielActivity.this, "Selected Item is: \t" + medecinOfficielSelectionne.getPrenom() + medecinOfficielSelectionne.getNom(), Toast.LENGTH_LONG).show();
+            }
+            if (listSavoirFaire.size() !=0) {
+                SavoirFaire savoirFaire = listSavoirFaire.get(0);
+                medecinOfficielSelectionne = MedecinOfficiel.find(MedecinOfficiel.class, "nom = ? and prenom = ? and savoir_faire = ? and ville = ?", nom, prenom, savoirFaire.getId().toString(), ville).get(0);
+                Toast.makeText(ChercherMedecinOfficielActivity.this, "Selected Item is: \t" + medecinOfficielSelectionne.getPrenom() + medecinOfficielSelectionne.getNom(), Toast.LENGTH_LONG).show();
+            }
+
         }
+
+        buttonRdv.setVisibility((View.VISIBLE));
     }
 
     @Override
@@ -473,5 +605,21 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
         }
         return super.dispatchTouchEvent(ev);
     }
+
+    public void ouvrirActiviteSuivante(Class classe){
+        Intent intent = new Intent(ChercherMedecinOfficielActivity.this, classe);
+        startActivity(intent);
+        finish();
+    }
+
+    public void ouvrirActiviteSuivante(Class classe, String nomExtra, Long objetIdExtra ) {
+        Intent intent = new Intent(ChercherMedecinOfficielActivity.this, classe);
+        intent.putExtra(nomExtra, objetIdExtra);
+        startActivity(intent);
+        finish();
+    }
+
+
+
 
 }

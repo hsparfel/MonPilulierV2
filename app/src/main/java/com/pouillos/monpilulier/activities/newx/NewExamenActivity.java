@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.entities.Examen;
-import com.pouillos.monpilulier.entities.Rdv;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
 
 import java.util.Date;
@@ -27,11 +26,7 @@ public class NewExamenActivity extends AppCompatActivity implements BasicUtils {
     private ImageButton buttonValider;
     private ImageButton buttonAnnuler;
     private TextView textNom;
-    private TextView textDescription;
-    private Class<?> activitySource;
-    private Examen examenAModif;
     private Intent intent;
-    private Rdv rdvEnCours;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +35,7 @@ public class NewExamenActivity extends AppCompatActivity implements BasicUtils {
 
         buttonValider = (ImageButton) findViewById(R.id.buttonValider);
         textNom = findViewById(R.id.textNom);
-        textDescription = findViewById(R.id.textDescription);
+       // textDescription = findViewById(R.id.textDescription);
         buttonAnnuler= (ImageButton) findViewById(R.id.buttonAnnuler);
 
         traiterIntent();
@@ -57,15 +52,9 @@ public class NewExamenActivity extends AppCompatActivity implements BasicUtils {
             public void onClick(View v) {
 
                 //rediger les verifs de remplissage des champs
-                if (isExistant(textNom)) {
-                    return;
-                }
-                if (!isRempli(textNom)) {
-                    return;
-                }
 
                 //enregistrer en bdd
-                saveToDb(textNom, textDescription);
+                saveToDb(textNom);
 
                 //retour
                 retourPagePrecedente();
@@ -90,16 +79,7 @@ public class NewExamenActivity extends AppCompatActivity implements BasicUtils {
     @Override
     public void traiterIntent() {
         intent = getIntent();
-        activitySource = (Class<?>) intent.getSerializableExtra("activitySource");
-        if (intent.hasExtra("examenAModifId")) {
-            Long examenAModifId = intent.getLongExtra("examenAModifId",0);
-            examenAModif = Examen.findById(Examen.class,examenAModifId);
-            textNom.setText(examenAModif.getName());
-            textDescription.setText(examenAModif.getDetail());
-        }
-        if (intent.hasExtra("rdvEnCours")) {
-            rdvEnCours = (Rdv) intent.getSerializableExtra("rdvEnCours");
-        }
+
     }
 
     @Override
@@ -107,98 +87,14 @@ public class NewExamenActivity extends AppCompatActivity implements BasicUtils {
     }
 
     @Override
-    public void alertOnSpinners() {
-    }
-
-    @Override
-    public void alertOffSpinners() {
-    }
-
-    @Override
     public void saveToDb(TextView... args) {
-        if (examenAModif ==null) {
-            Examen examen = new Examen(args[0].getText().toString(), args[1].getText().toString());
+
+            Examen examen = new Examen(args[0].getText().toString());
             examen.save();
-        } else {
-            Examen examen = (Examen.find(Examen.class,"id = ?", examenAModif.getId().toString())).get(0);
-            examen.setName(args[0].getText().toString());
-            examen.setDetail(args[1].getText().toString());
-            examen.save();
-        }
+
     }
 
     @Override
     public void saveToDb(TextView textNom, Date date, String sexe) {
     }
-
-    @Override
-    public void createSpinners() {
-    }
-
-    @Override
-    public void retourPagePrecedente(Intent intent) {
-    }
-
-    @Override
-    public void retourPagePrecedente() {
-        Intent nextActivity = new Intent(NewExamenActivity.this, activitySource);
-        nextActivity.putExtra("activitySource", NewExamenActivity.class);
-        nextActivity.putExtra("rdvEnCours", rdvEnCours);
-        startActivity(nextActivity);
-        finish();
-    }
-
-    @Override
-    public boolean isExistant(TextView textView) {
-        boolean reponse = false;
-        List<Examen> listAllExamen = Examen.listAll(Examen.class);
-        for (Examen examen : listAllExamen) {
-            if (examenAModif == null) {
-                if (textView.getText().toString().equals(examen.getName())) {
-                    textView.requestFocus();
-                    textView.setError("l'examen existe déjà");
-                    reponse = true;
-                }
-            } else {
-                if (!examenAModif.getName().equals(examen.getName()) && textView.getText().toString().equals(examen.getName())) {
-                    textView.requestFocus();
-                    textView.setError("l'examen existe déjà");
-                    reponse = true;
-                }
-            }
-        }
-        return reponse;
-    }
-
-    @Override
-    public boolean isRempli(TextView textView) {
-        if (TextUtils.isEmpty(textView.getText())) {
-            textView.requestFocus();
-            textView.setError("Saisie Obligatoire");
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    @Override
-    public boolean isRempli(TextView textView, Date date) {
-        return false;
-    }
-
-    @Override
-    public boolean isRempli(TextView textView, String string) {
-        return false;
-    }
-
-    @Override
-    public boolean isRempli(Spinner... args) {
-        return false;
-    }
-
-    @Override
-    public boolean isValid(TextView textView) {
-        return false;
-    }
-
 }

@@ -11,17 +11,11 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pouillos.monpilulier.R;
-import com.pouillos.monpilulier.activities.listallx.ListAllSpecialiteActivity;
 import com.pouillos.monpilulier.activities.listallx.ListAllUserActivity;
 import com.pouillos.monpilulier.activities.MainActivity;
-import com.pouillos.monpilulier.activities.newx.NewSpecialiteActivity;
 import com.pouillos.monpilulier.activities.newx.NewUserActivity;
 import com.pouillos.monpilulier.entities.Association;
-import com.pouillos.monpilulier.entities.Medecin;
-import com.pouillos.monpilulier.entities.Ordonnance;
 import com.pouillos.monpilulier.entities.Profil;
-import com.pouillos.monpilulier.entities.Rdv;
-import com.pouillos.monpilulier.entities.Specialite;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.views.viewholder.ListAllUserViewHolder;
 
@@ -83,9 +77,9 @@ public class ListAllUserAdapter extends RecyclerView.Adapter<ListAllUserViewHold
                                             utilisateur.delete();
                                             //Medecin.deleteAll(Medecin.class,"specialite = ?",specialite.getId().toString());
                                             Association.deleteAll(Association.class,"utilisateur = ?",utilisateur.getId().toString());
-                                            Ordonnance.deleteAll(Ordonnance.class,"utilisateur = ?",utilisateur.getId().toString());
+                                            //Ordonnance.deleteAll(Ordonnance.class,"utilisateur = ?",utilisateur.getId().toString());
                                             Profil.deleteAll(Profil.class,"utilisateur = ?",utilisateur.getId().toString());
-                                            Rdv.deleteAll(Rdv.class,"utilisateur = ?",utilisateur.getId().toString());
+                                           // Rdv.deleteAll(Rdv.class,"utilisateur = ?",utilisateur.getId().toString());
 
 
                                             listAllUser = Utilisateur.listAll(Utilisateur.class,"name");

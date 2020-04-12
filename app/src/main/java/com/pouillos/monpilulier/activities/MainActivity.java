@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,60 +21,29 @@ import com.orm.SchemaGenerator;
 import com.orm.SugarContext;
 import com.orm.SugarDb;
 import com.pouillos.monpilulier.R;
-import com.pouillos.monpilulier.activities.listallx.ListAllAnalyseActivity;
-import com.pouillos.monpilulier.activities.listallx.ListAllCabinetActivity;
-import com.pouillos.monpilulier.activities.listallx.ListAllDoseActivity;
-import com.pouillos.monpilulier.activities.listallx.ListAllDureeActivity;
-import com.pouillos.monpilulier.activities.listallx.ListAllExamenActivity;
-import com.pouillos.monpilulier.activities.listallx.ListAllMedecinActivity;
-import com.pouillos.monpilulier.activities.listallx.ListAllMedicamentActivity;
-import com.pouillos.monpilulier.activities.listallx.ListAllOrdoAnalyseActivity;
-import com.pouillos.monpilulier.activities.listallx.ListAllOrdoExamenActivity;
-import com.pouillos.monpilulier.activities.listallx.ListAllOrdonnanceActivity;
 import com.pouillos.monpilulier.activities.listallx.ListAllProfilActivity;
-import com.pouillos.monpilulier.activities.listallx.ListAllSpecialiteActivity;
 import com.pouillos.monpilulier.activities.listallx.ListAllUserActivity;
-import com.pouillos.monpilulier.activities.listmyx.ListMyMedecinActivity;
-import com.pouillos.monpilulier.activities.listmyx.ListMyPriseActivity;
 import com.pouillos.monpilulier.activities.listmyx.ListMyProfilActivity;
-import com.pouillos.monpilulier.activities.newx.NewAnalyseActivity;
-import com.pouillos.monpilulier.activities.newx.NewCabinetActivity;
-import com.pouillos.monpilulier.activities.newx.NewDoseActivity;
-import com.pouillos.monpilulier.activities.newx.NewDureeActivity;
-import com.pouillos.monpilulier.activities.newx.NewExamenActivity;
-import com.pouillos.monpilulier.activities.newx.NewMedecinActivity;
-import com.pouillos.monpilulier.activities.newx.NewMedicamentActivity;
-import com.pouillos.monpilulier.activities.newx.NewOrdonnanceActivity;
-import com.pouillos.monpilulier.activities.newx.NewRdvActivity;
-import com.pouillos.monpilulier.activities.newx.NewSpecialiteActivity;
 import com.pouillos.monpilulier.activities.newx.NewUserActivity;
 import com.pouillos.monpilulier.activities.recherche.ChercherMedecinOfficielActivity;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.Analyse;
-import com.pouillos.monpilulier.entities.Cabinet;
 import com.pouillos.monpilulier.entities.Departement;
-import com.pouillos.monpilulier.entities.Dose;
 import com.pouillos.monpilulier.entities.Duree;
 import com.pouillos.monpilulier.entities.Examen;
 import com.pouillos.monpilulier.entities.FormePharmaceutique;
-import com.pouillos.monpilulier.entities.Medecin;
 import com.pouillos.monpilulier.entities.MedecinOfficiel;
-import com.pouillos.monpilulier.entities.Medicament;
 import com.pouillos.monpilulier.entities.MedicamentOfficiel;
 import com.pouillos.monpilulier.entities.Profession;
 import com.pouillos.monpilulier.entities.Region;
 import com.pouillos.monpilulier.entities.SavoirFaire;
-import com.pouillos.monpilulier.entities.Specialite;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.parser.ParseListMedecinOfficiel;
 import com.pouillos.monpilulier.parser.ParseListMedicamentOfficiel;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-
-import static java.security.AccessController.getContext;
 
 public class MainActivity extends AppCompatActivity implements Serializable {
 
@@ -91,28 +59,12 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         TextView textUser = (TextView) findViewById(R.id.textUser);
         Button buttonListAllUser = (Button) findViewById(R.id.buttonListAllUser);
         Button buttonNewUser = (Button) findViewById(R.id.buttonNewUser);
-        Button buttonListAllMedicament = (Button) findViewById(R.id.buttonListAllMedicament);
-        Button buttonNewMedicament = (Button) findViewById(R.id.buttonNewMedicament);
-        Button buttonListAllAnalyse = (Button) findViewById(R.id.buttonListAllAnalyse);
-        Button buttonNewAnalyse = (Button) findViewById(R.id.buttonNewAnalyse);
-        Button buttonListAllDose = (Button) findViewById(R.id.buttonListAllDose);
-        Button buttonNewDose = (Button) findViewById(R.id.buttonNewDose);
-        Button buttonListAllExamen = (Button) findViewById(R.id.buttonListAllExamen);
-        Button buttonNewExamen = (Button) findViewById(R.id.buttonNewExamen);
-        Button buttonListAllSpecialite = (Button) findViewById(R.id.buttonListAllSpecialite);
-        Button buttonNewSpecialite = (Button) findViewById(R.id.buttonNewSpecialite);
-        Button buttonListAllCabinet = (Button) findViewById(R.id.buttonListAllCabinet);
-        Button buttonNewCabinet = (Button) findViewById(R.id.buttonNewCabinet);
-        Button buttonListAllDuree = (Button) findViewById(R.id.buttonListAllDuree);
-        Button buttonNewDuree = (Button) findViewById(R.id.buttonNewDuree);
-        Button buttonListAllMedecin = (Button) findViewById(R.id.buttonListAllMedecin);
-        Button buttonNewMedecin = (Button) findViewById(R.id.buttonNewMedecin);
-        Button buttonListMyMedecin = (Button) findViewById(R.id.buttonListMyMedecin);
+
         Button buttonNewOrdonnance = (Button) findViewById(R.id.buttonNewOrdonnance);
         Button buttonListAllOrdonnance = (Button) findViewById(R.id.buttonListAllOrdonnance);
         Button buttonListAllOrdoAnalyse = (Button) findViewById(R.id.buttonListAllOrdoAnalyse);
         Button buttonListAllOrdoExamen = (Button) findViewById(R.id.buttonListAllOrdoExamen);
-        ImageButton buttonDeleteAllUser = (ImageButton) findViewById(R.id.buttonDeleteAllUser);
+
         Button buttonRAZ = (Button) findViewById(R.id.buttonRAZ);
         Button buttonNewRdv = (Button) findViewById(R.id.buttonNewRdv);
         Button buttonListAllRdv = (Button) findViewById(R.id.buttonListAllRdv);
@@ -164,13 +116,10 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             this.notBuilder.setTicker("This is a ticker");
             this.notBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-
             // Set the time that the event occurred.
             // Notifications in the panel are sorted by this time.
 
             Date dateJour = new Date();
-
-
 
             this.notBuilder.setWhen(new DateUtils().ajouterHeure(dateJour, 1).getTime() + 10*1000);
 
@@ -178,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             this.notBuilder.setShowWhen(false);
             this.notBuilder.setContentTitle("This is title");
             this.notBuilder.setContentText("This is content text ....");
-
 
             // Create Intent
             Intent intent = new Intent(this, MainActivity.class);
@@ -188,21 +136,16 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             PendingIntent pendingIntent = PendingIntent.getActivity(this, MY_REQUEST_CODE,
                     intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-
             this.notBuilder.setContentIntent(pendingIntent);
-
-
 
             // Get a notification service (A service available on the system).
             NotificationManager notificationService  =
                     (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
 
-
             // Builds notification and issue it
 
             Notification notification =  notBuilder.build();
             notificationService.notify(MY_NOTIFICATION_ID, notification);
-
         });
 
         buttonChercherMedecinOfficiel.setOnClickListener(v -> {
@@ -224,23 +167,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             //List<MedecinOfficiel> listMedecinOfficiel = MedecinOfficiel.listAll(MedecinOfficiel.class);
             long size1 = MedicamentOfficiel.count(MedicamentOfficiel.class);
             long size2 = MedecinOfficiel.count(MedecinOfficiel.class);
-
             //ProgressDialog dialog = ProgressDialog.show(MainActivity.this, "","nb medicament: "+size1+" - nb medecin: "+size2, false);
-
             Toast toast = Toast.makeText(MainActivity.this, "nb medicament: "+size1+" - nb medecin: "+size2, Toast.LENGTH_LONG);
             toast.show();
-        });
-
-        buttonNewDuree.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, NewDureeActivity.class);
-            myProfilActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(myProfilActivity);
-        });
-
-        buttonNewMedecin.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, NewMedecinActivity.class);
-            myProfilActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(myProfilActivity);
         });
 
         buttonListAllProfil.setOnClickListener(v -> {
@@ -251,42 +180,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         buttonListMyProfil.setOnClickListener(v -> {
             Intent myProfilActivity = new Intent(MainActivity.this, ListMyProfilActivity.class);
-            myProfilActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(myProfilActivity);
-        });
-
-        buttonNewSpecialite.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, NewSpecialiteActivity.class);
-            myProfilActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(myProfilActivity);
-        });
-
-        buttonNewCabinet.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, NewCabinetActivity.class);
-            myProfilActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(myProfilActivity);
-        });
-
-        buttonNewMedicament.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, NewMedicamentActivity.class);
-            myProfilActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(myProfilActivity);
-        });
-
-        buttonNewAnalyse.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, NewAnalyseActivity.class);
-            myProfilActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(myProfilActivity);
-        });
-
-        buttonNewDose.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, NewDoseActivity.class);
-            myProfilActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(myProfilActivity);
-        });
-
-        buttonNewExamen.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, NewExamenActivity.class);
             myProfilActivity.putExtra("activitySource", MainActivity.class);
             startActivity(myProfilActivity);
         });
@@ -325,125 +218,20 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             startActivity(listAllUserActivity);
         });
 
-        buttonDeleteAllUser.setOnClickListener(v -> {
-
-            Utilisateur.deleteAll(Utilisateur.class);
-            recreate();
-            //Intent listAllUserActivity = new Intent(MainActivity.this, ListAllUserActivity.class);
-            //   listAllUserActivity.putExtra("precedent",MainActivity.class);
-            //   startActivity(listAllUserActivity);
-        });
 
 
-        buttonListAllMedicament.setOnClickListener(v -> {
-            Intent listAllMedicamentActivity = new Intent(MainActivity.this, ListAllMedicamentActivity.class);
-            listAllMedicamentActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(listAllMedicamentActivity);
-        });
 
 
-        buttonListAllAnalyse.setOnClickListener(v -> {
-            Intent listAllAnalyseActivity = new Intent(MainActivity.this, ListAllAnalyseActivity.class);
-            listAllAnalyseActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(listAllAnalyseActivity);
-        });
 
 
-        buttonListAllDose.setOnClickListener(v -> {
-            Intent listAllDoseActivity = new Intent(MainActivity.this, ListAllDoseActivity.class);
-            listAllDoseActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(listAllDoseActivity);
-        });
 
 
-        buttonListAllExamen.setOnClickListener(v -> {
-            Intent listAllExamenActivity = new Intent(MainActivity.this, ListAllExamenActivity.class);
-            listAllExamenActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(listAllExamenActivity);
-        });
 
 
-        buttonListAllSpecialite.setOnClickListener(v -> {
-            Intent listAllSpecialiteActivity = new Intent(MainActivity.this, ListAllSpecialiteActivity.class);
-            listAllSpecialiteActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(listAllSpecialiteActivity);
-        });
 
 
-        buttonListAllCabinet.setOnClickListener(v -> {
-            Intent listAllCabinetActivity = new Intent(MainActivity.this, ListAllCabinetActivity.class);
-            listAllCabinetActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(listAllCabinetActivity);
-        });
 
 
-        buttonListAllDuree.setOnClickListener(v -> {
-            Intent listAllDureeActivity = new Intent(MainActivity.this, ListAllDureeActivity.class);
-            listAllDureeActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(listAllDureeActivity);
-        });
-
-
-        buttonListAllMedecin.setOnClickListener(v -> {
-            Intent listAllMedecinActivity = new Intent(MainActivity.this, ListAllMedecinActivity.class);
-            listAllMedecinActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(listAllMedecinActivity);
-        });
-
-        buttonListMyMedecin.setOnClickListener(v -> {
-            Intent listMyMedecinActivity = new Intent(MainActivity.this, ListMyMedecinActivity.class);
-            listMyMedecinActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(listMyMedecinActivity);
-        });
-
-        buttonNewRdv.setOnClickListener(v -> {
-            Intent newRdvActivity = new Intent(MainActivity.this, NewRdvActivity.class);
-            newRdvActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(newRdvActivity);
-        });
-
-        buttonListAllRdv.setOnClickListener(v -> {
-            Intent ListAllRdvActivity = new Intent(MainActivity.this, com.pouillos.monpilulier.activities.listallx.ListAllRdvActivity.class);
-            ListAllRdvActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(ListAllRdvActivity);
-        });
-
-        buttonListMyRdv.setOnClickListener(v -> {
-            Intent ListMyRdvActivity = new Intent(MainActivity.this, com.pouillos.monpilulier.activities.listmyx.ListMyRdvActivity.class);
-            ListMyRdvActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(ListMyRdvActivity);
-        });
-
-        buttonNewOrdonnance.setOnClickListener(v -> {
-            Intent newOrdonnanceActivity = new Intent(MainActivity.this, NewOrdonnanceActivity.class);
-            newOrdonnanceActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(newOrdonnanceActivity);
-
-        });
-
-        buttonListAllOrdonnance.setOnClickListener(v -> {
-            Intent listAllOrdonnanceActivity = new Intent(MainActivity.this, ListAllOrdonnanceActivity.class);
-            listAllOrdonnanceActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(listAllOrdonnanceActivity);
-        });
-
-        buttonListAllOrdoAnalyse.setOnClickListener(v -> {
-            Intent listAllOrdoAnalyseActivity = new Intent(MainActivity.this, ListAllOrdoAnalyseActivity.class);
-            listAllOrdoAnalyseActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(listAllOrdoAnalyseActivity);
-        });
-
-        buttonListAllOrdoExamen.setOnClickListener(v -> {
-            Intent listAllOrdoExamenActivity = new Intent(MainActivity.this, ListAllOrdoExamenActivity.class);
-            listAllOrdoExamenActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(listAllOrdoExamenActivity);
-        });
-
-        buttonListMyPrise.setOnClickListener(v -> {
-            Intent listMyPriseActivity = new Intent(MainActivity.this, ListMyPriseActivity.class);
-            listMyPriseActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(listMyPriseActivity);
-        });
     }
 
     public void remplirDepartementBD() {
@@ -1148,15 +936,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
     public void remplirDefaultBD() {
 
-        List<Dose> listDose = Dose.listAll(Dose.class);
-        if (listDose.size()==0) {
-            new Dose("comprimé","desc comprime").save();
-            new Dose("sachet","desc sachet").save();
-            new Dose("cuillère à café","desc cac").save();
-            new Dose("cuillère à soupe","desc cas").save();
-            new Dose("ampoule","desc ampoule").save();
-        }
-
         List<Duree> listDuree = Duree.listAll(Duree.class);
         if (listDuree.size()==0) {
             new Duree("jour").save();
@@ -1167,9 +946,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         List<Analyse> listAnalyse = Analyse.listAll(Analyse.class);
         if (listAnalyse.size()==0) {
-            new Analyse("sang","desc sang").save();
-            new Analyse("urine","desc urine").save();
-            new Analyse("selle","desc selle").save();
+            new Analyse("sang").save();
+            new Analyse("urine").save();
+            new Analyse("selle").save();
+            new Analyse("adn").save();
+            new Analyse("autre").save();
         }
     }
 
@@ -1178,10 +959,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         List<Utilisateur> listUtilisateur = Utilisateur.listAll(Utilisateur.class);
         if (listUtilisateur.size()==0) {
             Utilisateur user = new Utilisateur("Bob",new Date(),"desc Bob");
-            //List<Departement> listDep = Departement.find(Departement.class,"numero = ?", "06");
             List<Departement> listDep = Departement.findWithQuery(Departement.class, "Select * from Departement where numero like '06'");
             Departement dep = listDep.get(0);
-
 
             user.setDepartement(dep);
             user.save();
@@ -1193,41 +972,24 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             user.save();
         }
 
-        List<Medicament> listMedicament = Medicament.listAll(Medicament.class);
-        if (listMedicament.size()==0) {
-            new Medicament("doliprane","desc doliprane").save();
-            new Medicament("neomercazole","desc neomercazole").save();
-            new Medicament("levothyrox","desc levothyrox").save();
-        }
-
         List<Examen> listExamen = Examen.listAll(Examen.class);
         if (listExamen.size()==0) {
-            new Examen("radiologie","desc radiologie").save();
-            new Examen("irm","desc irm").save();
-            new Examen("scanner","desc scanner").save();
+            new Examen("radiologie").save();
+            new Examen("échographie").save();
+            new Examen("irm").save();
+            new Examen("scanner").save();
+            new Examen("électrocardiogramme (ECG)").save();
+            new Examen("électroencéphalogramme (EEG)").save();
+            new Examen("tomographie à émission de positron").save();
+            new Examen("urographie intra-veineuse").save();
+            new Examen("ultrasons").save();
+            new Examen("doppler").save();
+            new Examen("endoscopie").save();
+            new Examen("lavement").save();
+            new Examen("biopsie").save();
+            new Examen("ponction lombaire").save();
+            new Examen("autre").save();
         }
-
-        List<Cabinet> listCabinet = Cabinet.listAll(Cabinet.class);
-        if (listCabinet.size()==0) {
-            new Cabinet("hopital 1","desc hopital1","adresse1","11111","ville1").save();
-            new Cabinet("hopital 2","desc hopital2","adresse2","22222","ville2").save();
-            new Cabinet("hopital 3","desc hopital3","adresse3","33333","ville3").save();
-        }
-
-        List<Specialite> listSpecialite = Specialite.listAll(Specialite.class);
-        if (listSpecialite.size()==0) {
-            new Specialite("radiologue","desc radiologue").save();
-            new Specialite("generaliste","desc generaliste").save();
-            new Specialite("endocrinologue","desc endocrinologue").save();
-        }
-
-        List<Medecin> listMedecin = Medecin.listAll(Medecin.class);
-        if (listMedecin.size()==0) {
-            new Medecin("dr alfred","desc alfred", Specialite.findById(Specialite.class,1), "1111111111","email1@email1.fr").save();
-            new Medecin("dr raoul","desc raoul", Specialite.findById(Specialite.class,2), "2222222222","email2@email2.fr").save();
-            new Medecin("dr charles","desc charles", Specialite.findById(Specialite.class,3), "3333333333","email3@email3.fr").save();
-        }
-
     }
 
     private void createNotificationChannel() {

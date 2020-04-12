@@ -206,27 +206,46 @@
         android:ems="10"
         android:gravity="center_horizontal"
         android:hint="Saisir le Nom *"
-        android:visibility="invisible"
-        />
+        android:visibility="gone" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/listMesIntervenants"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <AutoCompleteTextView
+            android:id="@+id/selectionMesIntervenants"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Selectionner"
+            android:inputType="none"
+            android:focusable="false"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <Button
             android:id="@+id/buttonAssocier"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Associer" />
+            android:text="Associer"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/buttonRdv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="+ RDV" />
+            android:text="+ RDV"
+            android:visibility="gone" />
     </LinearLayout>
 
 </LinearLayout>

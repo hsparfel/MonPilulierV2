@@ -88,6 +88,6 @@ public interface BasicUtils {
 
     public default void saveToDb(TextView... args) {};
     public default void saveToDb(TextView textNom, Date date, String sexe) {};
-
+    public default void saveToDb() {};
     public default void createSpinners() {};
 }
