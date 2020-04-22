@@ -7,12 +7,17 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
@@ -21,6 +26,7 @@ import com.orm.SchemaGenerator;
 import com.orm.SugarContext;
 import com.orm.SugarDb;
 import com.pouillos.monpilulier.R;
+import com.pouillos.monpilulier.activities.enregistrer.EnregistrerRdvAutreActivity;
 import com.pouillos.monpilulier.activities.listallx.ListAllProfilActivity;
 import com.pouillos.monpilulier.activities.listallx.ListAllUserActivity;
 import com.pouillos.monpilulier.activities.listmyx.ListMyProfilActivity;
@@ -28,42 +34,58 @@ import com.pouillos.monpilulier.activities.newx.NewUserActivity;
 import com.pouillos.monpilulier.activities.recherche.ChercherMedecinOfficielActivity;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.Analyse;
+import com.pouillos.monpilulier.entities.AssociationFormeDose;
 import com.pouillos.monpilulier.entities.Departement;
+import com.pouillos.monpilulier.entities.Dose;
 import com.pouillos.monpilulier.entities.Duree;
 import com.pouillos.monpilulier.entities.Examen;
 import com.pouillos.monpilulier.entities.FormePharmaceutique;
 import com.pouillos.monpilulier.entities.MedecinOfficiel;
+import com.pouillos.monpilulier.entities.MedecinOfficielLight;
 import com.pouillos.monpilulier.entities.MedicamentOfficiel;
 import com.pouillos.monpilulier.entities.Profession;
 import com.pouillos.monpilulier.entities.Region;
 import com.pouillos.monpilulier.entities.SavoirFaire;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.parser.ParseListMedecinOfficiel;
-import com.pouillos.monpilulier.parser.ParseListMedicamentOfficiel;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements Serializable {
 
     private NotificationCompat.Builder notBuilder;
     private static final int MY_NOTIFICATION_ID = 12345;
     private static final int MY_REQUEST_CODE = 100;
+    private ProgressBar progressBar;
+private TextView textUser;
+    public ProgressBar getProgressBar() {
+        return progressBar;
+    }
+
+    public void setProgressBar(ProgressBar progressBar) {
+        this.progressBar = progressBar;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Stetho.initializeWithDefaults(this);
-        TextView textUser = (TextView) findViewById(R.id.textUser);
+        textUser = (TextView) findViewById(R.id.textUser);
         Button buttonListAllUser = (Button) findViewById(R.id.buttonListAllUser);
         Button buttonNewUser = (Button) findViewById(R.id.buttonNewUser);
 
         Button buttonNewOrdonnance = (Button) findViewById(R.id.buttonNewOrdonnance);
         Button buttonListAllOrdonnance = (Button) findViewById(R.id.buttonListAllOrdonnance);
-        Button buttonListAllOrdoAnalyse = (Button) findViewById(R.id.buttonListAllOrdoAnalyse);
-        Button buttonListAllOrdoExamen = (Button) findViewById(R.id.buttonListAllOrdoExamen);
+
 
         Button buttonRAZ = (Button) findViewById(R.id.buttonRAZ);
         Button buttonNewRdv = (Button) findViewById(R.id.buttonNewRdv);
@@ -78,29 +100,16 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         Button buttonNewMedecinOfficiel = (Button) findViewById(R.id.buttonMajMedecinOfficiel);
         Button buttonInfoDb = (Button) findViewById(R.id.buttonInfoDb);
         Button buttonChercherMedecinOfficiel = (Button) findViewById(R.id.buttonChercherMedecinOfficiel);
+        progressBar = (ProgressBar) findViewById(R.id.my_progressBar);
 
-        //remplir BD avec valeur par defaut
-        remplirDefaultBD();
+        progressBar.setVisibility(View.VISIBLE);
 
-        remplirFormePharmaceutiqueBD();
-        remplirProfessionBD();
-        remplirSavoirFaireBD();
-        remplirRegionBD();
-        remplirDepartementBD();
-        remplirExempleBD();
-
-        //afficher le user actif
-        Utilisateur utilisateur = (new Utilisateur()).findActifUser();
-        if (utilisateur.getId() == null) {
-            textUser.setText("user inconnu");
-        } else {
-            textUser.setText(utilisateur.getName());
-        }
+        AsyncTaskRunnerBD runnerBD = new AsyncTaskRunnerBD();
+        runnerBD.execute();
 
         //notification
         //creation du channel
         createNotificationChannel();
-
 
         this.notBuilder = new NotificationCompat.Builder(this, "notifTest");
         // The message will automatically be canceled when the user clicks on Panel
@@ -148,6 +157,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             notificationService.notify(MY_NOTIFICATION_ID, notification);
         });
 
+        buttonNewRdv.setOnClickListener(v -> {
+            Intent myProfilActivity = new Intent(MainActivity.this, EnregistrerRdvAutreActivity.class);
+            startActivity(myProfilActivity);
+        });
+
         buttonChercherMedecinOfficiel.setOnClickListener(v -> {
             Intent myProfilActivity = new Intent(MainActivity.this, ChercherMedecinOfficielActivity.class);
             //myProfilActivity.putExtra("activitySource", MainActivity.class);
@@ -155,11 +169,20 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         });
 
         buttonNewMedicamentOfficiel.setOnClickListener(v -> {
-            remplirMedicamentOfficielBD();
+            progressBar.setVisibility(View.VISIBLE);
+            //remplirMedicamentOfficielBD();
+            progressBar.setProgress(0);
+            AsyncTaskRunnerMedicament runnerMedicament = new AsyncTaskRunnerMedicament();
+            runnerMedicament.execute();
         });
 
         buttonNewMedecinOfficiel.setOnClickListener(v -> {
-            remplirMedecinOfficielBD();
+            //remplirMedecinOfficielBD();
+            progressBar.setVisibility(View.VISIBLE);
+            //remplirMedicamentOfficielBD();
+            progressBar.setProgress(0);
+            AsyncTaskRunnerMedecin runnerMedecin = new AsyncTaskRunnerMedecin(this);
+            runnerMedecin.execute();
         });
 
         buttonInfoDb.setOnClickListener(v -> {
@@ -197,41 +220,97 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         });
 
         buttonRAZ.setOnClickListener(v -> {
-
-           //RAZ A LA DEMANDE
-             //SugarRecord.executeQuery("DROP TABLE PATIENT_MEDECIN");
-            //SugarRecord.executeQuery("DELETE FROM RDV");
-            //SugarRecord.executeQuery("DELETE FROM ASSOCIATION");
-
-            //RAZ TOUT
-            SugarContext.terminate();
-            SchemaGenerator schemaGenerator = new SchemaGenerator(getApplicationContext());
-            schemaGenerator.deleteTables(new SugarDb(getApplicationContext()).getDB());
-            SugarContext.init(getApplicationContext());
-            schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());
+            //mettre en commentaire pr eviter suppression involontaire FAIRE ATTENTION
+            progressBar.setVisibility(View.VISIBLE);
+            progressBar.setProgress(0);
+            AsyncTaskRunnerRAZ runnerRAZ = new AsyncTaskRunnerRAZ();
+            runnerRAZ.execute();
         });
 
         buttonListAllUser.setOnClickListener(v -> {
-
             Intent listAllUserActivity = new Intent(MainActivity.this, ListAllUserActivity.class);
             listAllUserActivity.putExtra("activitySource", MainActivity.class);
             startActivity(listAllUserActivity);
         });
 
+    }
 
+    private class AsyncTaskRunnerRAZ extends AsyncTask<Void, Integer, Void> {
 
+        protected Void doInBackground(Void...voids) {
 
+            //RAZ A LA DEMANDE
+            //SugarRecord.executeQuery("DROP TABLE PATIENT_MEDECIN");
+            //SugarRecord.executeQuery("DELETE FROM RDV");
+            //SugarRecord.executeQuery("DELETE FROM ASSOCIATION");
 
+                SugarContext.terminate();
+                publishProgress(20);
+                SchemaGenerator schemaGenerator = new SchemaGenerator(getApplicationContext());
+            publishProgress(40);
+                schemaGenerator.deleteTables(new SugarDb(getApplicationContext()).getDB());
+            publishProgress(60);
+                SugarContext.init(getApplicationContext());
+            publishProgress(80);
+                schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());
+            publishProgress(100);
+            return null;
+        }
 
+        protected void onPostExecute(Void result) {
+            progressBar.setVisibility(View.GONE);
+            Toast toast = Toast.makeText(MainActivity.this, "RAZ fini", Toast.LENGTH_LONG);
+            toast.show();
+        }
 
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        protected void onProgressUpdate(Integer... integer) {
+            progressBar.setProgress(integer[0],true);
+        }
+    }
 
+    private class AsyncTaskRunnerBD extends AsyncTask<Void, Integer, Void> {
 
+        protected Void doInBackground(Void...voids) {
+                    //remplir BD avec valeur par defaut
 
+            remplirFormePharmaceutiqueBD();
 
+            publishProgress(10);
+            remplirDefaultBD();
+            publishProgress(20);
+                    remplirProfessionBD();
+            publishProgress(30);
+                    remplirSavoirFaireBD();
+            publishProgress(40);
+                    remplirRegionBD();
+            publishProgress(50);
+                    remplirDepartementBD();
+            publishProgress(70);
+                    remplirExempleBD();
+            publishProgress(90);
 
+                    //afficher le user actif
+                    Utilisateur utilisateur = (new Utilisateur()).findActifUser();
+                    if (utilisateur.getId() == null) {
+                        textUser.setText("user inconnu");
+                    } else {
+                        textUser.setText(utilisateur.getName());
+                    }
+            publishProgress(100);
+            return null;
+        }
 
+        protected void onPostExecute(Void result) {
+            progressBar.setVisibility(View.GONE);
+            Toast toast = Toast.makeText(MainActivity.this, "Creation BD fini", Toast.LENGTH_LONG);
+            toast.show();
+        }
 
-
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        protected void onProgressUpdate(Integer... integer) {
+            progressBar.setProgress(integer[0],true);
+        }
     }
 
     public void remplirDepartementBD() {
@@ -333,6 +412,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             new Departement("93","Seine-Saint-Denis",Region.find(Region.class,"nom = ?","Ile-de-France").get(0)).save();
             new Departement("94","Val-de-Marne",Region.find(Region.class,"nom = ?","Ile-de-France").get(0)).save();
             new Departement("95","Val-D'Oise",Region.find(Region.class,"nom = ?","Ile-de-France").get(0)).save();
+            new Departement("97","Outre-Mer",Region.find(Region.class,"nom = ?","Dom-Tom").get(0)).save();
+            new Departement("98","Autre",Region.find(Region.class,"nom = ?","Autre").get(0)).save();
         }
         //verif a suppr
         listDepartement = Departement.listAll(Departement.class);
@@ -356,6 +437,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             new Region("Occitanie").save();
             new Region("Pays de la Loire").save();
             new Region("Provence-Alpes-Côte d'Azur").save();
+            new Region("Dom-Tom").save();
+            new Region("Autre").save();
         }
         //verif a suppr
         listRegion = Region.listAll(Region.class);
@@ -892,46 +975,326 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         int listSize = listFormePharmaceutique.size();
     }
 
-    public void remplirMedicamentOfficielBD() {
-        ProgressDialog dialog = ProgressDialog.show(MainActivity.this, "",
-                "Loading. Please wait...", true);
-        //MedicamentOfficiel.deleteAll(MedicamentOfficiel.class);
-        ParseListMedicamentOfficiel parser = new ParseListMedicamentOfficiel();
-        parser.readFile(getAssets(),"CIS_bdpm.txt");
 
-        Toast toast = Toast.makeText(MainActivity.this, "Import fini", Toast.LENGTH_LONG);
-        toast.show();
+
+    private class AsyncTaskRunnerMedicament extends AsyncTask<Void, Integer, Void> {
+
+        protected Void doInBackground(Void...voids) {
+
+                InputStream is = null;
+                BufferedReader reader = null;
+
+                try {
+                    is = getAssets().open("CIS_bdpm.txt");
+                    reader = new BufferedReader(new InputStreamReader(is,"iso-8859-1"));
+                    String line = null;
+
+                    List<MedicamentOfficiel> listMedicamentOfficiel = MedicamentOfficiel.listAll(MedicamentOfficiel.class);
+                    Map<Long, MedicamentOfficiel> mapMedicamentOfficiel = new HashMap<>();
+                    for (MedicamentOfficiel medicamentOfficiel : listMedicamentOfficiel) {
+                        mapMedicamentOfficiel.put(medicamentOfficiel.getCodeCIS(), medicamentOfficiel);
+                    }
+
+                    List<FormePharmaceutique> listFormePharamaceutique = FormePharmaceutique.listAll(FormePharmaceutique.class);
+                    Map<String, FormePharmaceutique> mapFormePharamaceutique = new HashMap<>();
+                    for (FormePharmaceutique formePharmaceutique : listFormePharamaceutique) {
+                        mapFormePharamaceutique.put(formePharmaceutique.getName(), formePharmaceutique);
+                    }
+
+                    int readerSize = 15090;
+                    int readerCount = 0;
+                    int compteur = 0;
+                    publishProgress(compteur);
+                    while ((line = reader.readLine()) != null) {
+                        readerCount ++;
+                        compteur = readerCount*100/readerSize;
+                        publishProgress(compteur);
+                        final String SEPARATEUR = "\t";
+                        String lineSplitted[] = line.split(SEPARATEUR);
+
+                        MedicamentOfficiel medicamentOfficiel = new MedicamentOfficiel();
+                        //verif si commercialise
+                        if (!lineSplitted[6].equals("Commercialisée") ) {
+                            continue;
+                        }
+
+                        //verif si existant
+                        MedicamentOfficiel verifMedicamentOfficiel = null;
+                        verifMedicamentOfficiel = mapMedicamentOfficiel.get(Long.parseLong(lineSplitted[0]));
+                        if (verifMedicamentOfficiel != null){
+                            continue;
+                        }
+
+                        medicamentOfficiel.setCodeCIS(Long.parseLong(lineSplitted[0]));
+
+                        int positionVirgule = lineSplitted[1].indexOf(",");
+                        if (positionVirgule >=0){
+                            medicamentOfficiel.setDenomination(lineSplitted[1].substring(0,positionVirgule));
+                        } else {
+                            medicamentOfficiel.setDenomination(lineSplitted[1]);
+                        }
+                        if (lineSplitted[2].substring(0,1).equals(" ")) {
+                            lineSplitted[2] = lineSplitted[2].substring(1,lineSplitted[2].length());
+                        }
+
+                        medicamentOfficiel.setFormePharmaceutique(mapFormePharamaceutique.get(lineSplitted[2]));
+
+                        int positionPointVirgule = lineSplitted[10].indexOf(";");
+                        if (positionPointVirgule >=0){
+                            medicamentOfficiel.setTitulaire(lineSplitted[10].substring(0,positionPointVirgule));
+                        } else {
+                            medicamentOfficiel.setTitulaire(lineSplitted[10]);
+                        }
+                        medicamentOfficiel.save();
+                    }
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (is != null) {
+                        try {
+                            is.close();
+                        } catch (IOException ignored) {
+                        }
+                    }
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException ignored) {
+                        }
+                    }
+                }
+
+
+
+            publishProgress(100);
+            return null;
+        }
+
+        protected void onPostExecute(Void result) {
+            progressBar.setVisibility(View.GONE);
+            Toast toast = Toast.makeText(MainActivity.this, "Import fini", Toast.LENGTH_LONG);
+            toast.show();
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        protected void onProgressUpdate(Integer... integer) {
+            progressBar.setProgress(integer[0],true);
+        }
     }
 
-    public void remplirMedecinOfficielBD() {
-        ProgressDialog dialog = ProgressDialog.show(MainActivity.this, "",
-                "Loading. Please wait...", true);
-        //MedecinOfficiel.deleteAll(MedecinOfficiel.class);
-        ParseListMedecinOfficiel parser = new ParseListMedecinOfficiel();
-        parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_test.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_0.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_1.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_2.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_3.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_4.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_5.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_6.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_7.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_8.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_9.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_10.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_11.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_12.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_13.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_14.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_15.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_16.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_17.txt");
-        //parser.readFile(getAssets(),"PS_LibreAcces_Personne_activite_18.txt");
+
+    private class AsyncTaskRunnerMedecin extends AsyncTask<Void, Integer, Void> {
+
+        private Context context;
+        public AsyncTaskRunnerMedecin(Context context) {
+            this.context=context;
+        }
+
+        protected Void doInBackground(Void...voids) {
+
+            InputStream is = null;
+            BufferedReader reader = null;
+
+            try {
+                is = getAssets().open("PS_LibreAcces_Personne_activite_0.txt");
+                //reader = new BufferedReader(new InputStreamReader(is,"iso-8859-1"));
+                //reader = new BufferedReader(new InputStreamReader(is,"windows-1252"));
+                reader = new BufferedReader(new InputStreamReader(is,"UTF-8"));
+                //contents = reader.readLine();
+                String line = null;
+
+                //TODO remplacer le listAll par unee requete qui ne ramene que l'IdPP et le nom par exemple
+                /*List<MedecinOfficiel> listMedecinOfficiel = MedecinOfficiel.listAll(MedecinOfficiel.class);
+                Map<String, MedecinOfficiel> mapMedecinOfficiel = new HashMap<>();
+                for (MedecinOfficiel medecinOfficiel : listMedecinOfficiel) {
+                    mapMedecinOfficiel.put(medecinOfficiel.getIdPP(), medecinOfficiel);
+                }*/
+
+                //List<String> listIdPP = MedecinOfficiel.findWithQuery(String.class,"Select id_pp from Medecin_Officiel");
+
+                List<Profession> listProfession = Profession.listAll(Profession.class);
+                Map<String, Profession> mapProfession = new HashMap<>();
+                for (Profession profession : listProfession) {
+                    mapProfession.put(profession.getName(), profession);
+                }
+
+                List<SavoirFaire> listSavoirFaire = SavoirFaire.listAll(SavoirFaire.class);
+                Map<String, SavoirFaire> mapSavoirFaire = new HashMap<>();
+                for (SavoirFaire savoirFaire : listSavoirFaire) {
+                    mapSavoirFaire.put(savoirFaire.getName(), savoirFaire);
+                }
+                int readerSize = 100000;
+                int readerCount = 0;
+                int compteur = 0;
+                publishProgress(compteur);
+                while ((line = reader.readLine()) != null) {
+                    readerCount ++;
+                    compteur = readerCount*100/readerSize;
+                    publishProgress(compteur);
+                    final String SEPARATEUR = "\\|";
+                    String lineSplitted[] = line.split(SEPARATEUR);
+
+                    if (lineSplitted[1].equals("Identifiant PP")) {
 
 
-        Toast toast = Toast.makeText(MainActivity.this, "Import fini", Toast.LENGTH_LONG);
-        toast.show();
+                        continue;
+                    }
+
+
+                    //verif si existant
+                    //TODO ne travailler que l'idPP et le nom
+                    /*MedecinOfficiel verifMedecinOfficiel = null;
+                    verifMedecinOfficiel = mapMedecinOfficiel.get(lineSplitted[2]);
+
+                    if (verifMedecinOfficiel != null){
+                        continue;
+                    }*/
+
+                   /* if (listIdPP.contains(lineSplitted[2])) {
+                        continue;
+                        //medecinOfficiel = listMedecinOfficiel.get(0);
+                    }*/
+
+
+                //ne fct pas => pas de verif de l'existant car trop long
+
+                  /*  List<MedecinOfficiel> listMedecinOfficiel = MedecinOfficiel.find(MedecinOfficiel.class,"id_pp = ?", lineSplitted[2]);
+                if (listMedecinOfficiel.size()>0) {
+                    continue;
+                    //medecinOfficiel = listMedecinOfficiel.get(0);
+                }*/
+
+                    MedecinOfficiel medecinOfficiel = new MedecinOfficiel();
+                    medecinOfficiel.setIdPP(lineSplitted[2]);
+                    medecinOfficiel.setCodeCivilite(lineSplitted[3]);
+                    medecinOfficiel.setNom(lineSplitted[7].toUpperCase());
+                    if (lineSplitted[8].length()>1) {
+                        String prenom = lineSplitted[8].substring(0,1).toUpperCase()+lineSplitted[8].substring(1,lineSplitted[8].length()-1).toLowerCase();
+                    }
+                    medecinOfficiel.setPrenom(lineSplitted[8]);
+                    medecinOfficiel.setProfession(mapProfession.get(lineSplitted[10]));
+
+                    if (lineSplitted[16].equals("Qualifié en Médecine Générale") || lineSplitted[16].equals("Spécialiste en Médecine Générale")) {
+                        medecinOfficiel.setSavoirFaire(mapSavoirFaire.get("Médecine Générale"));
+                    } else {
+                        medecinOfficiel.setSavoirFaire(mapSavoirFaire.get(lineSplitted[16]));
+                    }
+                    if (lineSplitted.length>24) {
+                        medecinOfficiel.setRaisonSocial(lineSplitted[24]);
+                    }
+                    if (lineSplitted.length>26) {
+                        medecinOfficiel.setComplement(lineSplitted[26]);
+                    }
+                    String adresse = "";
+                    if ((lineSplitted.length>28) && (!lineSplitted[28].isEmpty())){
+                        adresse = lineSplitted[28]+" ";
+                    }
+
+                    if ((lineSplitted.length>31) && (!lineSplitted[31].isEmpty())){
+                        adresse += lineSplitted[31]+" ";
+                    }
+                    if ((lineSplitted.length>32) && (!lineSplitted[32].isEmpty())){
+                        adresse += lineSplitted[32];
+                    }
+                    medecinOfficiel.setAdresse(adresse.toUpperCase());
+                /*if (lineSplitted.length>35) {
+                    if (lineSplitted[35].length() == 4) {
+                        medecinOfficiel.setCp("0" + lineSplitted[35]);
+                    } else {
+                        medecinOfficiel.setCp(lineSplitted[35]);
+                    }
+                }
+                if (lineSplitted.length>37) {
+                    medecinOfficiel.setVille(lineSplitted[37].toUpperCase());
+                }*/
+                    if (lineSplitted.length>35 && !lineSplitted[34].isEmpty())  {
+
+                        //pr correction bug
+                       // String test = lineSplitted[34];
+                       // String testCp = lineSplitted[34].substring(0,5);
+                      //  String testVille = lineSplitted[34].substring(6);
+                        //fin correction
+                        medecinOfficiel.setCp(lineSplitted[34].substring(0,5));
+                        medecinOfficiel.setVille(lineSplitted[34].substring(6));
+
+                        //medecinOfficiel.setCp(testCp);
+                       // medecinOfficiel.setVille(testVille);
+                    }
+                    if (lineSplitted.length>40 && !lineSplitted[40].isEmpty())  {
+                        lineSplitted[40] = lineSplitted[40].replace(" ", "");
+                        lineSplitted[40] = lineSplitted[40].replace(".", "");
+                        if (lineSplitted[40].length() == 9) {
+                            medecinOfficiel.setTelephone("0" + lineSplitted[40]);
+                        } else if (lineSplitted[40].length() == 10) {
+                            medecinOfficiel.setTelephone(lineSplitted[40]);
+                        }
+                    }
+                    if (lineSplitted.length>42 && !lineSplitted[42].isEmpty())  {
+                        lineSplitted[42] = lineSplitted[42].replace(" ", "");
+                        lineSplitted[42] = lineSplitted[42].replace(".", "");
+                        if (lineSplitted[42].length() == 9) {
+                            medecinOfficiel.setFax("0" + lineSplitted[42]);
+                        } else if (lineSplitted[42].length() == 10) {
+                            medecinOfficiel.setFax(lineSplitted[42]);
+                        }
+                    }
+                    if (lineSplitted.length>43 && !lineSplitted[43].isEmpty())  {
+                        medecinOfficiel.setEmail(lineSplitted[43]);
+                    }
+
+                    List<MedecinOfficielLight> listMedecinOfficielLight = MedecinOfficielLight.find(MedecinOfficielLight.class, "id_pp = ?",lineSplitted[2]);
+                    if (listMedecinOfficielLight.size()>0) {
+                        //TODO deplacer juste avant le save et verif si eisantdans cete liste
+                        boolean bool = false;
+                        for (MedecinOfficielLight medecinOfficielLight : listMedecinOfficielLight){
+                            if (comparer(medecinOfficielLight,medecinOfficiel)){
+                                Log.i("existant","medecin deja cree: "+lineSplitted[2]);
+
+                                bool = true;
+                                continue;
+                            }
+                        }
+                        if (bool) {
+                            continue;
+                        }
+                    }
+                    if (medecinOfficiel.getAdresse() != null && medecinOfficiel.getCp() != null && medecinOfficiel.getVille() != null) {
+                        medecinOfficiel.enregisterCoordonnees(context);
+                    }
+                    Log.i("enregistre","medecin new: "+lineSplitted[2]);
+                    medecinOfficiel.save();
+                }
+            } catch (final Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException ignored) {
+                    }
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException ignored) {
+                    }
+                }
+            }
+
+            publishProgress(100);
+            return null;
+        }
+
+        protected void onPostExecute(Void result) {
+            progressBar.setVisibility(View.GONE);
+            Toast toast = Toast.makeText(MainActivity.this, "Import fini", Toast.LENGTH_LONG);
+            toast.show();
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        protected void onProgressUpdate(Integer... integer) {
+            progressBar.setProgress(integer[0],true);
+        }
     }
 
     public void remplirDefaultBD() {
@@ -952,24 +1315,31 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             new Analyse("adn").save();
             new Analyse("autre").save();
         }
-    }
 
-    public void remplirExempleBD() {
-
-        List<Utilisateur> listUtilisateur = Utilisateur.listAll(Utilisateur.class);
-        if (listUtilisateur.size()==0) {
-            Utilisateur user = new Utilisateur("Bob",new Date(),"desc Bob");
-            List<Departement> listDep = Departement.findWithQuery(Departement.class, "Select * from Departement where numero like '06'");
-            Departement dep = listDep.get(0);
-
-            user.setDepartement(dep);
-            user.save();
-            user = new Utilisateur("John",new Date(),"desc John");
-            user.setDepartement(dep);
-            user.save();
-            user = new Utilisateur("Bill",new Date(),"desc Bill");
-            user.setDepartement(dep);
-            user.save();
+        List<Dose> listDose = Dose.listAll(Dose.class);
+        if (listAnalyse.size()==0) {
+            new Dose("application").save();
+            new Dose("bâton").save();
+            new Dose("capsule").save();
+            new Dose("cartouche").save();
+            new Dose("compresse").save();
+            new Dose("comprimé").save();
+            new Dose("cuillère à café").save();
+            new Dose("cuillère à soupe").save();
+            new Dose("dispositif").save();
+            new Dose("emplâtre").save();
+            new Dose("gélule").save();
+            new Dose("gomme").save();
+            new Dose("goutte").save();
+            new Dose("graine").save();
+            new Dose("granulés").save();
+            new Dose("indéfini").save();
+            new Dose("pansement").save();
+            new Dose("pastille").save();
+            new Dose("sachet").save();
+            new Dose("suppositoire").save();
+            new Dose("tampon").save();
+            new Dose("trousse").save();
         }
 
         List<Examen> listExamen = Examen.listAll(Examen.class);
@@ -990,6 +1360,597 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             new Examen("ponction lombaire").save();
             new Examen("autre").save();
         }
+
+
+
+        List<AssociationFormeDose> listAssoc = AssociationFormeDose.listAll(AssociationFormeDose.class);
+        if (listAssoc.size()==0) {
+            new AssociationFormeDose("comprimé et solution(s) et granules et poudre","comprimé").save();
+            new AssociationFormeDose("comprimé et solution(s) et granules et poudre et pommade","comprimé").save();
+            new AssociationFormeDose("crème et solution et granules et poudre","application").save();
+            new AssociationFormeDose("crème et solution et granules et poudre et pommade","application").save();
+            new AssociationFormeDose("dispositif(s)","dispositif").save();
+            new AssociationFormeDose("solution et granules et poudre et pommade","indéfini").save();
+            new AssociationFormeDose("bain de bouche","application").save();
+            new AssociationFormeDose("bâton pour application","bâton").save();
+            new AssociationFormeDose("bâton pour usage dentaire","bâton").save();
+            new AssociationFormeDose("bâton pour usage urétral","bâton").save();
+            new AssociationFormeDose("capsule","capsule").save();
+            new AssociationFormeDose("capsule molle","capsule").save();
+            new AssociationFormeDose("capsule molle ou","capsule").save();
+            new AssociationFormeDose("capsule pour inhalation par vapeur","capsule").save();
+            new AssociationFormeDose("cartouche pour inhalation","cartouche").save();
+            new AssociationFormeDose("collutoire","indéfini").save();
+            new AssociationFormeDose("collyre","goutte").save();
+            new AssociationFormeDose("collyre à libération prolongée","goutte").save();
+            new AssociationFormeDose("collyre en émulsion","goutte").save();
+            new AssociationFormeDose("collyre en solution","goutte").save();
+            new AssociationFormeDose("collyre en suspension","goutte").save();
+            new AssociationFormeDose("collyre pour solution","goutte").save();
+            new AssociationFormeDose("compresse et solution(s) et générateur radiopharmaceutique","compresse").save();
+            new AssociationFormeDose("compresse imprégné(e)","compresse").save();
+            new AssociationFormeDose("compresse imprégné(e) pour usage dentaire","compresse").save();
+            new AssociationFormeDose("comprimé","comprimé").save();
+            new AssociationFormeDose("comprimé à croquer","comprimé").save();
+            new AssociationFormeDose("comprimé à croquer à sucer ou dispersible","comprimé").save();
+            new AssociationFormeDose("comprimé à croquer ou à sucer","comprimé").save();
+            new AssociationFormeDose("comprimé à croquer ou dispersible","comprimé").save();
+            new AssociationFormeDose("comprimé à libération modifiée","comprimé").save();
+            new AssociationFormeDose("comprimé à libération prolongée","comprimé").save();
+            new AssociationFormeDose("comprimé à mâcher","comprimé").save();
+            new AssociationFormeDose("comprimé à sucer","comprimé").save();
+            new AssociationFormeDose("comprimé à sucer ou à croquer","comprimé").save();
+            new AssociationFormeDose("comprimé à sucer sécable","comprimé").save();
+            new AssociationFormeDose("comprimé dispersible","comprimé").save();
+            new AssociationFormeDose("comprimé dispersible et orodispersible","comprimé").save();
+            new AssociationFormeDose("comprimé dispersible orodispersible","comprimé").save();
+            new AssociationFormeDose("comprimé dispersible ou à croquer","comprimé").save();
+            new AssociationFormeDose("comprimé dispersible sécable","comprimé").save();
+            new AssociationFormeDose("comprimé dragéifié","comprimé").save();
+            new AssociationFormeDose("comprimé effervescent(e)","comprimé").save();
+            new AssociationFormeDose("comprimé effervescent(e) sécable","comprimé").save();
+            new AssociationFormeDose("comprimé enrobé","comprimé").save();
+            new AssociationFormeDose("comprimé enrobé à croquer","comprimé").save();
+            new AssociationFormeDose("comprimé enrobé à libération prolongée","comprimé").save();
+            new AssociationFormeDose("comprimé enrobé et  comprimé enrobé","comprimé").save();
+            new AssociationFormeDose("comprimé enrobé et  comprimé enrobé enrobé","comprimé").save();
+            new AssociationFormeDose("comprimé enrobé et  comprimé enrobé et  comprimé enrobé","comprimé").save();
+            new AssociationFormeDose("comprimé enrobé et  comprimé enrobé et  comprimé enrobé enrobé","comprimé").save();
+            new AssociationFormeDose("comprimé enrobé gastro-résistant(e)","comprimé").save();
+            new AssociationFormeDose("comprimé enrobé sécable","comprimé").save();
+            new AssociationFormeDose("comprimé et  comprimé","comprimé").save();
+            new AssociationFormeDose("comprimé et  comprimé et  comprimé","comprimé").save();
+            new AssociationFormeDose("comprimé et  comprimé pelliculé","comprimé").save();
+            new AssociationFormeDose("comprimé et  gélule","comprimé").save();
+            new AssociationFormeDose("comprimé gastro-résistant(e)","comprimé").save();
+            new AssociationFormeDose("comprimé muco-adhésif","comprimé").save();
+            new AssociationFormeDose("comprimé orodispersible","comprimé").save();
+            new AssociationFormeDose("comprimé orodispersible sécable","comprimé").save();
+            new AssociationFormeDose("comprimé osmotique","comprimé").save();
+            new AssociationFormeDose("comprimé osmotique pelliculé à libération prolongée","comprimé").save();
+            new AssociationFormeDose("comprimé pelliculé","comprimé").save();
+            new AssociationFormeDose("comprimé pelliculé à libération modifiée","comprimé").save();
+            new AssociationFormeDose("comprimé pelliculé à libération prolongée","comprimé").save();
+            new AssociationFormeDose("comprimé pelliculé dispersible","comprimé").save();
+            new AssociationFormeDose("comprimé pelliculé et  comprimé pelliculé","comprimé").save();
+            new AssociationFormeDose("comprimé pelliculé et  comprimé pelliculé et  comprimé pelliculé","comprimé").save();
+            new AssociationFormeDose("comprimé pelliculé et  comprimé pelliculé pelliculé","comprimé").save();
+            new AssociationFormeDose("comprimé pelliculé et  granulés effervescent(e)","comprimé").save();
+            new AssociationFormeDose("comprimé pelliculé gastro-résistant(e)","comprimé").save();
+            new AssociationFormeDose("comprimé pelliculé quadrisécable","comprimé").save();
+            new AssociationFormeDose("comprimé pelliculé sécable","comprimé").save();
+            new AssociationFormeDose("comprimé pelliculé sécable à libération prolongée","comprimé").save();
+            new AssociationFormeDose("comprimé pour solution buvable","comprimé").save();
+            new AssociationFormeDose("comprimé pour suspension buvable","comprimé").save();
+            new AssociationFormeDose("comprimé quadrisécable","comprimé").save();
+            new AssociationFormeDose("comprimé sécable","comprimé").save();
+            new AssociationFormeDose("comprimé sécable à libération modifiée","comprimé").save();
+            new AssociationFormeDose("comprimé sécable à libération prolongée","comprimé").save();
+            new AssociationFormeDose("comprimé sécable pelliculé","comprimé").save();
+            new AssociationFormeDose("comprimé sécable pour suspension buvable","comprimé").save();
+            new AssociationFormeDose("comprimé(s) pelliculé","comprimé").save();
+            new AssociationFormeDose("cône pour usage dentaire","application").save();
+            new AssociationFormeDose("crème","application").save();
+            new AssociationFormeDose("crème épaisse pour application","application").save();
+            new AssociationFormeDose("crème et solution et granules et poudre unidose","application").save();
+            new AssociationFormeDose("crème pour application","application").save();
+            new AssociationFormeDose("crème pour usage dentaire","application").save();
+            new AssociationFormeDose("crème stérile","application").save();
+            new AssociationFormeDose("dispersion liposomale à diluer injectable","indéfini").save();
+            new AssociationFormeDose("dispersion pour perfusion","indéfini").save();
+            new AssociationFormeDose("dispositif","dispositif").save();
+            new AssociationFormeDose("dispositif et  dispositif","dispositif").save();
+            new AssociationFormeDose("dispositif et  gel","dispositif").save();
+            new AssociationFormeDose("dispositif pour application","dispositif").save();
+            new AssociationFormeDose("éluat et  solution","indéfini").save();
+            new AssociationFormeDose("emplâtre","emplâtre").save();
+            new AssociationFormeDose("emplâtre adhésif(ve)","emplâtre").save();
+            new AssociationFormeDose("emplâtre médicamenteux(se)","emplâtre").save();
+            new AssociationFormeDose("émulsion et  solution et  solution pour perfusion","indéfini").save();
+            new AssociationFormeDose("émulsion fluide pour application","indéfini").save();
+            new AssociationFormeDose("émulsion injectable","indéfini").save();
+            new AssociationFormeDose("émulsion injectable ou pour perfusion","indéfini").save();
+            new AssociationFormeDose("émulsion injectable pour perfusion","indéfini").save();
+            new AssociationFormeDose("émulsion pour application","indéfini").save();
+            new AssociationFormeDose("émulsion pour inhalation par fumigation","indéfini").save();
+            new AssociationFormeDose("émulsion pour perfusion","indéfini").save();
+            new AssociationFormeDose("éponge pour usage dentaire","application").save();
+            new AssociationFormeDose("film orodispersible","indéfini").save();
+            new AssociationFormeDose("gaz","indéfini").save();
+            new AssociationFormeDose("gaz pour inhalation","indéfini").save();
+            new AssociationFormeDose("gel","application").save();
+            new AssociationFormeDose("gel buvable","application").save();
+            new AssociationFormeDose("gel dentifrice","application").save();
+            new AssociationFormeDose("gel et","application").save();
+            new AssociationFormeDose("gel intestinal","application").save();
+            new AssociationFormeDose("gel pour application","application").save();
+            new AssociationFormeDose("gel pour lavement","application").save();
+            new AssociationFormeDose("gel pour usage dentaire","application").save();
+            new AssociationFormeDose("gel stérile","application").save();
+            new AssociationFormeDose("gelée","indéfini").save();
+            new AssociationFormeDose("gélule","gélule").save();
+            new AssociationFormeDose("gélule à libération modifiée","gélule").save();
+            new AssociationFormeDose("gélule à libération prolongée","gélule").save();
+            new AssociationFormeDose("gélule et  gélule","gélule").save();
+            new AssociationFormeDose("gélule et  gélule gastro-résistant(e)","gélule").save();
+            new AssociationFormeDose("gélule gastro-résistant(e)","gélule").save();
+            new AssociationFormeDose("gélule gastro-soluble et  gélule gastro-résistant(e)","gélule").save();
+            new AssociationFormeDose("générateur radiopharmaceutique","indéfini").save();
+            new AssociationFormeDose("gomme","gomme").save();
+            new AssociationFormeDose("gomme à mâcher","gomme").save();
+            new AssociationFormeDose("gomme à mâcher médicamenteux(se)","gomme").save();
+            new AssociationFormeDose("graines","graine").save();
+            new AssociationFormeDose("granules","granulés").save();
+            new AssociationFormeDose("granulés","granulés").save();
+            new AssociationFormeDose("granulés à croquer","granulés").save();
+            new AssociationFormeDose("granulés à libération prolongée","granulés").save();
+            new AssociationFormeDose("granulés buvable pour solution","granulés").save();
+            new AssociationFormeDose("granulés buvable pour suspension","granulés").save();
+            new AssociationFormeDose("granulés effervescent(e)","granulés").save();
+            new AssociationFormeDose("granulés effervescent(e) pour solution buvable","granulés").save();
+            new AssociationFormeDose("granulés en gélule","granulés").save();
+            new AssociationFormeDose("granulés enrobé","granulés").save();
+            new AssociationFormeDose("granulés enrobé en vrac","granulés").save();
+            new AssociationFormeDose("granules et  crème et  solution en gouttes en gouttes","granulés").save();
+            new AssociationFormeDose("granulés et  granulés pour solution buvable","granulés").save();
+            new AssociationFormeDose("granules et  pommade et  solution en gouttes en gouttes","granulés").save();
+            new AssociationFormeDose("granules et  poudre et  solution en gouttes en gouttes","granulés").save();
+            new AssociationFormeDose("granules et  solution en gouttes en gouttes","granulés").save();
+            new AssociationFormeDose("granules et  solution en gouttes en gouttes et  crème","granulés").save();
+            new AssociationFormeDose("granules et  solution en gouttes en gouttes et  poudre","granulés").save();
+            new AssociationFormeDose("granulés et  solvant pour suspension buvable","granulés").save();
+            new AssociationFormeDose("granulés gastro-résistant(e)","granulés").save();
+            new AssociationFormeDose("granulés gastro-résistant(e) pour suspension buvable","granulés").save();
+            new AssociationFormeDose("granulés pour solution buvable","granulés").save();
+            new AssociationFormeDose("granules pour suspension buvable","granulés").save();
+            new AssociationFormeDose("granulés pour suspension buvable","granulés").save();
+            new AssociationFormeDose("implant","indéfini").save();
+            new AssociationFormeDose("implant injectable","indéfini").save();
+            new AssociationFormeDose("insert","indéfini").save();
+            new AssociationFormeDose("liquide","indéfini").save();
+            new AssociationFormeDose("liquide par vapeur pour inhalation","indéfini").save();
+            new AssociationFormeDose("liquide pour application","indéfini").save();
+            new AssociationFormeDose("liquide pour inhalation par fumigation","indéfini").save();
+            new AssociationFormeDose("liquide pour inhalation par vapeur","indéfini").save();
+            new AssociationFormeDose("lotion","application").save();
+            new AssociationFormeDose("lotion pour application","application").save();
+            new AssociationFormeDose("lyophilisat","indéfini").save();
+            new AssociationFormeDose("lyophilisat et  poudre pour préparation injectable","indéfini").save();
+            new AssociationFormeDose("lyophilisat et  poudre pour usage parentéral","indéfini").save();
+            new AssociationFormeDose("lyophilisat et  solution pour préparation injectable","indéfini").save();
+            new AssociationFormeDose("lyophilisat et  solution pour usage parentéral","indéfini").save();
+            new AssociationFormeDose("lyophilisat et  solvant pour collyre","indéfini").save();
+            new AssociationFormeDose("lyophilisat pour préparation injectable","indéfini").save();
+            new AssociationFormeDose("lyophilisat pour usage parentéral","indéfini").save();
+            new AssociationFormeDose("lyophilisat pour usage parentéral pour perfusion","indéfini").save();
+            new AssociationFormeDose("matrice","indéfini").save();
+            new AssociationFormeDose("matrice pour colle","indéfini").save();
+            new AssociationFormeDose("mélange de plantes pour tisane","indéfini").save();
+            new AssociationFormeDose("microgranule à libération prolongée en gélule","gélule").save();
+            new AssociationFormeDose("microgranule en comprimé","comprimé").save();
+            new AssociationFormeDose("microgranule gastro-résistant(e)","indéfini").save();
+            new AssociationFormeDose("microgranule gastro-résistant(e) en gélule","gélule").save();
+            new AssociationFormeDose("microsphère et  solution pour usage parentéral à libération prolongée","indéfini").save();
+            new AssociationFormeDose("mousse","application").save();
+            new AssociationFormeDose("mousse pour application","application").save();
+            new AssociationFormeDose("ovule","indéfini").save();
+            new AssociationFormeDose("ovule à libération prolongée","indéfini").save();
+            new AssociationFormeDose("pansement adhésif(ve)","pansement").save();
+            new AssociationFormeDose("pansement médicamenteux(se)","pansement").save();
+            new AssociationFormeDose("pastille","pastille").save();
+            new AssociationFormeDose("pastille à sucer","pastille").save();
+            new AssociationFormeDose("pâte","application").save();
+            new AssociationFormeDose("pâte à sucer","application").save();
+            new AssociationFormeDose("pâte dentifrice","application").save();
+            new AssociationFormeDose("pâte pour application","application").save();
+            new AssociationFormeDose("pâte pour usage dentaire","application").save();
+            new AssociationFormeDose("plante(s) pour tisane","indéfini").save();
+            new AssociationFormeDose("plante(s) pour tisane en vrac","indéfini").save();
+            new AssociationFormeDose("pommade","application").save();
+            new AssociationFormeDose("pommade pour application","application").save();
+            new AssociationFormeDose("pommade pour application et","application").save();
+            new AssociationFormeDose("poudre","sachet").save();
+            new AssociationFormeDose("poudre à diluer à diluer et  diluant pour solution pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre à diluer à diluer et  solution pour solution pour solution","sachet").save();
+            new AssociationFormeDose("poudre à diluer pour solution pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre buvable effervescent(e) pour suspension","sachet").save();
+            new AssociationFormeDose("poudre buvable pour solution","sachet").save();
+            new AssociationFormeDose("poudre buvable pour suspension","sachet").save();
+            new AssociationFormeDose("poudre buvable pour suspension en pot","sachet").save();
+            new AssociationFormeDose("poudre effervescent(e) pour solution buvable","sachet").save();
+            new AssociationFormeDose("poudre effervescent(e) pour suspension buvable","sachet").save();
+            new AssociationFormeDose("poudre et  dispersion et  solvant pour solution à diluer pour dispersion pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre et  poudre","sachet").save();
+            new AssociationFormeDose("poudre et  poudre pour solution buvable","sachet").save();
+            new AssociationFormeDose("poudre et  poudre pour solution injectable","sachet").save();
+            new AssociationFormeDose("poudre et  solution pour préparation injectable","sachet").save();
+            new AssociationFormeDose("poudre et  solution pour solution injectable","sachet").save();
+            new AssociationFormeDose("poudre et  solution pour usage parentéral","sachet").save();
+            new AssociationFormeDose("poudre et  solution pour usage parentéral à diluer","sachet").save();
+            new AssociationFormeDose("poudre et  solvant","sachet").save();
+            new AssociationFormeDose("poudre et  solvant et  matrice pour matrice implantable","sachet").save();
+            new AssociationFormeDose("poudre et  solvant et  solvant pour solution injectable","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour dispersion injectable","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour inhalation par nébuliseur","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour préparation injectable","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour solution","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour solution à diluer pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour solution injectable","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour solution injectable et pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour solution injectable ou pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour solution injectable pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour solution injectable pour perfusion ou buvable","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour solution pour inhalation","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour solution pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour solution pour pulvérisation","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour suspension buvable","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour suspension injectable","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour suspension injectable à libération prolongée","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour suspension pour administration intravésicale","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour suspension pour instillation","sachet").save();
+            new AssociationFormeDose("poudre et  solvant pour usage parentéral","sachet").save();
+            new AssociationFormeDose("poudre et  suspension pour suspension injectable","sachet").save();
+            new AssociationFormeDose("poudre pour aérosol et pour usage parentéral","sachet").save();
+            new AssociationFormeDose("poudre pour application","sachet").save();
+            new AssociationFormeDose("poudre pour concentré pour solution pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre pour dispersion pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre pour inhalation","sachet").save();
+            new AssociationFormeDose("poudre pour inhalation en gélule","sachet").save();
+            new AssociationFormeDose("poudre pour inhalation et  poudre pour inhalation","sachet").save();
+            new AssociationFormeDose("poudre pour inhalation et  poudre pour inhalation pour inhalation","sachet").save();
+            new AssociationFormeDose("poudre pour injection","sachet").save();
+            new AssociationFormeDose("poudre pour préparation injectable","sachet").save();
+            new AssociationFormeDose("poudre pour solution","sachet").save();
+            new AssociationFormeDose("poudre pour solution à diluer injectable ou pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre pour solution à diluer injectable pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre pour solution à diluer pour injection ou pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre pour solution à diluer pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre pour solution à diluer pour perfusion ou buvable","sachet").save();
+            new AssociationFormeDose("poudre pour solution buvable","sachet").save();
+            new AssociationFormeDose("poudre pour solution buvable entéral(e)","sachet").save();
+            new AssociationFormeDose("poudre pour solution buvable et entéral(e)","sachet").save();
+            new AssociationFormeDose("poudre pour solution buvable et gastro-entérale","sachet").save();
+            new AssociationFormeDose("poudre pour solution injectable","sachet").save();
+            new AssociationFormeDose("poudre pour solution injectable et pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre pour solution injectable ou pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre pour solution injectable pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre pour solution injectable pour perfusion ou buvable","sachet").save();
+            new AssociationFormeDose("poudre pour solution pour inhalation par nébuliseur","sachet").save();
+            new AssociationFormeDose("poudre pour solution pour injection ou pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre pour solution pour irrigation vésical(e)","sachet").save();
+            new AssociationFormeDose("poudre pour solution pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre pour suspension buvable","sachet").save();
+            new AssociationFormeDose("poudre pour suspension et","sachet").save();
+            new AssociationFormeDose("poudre pour suspension injectable","sachet").save();
+            new AssociationFormeDose("poudre pour suspension injectable pour perfusion","sachet").save();
+            new AssociationFormeDose("poudre pour suspension ou","sachet").save();
+            new AssociationFormeDose("poudre pour suspension pour administration intravésicale","sachet").save();
+            new AssociationFormeDose("poudre pour usage diagnostic","sachet").save();
+            new AssociationFormeDose("poudre pour usage parentéral","sachet").save();
+            new AssociationFormeDose("précurseur radiopharmaceutique","indéfini").save();
+            new AssociationFormeDose("précurseur radiopharmaceutique en solution","indéfini").save();
+            new AssociationFormeDose("shampooing","application").save();
+            new AssociationFormeDose("sirop","cuillère à café").save();
+            new AssociationFormeDose("sirop","cuillère à soupe").save();
+            new AssociationFormeDose("solution","indéfini").save();
+            new AssociationFormeDose("solution à diluer et  diluant pour solution pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution à diluer et  solvant à diluer pour solution injectable","indéfini").save();
+            new AssociationFormeDose("solution à diluer et  solvant injectable injectable","indéfini").save();
+            new AssociationFormeDose("solution à diluer et  solvant pour solution à diluer pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution à diluer injectable","indéfini").save();
+            new AssociationFormeDose("solution à diluer injectable ou pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution à diluer injectable pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution à diluer pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution à diluer pour solution buvable","indéfini").save();
+            new AssociationFormeDose("solution à diluer pour solution injectable pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution buvable","indéfini").save();
+            new AssociationFormeDose("solution buvable à diluer","indéfini").save();
+            new AssociationFormeDose("solution buvable en gouttes","indéfini").save();
+            new AssociationFormeDose("solution buvable et  comprimé pelliculé buvable pelliculé","indéfini").save();
+            new AssociationFormeDose("solution buvable et injectable","indéfini").save();
+            new AssociationFormeDose("solution buvable gouttes","indéfini").save();
+            new AssociationFormeDose("solution buvable ou","indéfini").save();
+            new AssociationFormeDose("solution concentré(e) à diluer pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution concentré(e) à diluer pour solution pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution et","indéfini").save();
+            new AssociationFormeDose("solution et  émulsion et  solution pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution et  poudre pour injection","indéfini").save();
+            new AssociationFormeDose("solution et  solution buvable","indéfini").save();
+            new AssociationFormeDose("solution et  solution et  émulsion pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution et  solution injectable","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour application","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour colle","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour dialyse péritonéale","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour hémodialyse et pour hémofiltration","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour hémodialyse pour hémofiltration","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour hémofiltration et pour hémodialyse","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour hémofiltration pour hémodialyse et pour hémodiafiltration","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour marquage","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution et  suspension pour suspension injectable","indéfini").save();
+            new AssociationFormeDose("solution filmogène pour application","indéfini").save();
+            new AssociationFormeDose("solution gouttes","indéfini").save();
+            new AssociationFormeDose("solution injectable","indéfini").save();
+            new AssociationFormeDose("solution injectable à diluer ou pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution injectable à diluer pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution injectable à libération prolongée","indéfini").save();
+            new AssociationFormeDose("solution injectable et buvable","indéfini").save();
+            new AssociationFormeDose("solution injectable hypertonique pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution injectable isotonique","indéfini").save();
+            new AssociationFormeDose("solution injectable ou","indéfini").save();
+            new AssociationFormeDose("solution injectable ou à diluer pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution injectable ou pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution injectable pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution injectable pour usage dentaire","indéfini").save();
+            new AssociationFormeDose("solution moussant(e)","indéfini").save();
+            new AssociationFormeDose("solution oculaire pour lavage","indéfini").save();
+            new AssociationFormeDose("solution ou","indéfini").save();
+            new AssociationFormeDose("solution ou injectable pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution pour administration endonasale","indéfini").save();
+            new AssociationFormeDose("solution pour administration intravésicale","indéfini").save();
+            new AssociationFormeDose("solution pour application","indéfini").save();
+            new AssociationFormeDose("solution pour application à diluer","indéfini").save();
+            new AssociationFormeDose("solution pour application et  solution pour application","indéfini").save();
+            new AssociationFormeDose("solution pour application moussant(e)","indéfini").save();
+            new AssociationFormeDose("solution pour application stérile","indéfini").save();
+            new AssociationFormeDose("solution pour bain de bouche","indéfini").save();
+            new AssociationFormeDose("solution pour dialyse péritonéale","indéfini").save();
+            new AssociationFormeDose("solution pour gargarisme ou pour bain de bouche","indéfini").save();
+            new AssociationFormeDose("solution pour hémodialyse pour hémodialyse et  solution pour hémodialyse pour hémodialyse","indéfini").save();
+            new AssociationFormeDose("solution pour hémofiltration","indéfini").save();
+            new AssociationFormeDose("solution pour inhalation","indéfini").save();
+            new AssociationFormeDose("solution pour inhalation par fumigation","indéfini").save();
+            new AssociationFormeDose("solution pour inhalation par nébuliseur","indéfini").save();
+            new AssociationFormeDose("solution pour injection","indéfini").save();
+            new AssociationFormeDose("solution pour injection ou pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution pour instillation","indéfini").save();
+            new AssociationFormeDose("solution pour irrigation oculaire","indéfini").save();
+            new AssociationFormeDose("solution pour lavage","indéfini").save();
+            new AssociationFormeDose("solution pour marquage","indéfini").save();
+            new AssociationFormeDose("solution pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution pour préparation injectable","indéfini").save();
+            new AssociationFormeDose("solution pour préparation injectable ou pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution pour préparation parentérale","indéfini").save();
+            new AssociationFormeDose("solution pour prick-test","indéfini").save();
+            new AssociationFormeDose("solution pour pulvérisation","indéfini").save();
+            new AssociationFormeDose("solution pour pulvérisation endo-buccal(e)","indéfini").save();
+            new AssociationFormeDose("solution pour pulvérisation ou","indéfini").save();
+            new AssociationFormeDose("solution pour usage dentaire","indéfini").save();
+            new AssociationFormeDose("solvant et solution et poudre(s) pour colle","indéfini").save();
+            new AssociationFormeDose("solvant pour préparation parentérale","indéfini").save();
+            new AssociationFormeDose("solvant(s) et poudre(s) pour colle","indéfini").save();
+            new AssociationFormeDose("solvant(s) et poudre(s) pour solution injectable","indéfini").save();
+            new AssociationFormeDose("substitut de tissu vivant","indéfini").save();
+            new AssociationFormeDose("suppositoire","suppositoire").save();
+            new AssociationFormeDose("suppositoire effervescent(e)","suppositoire").save();
+            new AssociationFormeDose("suppositoire sécable","suppositoire").save();
+            new AssociationFormeDose("suspension","sachet").save();
+            new AssociationFormeDose("suspension à diluer pour perfusion","sachet").save();
+            new AssociationFormeDose("suspension buvable","sachet").save();
+            new AssociationFormeDose("suspension buvable à diluer","sachet").save();
+            new AssociationFormeDose("suspension buvable ou","sachet").save();
+            new AssociationFormeDose("suspension buvable ou pour instillation","sachet").save();
+            new AssociationFormeDose("suspension colloidale injectable","sachet").save();
+            new AssociationFormeDose("suspension et  granulés effervescent(e) pour suspension buvable","sachet").save();
+            new AssociationFormeDose("suspension et  solvant pour usage dentaire","sachet").save();
+            new AssociationFormeDose("suspension injectable","sachet").save();
+            new AssociationFormeDose("suspension injectable à libération prolongée","sachet").save();
+            new AssociationFormeDose("suspension par nébuliseur pour inhalation","sachet").save();
+            new AssociationFormeDose("suspension pour application","sachet").save();
+            new AssociationFormeDose("suspension pour inhalation","sachet").save();
+            new AssociationFormeDose("suspension pour inhalation par nébuliseur","sachet").save();
+            new AssociationFormeDose("suspension pour injection","sachet").save();
+            new AssociationFormeDose("suspension pour instillation","sachet").save();
+            new AssociationFormeDose("suspension pour pulvérisation","sachet").save();
+            new AssociationFormeDose("système de diffusion","indéfini").save();
+            new AssociationFormeDose("tampon imprégné(e) pour inhalation","tampon").save();
+            new AssociationFormeDose("tampon imprégné(e) pour inhalation par fumigation","tampon").save();
+            new AssociationFormeDose("trousse","trousse").save();
+            new AssociationFormeDose("trousse et  trousse et  trousse pour préparation radiopharmaceutique","trousse").save();
+            new AssociationFormeDose("trousse et  trousse et  trousse pour préparation radiopharmaceutique pour perfusion","trousse").save();
+            new AssociationFormeDose("trousse et  trousse pour préparation radiopharmaceutique","trousse").save();
+            new AssociationFormeDose("trousse et  trousse pour préparation radiopharmaceutique pour injection","trousse").save();
+            new AssociationFormeDose("trousse et  trousse radiopharmaceutique","trousse").save();
+            new AssociationFormeDose("trousse pour préparation radiopharmaceutique","trousse").save();
+            new AssociationFormeDose("trousse pour préparation radiopharmaceutique et  trousse pour préparation radiopharmaceutique","trousse").save();
+            new AssociationFormeDose("trousse radiopharmaceutique","trousse").save();
+            new AssociationFormeDose("vernis à ongles médicamenteux(se)","application").save();
+            new AssociationFormeDose("comprimé et solution(s) et granules et poudre","indéfini").save();
+            new AssociationFormeDose("comprimé et solution(s) et granules et poudre et pommade","indéfini").save();
+            new AssociationFormeDose("crème et solution et granules et poudre","indéfini").save();
+            new AssociationFormeDose("crème et solution et granules et poudre et pommade","indéfini").save();
+            new AssociationFormeDose("solution et granules et poudre et pommade","granulés").save();
+            new AssociationFormeDose("compresse et solution(s) et générateur radiopharmaceutique","indéfini").save();
+            new AssociationFormeDose("comprimé dispersible et orodispersible","indéfini").save();
+            new AssociationFormeDose("comprimé enrobé et  comprimé enrobé","comprimé").save();
+            new AssociationFormeDose("comprimé enrobé et  comprimé enrobé enrobé","comprimé").save();
+            new AssociationFormeDose("comprimé enrobé et  comprimé enrobé et  comprimé enrobé","comprimé").save();
+            new AssociationFormeDose("comprimé enrobé et  comprimé enrobé et  comprimé enrobé enrobé","comprimé").save();
+            new AssociationFormeDose("comprimé et  comprimé","comprimé").save();
+            new AssociationFormeDose("comprimé et  comprimé et  comprimé","comprimé").save();
+            new AssociationFormeDose("comprimé et  comprimé pelliculé","comprimé").save();
+            new AssociationFormeDose("comprimé et  gélule","gélule").save();
+            new AssociationFormeDose("comprimé pelliculé et  comprimé pelliculé","comprimé").save();
+            new AssociationFormeDose("comprimé pelliculé et  comprimé pelliculé et  comprimé pelliculé","comprimé").save();
+            new AssociationFormeDose("comprimé pelliculé et  comprimé pelliculé pelliculé","comprimé").save();
+            new AssociationFormeDose("comprimé pelliculé et  granulés effervescent(e)","granulés").save();
+            new AssociationFormeDose("crème et solution et granules et poudre unidose","indéfini").save();
+            new AssociationFormeDose("dispositif et  dispositif","dispositif").save();
+            new AssociationFormeDose("dispositif et  gel","application").save();
+            new AssociationFormeDose("éluat et  solution","indéfini").save();
+            new AssociationFormeDose("émulsion et  solution et  solution pour perfusion","indéfini").save();
+            new AssociationFormeDose("gélule et  gélule","gélule").save();
+            new AssociationFormeDose("gélule et  gélule gastro-résistant(e)","gélule").save();
+            new AssociationFormeDose("gélule gastro-soluble et  gélule gastro-résistant(e)","gélule").save();
+            new AssociationFormeDose("granules et  crème et  solution en gouttes en gouttes","application").save();
+            new AssociationFormeDose("granulés et  granulés pour solution buvable","granulés").save();
+            new AssociationFormeDose("granules et  pommade et  solution en gouttes en gouttes","application").save();
+            new AssociationFormeDose("granules et  poudre et  solution en gouttes en gouttes","sachet").save();
+            new AssociationFormeDose("granules et  solution en gouttes en gouttes","indéfini").save();
+            new AssociationFormeDose("granules et  solution en gouttes en gouttes et  crème","indéfini").save();
+            new AssociationFormeDose("granules et  solution en gouttes en gouttes et  poudre","indéfini").save();
+            new AssociationFormeDose("granulés et  solvant pour suspension buvable","indéfini").save();
+            new AssociationFormeDose("lyophilisat et  poudre pour préparation injectable","sachet").save();
+            new AssociationFormeDose("lyophilisat et  poudre pour usage parentéral","sachet").save();
+            new AssociationFormeDose("lyophilisat et  solution pour préparation injectable","indéfini").save();
+            new AssociationFormeDose("lyophilisat et  solution pour usage parentéral","indéfini").save();
+            new AssociationFormeDose("lyophilisat et  solvant pour collyre","indéfini").save();
+            new AssociationFormeDose("microsphère et  solution pour usage parentéral à libération prolongée","indéfini").save();
+            new AssociationFormeDose("poudre à diluer à diluer et  diluant pour solution pour perfusion","indéfini").save();
+            new AssociationFormeDose("poudre à diluer à diluer et  solution pour solution pour solution","indéfini").save();
+            new AssociationFormeDose("poudre et  dispersion et  solvant pour solution à diluer pour dispersion pour perfusion","indéfini").save();
+            new AssociationFormeDose("poudre et  poudre","sachet").save();
+            new AssociationFormeDose("poudre et  poudre pour solution buvable","sachet").save();
+            new AssociationFormeDose("poudre et  poudre pour solution injectable","sachet").save();
+            new AssociationFormeDose("poudre et  solution pour préparation injectable","indéfini").save();
+            new AssociationFormeDose("poudre et  solution pour solution injectable","indéfini").save();
+            new AssociationFormeDose("poudre et  solution pour usage parentéral","indéfini").save();
+            new AssociationFormeDose("poudre et  solution pour usage parentéral à diluer","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant et  matrice pour matrice implantable","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant et  solvant pour solution injectable","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour dispersion injectable","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour inhalation par nébuliseur","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour préparation injectable","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour solution","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour solution à diluer pour perfusion","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour solution injectable","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour solution injectable et pour perfusion","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour solution injectable ou pour perfusion","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour solution injectable pour perfusion","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour solution injectable pour perfusion ou buvable","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour solution pour inhalation","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour solution pour perfusion","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour solution pour pulvérisation","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour suspension buvable","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour suspension injectable","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour suspension injectable à libération prolongée","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour suspension pour administration intravésicale","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour suspension pour instillation","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour usage parentéral","indéfini").save();
+            new AssociationFormeDose("poudre et  suspension pour suspension injectable","sachet").save();
+            new AssociationFormeDose("poudre pour aérosol et pour usage parentéral","sachet").save();
+            new AssociationFormeDose("poudre pour inhalation et  poudre pour inhalation","sachet").save();
+            new AssociationFormeDose("poudre pour inhalation et  poudre pour inhalation pour inhalation","sachet").save();
+            new AssociationFormeDose("poudre pour solution buvable et entéral(e)","indéfini").save();
+            new AssociationFormeDose("poudre pour solution buvable et gastro-entérale","indéfini").save();
+            new AssociationFormeDose("poudre pour solution injectable et pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution à diluer et  diluant pour solution pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution à diluer et  solvant à diluer pour solution injectable","indéfini").save();
+            new AssociationFormeDose("solution à diluer et  solvant injectable injectable","indéfini").save();
+            new AssociationFormeDose("solution à diluer et  solvant pour solution à diluer pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution buvable et  comprimé pelliculé buvable pelliculé","comprimé").save();
+            new AssociationFormeDose("solution buvable et injectable","indéfini").save();
+            new AssociationFormeDose("solution et  émulsion et  solution pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution et  poudre pour injection","sachet").save();
+            new AssociationFormeDose("solution et  solution buvable","indéfini").save();
+            new AssociationFormeDose("solution et  solution et  émulsion pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution et  solution injectable","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour application","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour colle","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour dialyse péritonéale","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour hémodialyse et pour hémofiltration","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour hémodialyse pour hémofiltration","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour hémofiltration et pour hémodialyse","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour hémofiltration pour hémodialyse et pour hémodiafiltration","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour marquage","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution et  suspension pour suspension injectable","sachet").save();
+            new AssociationFormeDose("solution injectable et buvable","indéfini").save();
+            new AssociationFormeDose("solution pour application et  solution pour application","indéfini").save();
+            new AssociationFormeDose("solution pour hémodialyse pour hémodialyse et  solution pour hémodialyse pour hémodialyse","indéfini").save();
+            new AssociationFormeDose("solvant et solution et poudre(s) pour colle","indéfini").save();
+            new AssociationFormeDose("solvant(s) et poudre(s) pour colle","sachet").save();
+            new AssociationFormeDose("solvant(s) et poudre(s) pour solution injectable","sachet").save();
+            new AssociationFormeDose("suspension et  granulés effervescent(e) pour suspension buvable","granulés").save();
+            new AssociationFormeDose("suspension et  solvant pour usage dentaire","indéfini").save();
+            new AssociationFormeDose("trousse et  trousse et  trousse pour préparation radiopharmaceutique","trousse").save();
+            new AssociationFormeDose("trousse et  trousse et  trousse pour préparation radiopharmaceutique pour perfusion","trousse").save();
+            new AssociationFormeDose("trousse et  trousse pour préparation radiopharmaceutique","trousse").save();
+            new AssociationFormeDose("trousse et  trousse pour préparation radiopharmaceutique pour injection","trousse").save();
+            new AssociationFormeDose("trousse et  trousse radiopharmaceutique","trousse").save();
+            new AssociationFormeDose("trousse pour préparation radiopharmaceutique et  trousse pour préparation radiopharmaceutique","trousse").save();
+            new AssociationFormeDose("comprimé et solution(s) et granules et poudre","granulés").save();
+            new AssociationFormeDose("comprimé et solution(s) et granules et poudre et pommade","granulés").save();
+            new AssociationFormeDose("crème et solution et granules et poudre","granulés").save();
+            new AssociationFormeDose("crème et solution et granules et poudre et pommade","granulés").save();
+            new AssociationFormeDose("solution et granules et poudre et pommade","sachet").save();
+            new AssociationFormeDose("compresse et solution(s) et générateur radiopharmaceutique","indéfini").save();
+            new AssociationFormeDose("comprimé enrobé et  comprimé enrobé et  comprimé enrobé","comprimé").save();
+            new AssociationFormeDose("comprimé enrobé et  comprimé enrobé et  comprimé enrobé enrobé","comprimé").save();
+            new AssociationFormeDose("comprimé et  comprimé et  comprimé","comprimé").save();
+            new AssociationFormeDose("comprimé pelliculé et  comprimé pelliculé et  comprimé pelliculé","comprimé").save();
+            new AssociationFormeDose("crème et solution et granules et poudre unidose","granulés").save();
+            new AssociationFormeDose("émulsion et  solution et  solution pour perfusion","indéfini").save();
+            new AssociationFormeDose("granules et  crème et  solution en gouttes en gouttes","indéfini").save();
+            new AssociationFormeDose("granules et  pommade et  solution en gouttes en gouttes","indéfini").save();
+            new AssociationFormeDose("granules et  poudre et  solution en gouttes en gouttes","indéfini").save();
+            new AssociationFormeDose("granules et  solution en gouttes en gouttes et  crème","application").save();
+            new AssociationFormeDose("granules et  solution en gouttes en gouttes et  poudre","sachet").save();
+            new AssociationFormeDose("poudre et  dispersion et  solvant pour solution à diluer pour dispersion pour perfusion","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant et  matrice pour matrice implantable","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant et  solvant pour solution injectable","indéfini").save();
+            new AssociationFormeDose("poudre et  solvant pour solution injectable et pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution et  émulsion et  solution pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution et  solution et  émulsion pour perfusion","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour hémodialyse et pour hémofiltration","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour hémofiltration et pour hémodialyse","indéfini").save();
+            new AssociationFormeDose("solution et  solution pour hémofiltration pour hémodialyse et pour hémodiafiltration","indéfini").save();
+            new AssociationFormeDose("solvant et solution et poudre(s) pour colle","indéfini").save();
+            new AssociationFormeDose("trousse et  trousse et  trousse pour préparation radiopharmaceutique","trousse").save();
+            new AssociationFormeDose("trousse et  trousse et  trousse pour préparation radiopharmaceutique pour perfusion","trousse").save();
+            new AssociationFormeDose("comprimé et solution(s) et granules et poudre","sachet").save();
+            new AssociationFormeDose("comprimé et solution(s) et granules et poudre et pommade","sachet").save();
+            new AssociationFormeDose("crème et solution et granules et poudre","sachet").save();
+            new AssociationFormeDose("crème et solution et granules et poudre et pommade","sachet").save();
+            new AssociationFormeDose("solution et granules et poudre et pommade","application").save();
+            new AssociationFormeDose("crème et solution et granules et poudre unidose","sachet").save();
+            new AssociationFormeDose("comprimé et solution(s) et granules et poudre et pommade","application").save();
+            new AssociationFormeDose("crème et solution et granules et poudre et pommade","application").save();
+        }
+
+    }
+
+    public void remplirExempleBD() {
+
+        List<Utilisateur> listUtilisateur = Utilisateur.listAll(Utilisateur.class);
+        if (listUtilisateur.size()==0) {
+            Utilisateur user = new Utilisateur("Bob",new Date(),"desc Bob");
+            List<Departement> listDep = Departement.findWithQuery(Departement.class, "Select * from Departement where numero like '06'");
+            Departement dep = listDep.get(0);
+
+            user.setDepartement(dep);
+            user.save();
+            user = new Utilisateur("John",new Date(),"desc John");
+            user.setDepartement(dep);
+            user.setActif(true);
+            user.save();
+            user = new Utilisateur("Bill",new Date(),"desc Bill");
+            user.setDepartement(dep);
+            user.save();
+        }
+
+
     }
 
     private void createNotificationChannel() {
@@ -1008,5 +1969,22 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
+    }
+
+    private boolean comparer(MedecinOfficielLight medecinLight, MedecinOfficiel medecin){
+        boolean bool = true;
+        if (medecinLight.getIdPP() != null && medecin.getIdPP() != null) {
+            bool = bool && medecinLight.getIdPP().equalsIgnoreCase(medecin.getIdPP());
+        }
+        if (medecinLight.getAdresse() != null && medecin.getAdresse() != null) {
+            bool = bool && medecinLight.getAdresse().equalsIgnoreCase(medecin.getAdresse());
+        }
+        if (medecinLight.getCp() != null && medecin.getCp() != null) {
+            bool = bool && medecinLight.getCp().equalsIgnoreCase(medecin.getCp());
+        }
+        if (medecinLight.getVille() != null && medecin.getVille() != null) {
+            bool = bool && medecinLight.getVille().equalsIgnoreCase(medecin.getVille());
+        }
+        return bool;
     }
 }

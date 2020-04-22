@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.pouillos.monpilulier.activities.MainActivity;
@@ -21,10 +22,16 @@ import java.util.Map;
 
 public class ParseListMedicamentOfficiel {
 
+//save the context recievied via constructor in a local variable
+
+
+
     public static void readFile(AssetManager mgr, String path) {
         String contents = "";
         InputStream is = null;
         BufferedReader reader = null;
+
+
 
 
         try {

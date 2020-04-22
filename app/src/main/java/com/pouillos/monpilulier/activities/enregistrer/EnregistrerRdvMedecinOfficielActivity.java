@@ -1,12 +1,15 @@
 package com.pouillos.monpilulier.activities.enregistrer;
 
 import android.app.TimePickerDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -84,8 +87,64 @@ public class EnregistrerRdvMedecinOfficielActivity extends AppCompatActivity imp
         textFax = findViewById(R.id.textFax);
         textEmail = findViewById(R.id.textEmail);
         //textDate = findViewById(R.id.textDate);
-
+        Button buttonWaze = findViewById(R.id.buttonWaze);
+        Button buttonGoogleMap = findViewById(R.id.buttonGoogleMap);
         traiterIntent();
+
+        buttonGoogleMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try
+                {
+                    // Launch GoogleMap to look for Hawaii:
+
+                    //String url = "https://www.google.com/maps/search/?api=1&query=";
+                    String url = "geo:";
+                    String addr = "";
+                    if (medecinOfficiel.getLatitude() != 0 && medecinOfficiel.getLongitude() != 0) {
+                        url += medecinOfficiel.getLatitude()+","+medecinOfficiel.getLongitude();
+                    } else if (medecinOfficiel.getAdresse() != null && medecinOfficiel.getCp() != null && medecinOfficiel.getVille() != null) {
+                        url += "0,0?q=";
+                        addr += Uri.parse(medecinOfficiel.getAdresse()+", "+medecinOfficiel.getCp()+", "+medecinOfficiel.getVille()+", FRANCE");
+                        url += addr;
+                    }
+                    Intent intent = new Intent( Intent.ACTION_VIEW, Uri.parse( url ) );
+                    intent.setPackage("com.google.android.apps.maps");
+                    if (intent.resolveActivity(getPackageManager()) != null) {
+                        startActivity(intent);
+                    }
+                }
+                catch ( ActivityNotFoundException ex  )
+                {
+                    // If Waze is not installed, open it in Google Play:
+                    Intent intent = new Intent( Intent.ACTION_VIEW, Uri.parse( "market://details?id=com.waze" ) );
+                    startActivity(intent);
+                }
+            }
+        });
+
+        buttonWaze.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try
+                {
+                    // Launch Waze to look for Hawaii:
+
+                    String url = "https://waze.com/ul?q=";
+                    url += medecinOfficiel.getAdresse()+"%20"+medecinOfficiel.getCp()+"%20"+medecinOfficiel.getVille();
+
+                    Intent intent = new Intent( Intent.ACTION_VIEW, Uri.parse( url ) );
+                    startActivity( intent );
+                }
+                catch ( ActivityNotFoundException ex  )
+                {
+                    // If Waze is not installed, open it in Google Play:
+                    Intent intent = new Intent( Intent.ACTION_VIEW, Uri.parse( "market://details?id=com.waze" ) );
+                    startActivity(intent);
+                }
+            }
+        });
+
 
         editTextHeure.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -189,6 +248,9 @@ public class EnregistrerRdvMedecinOfficielActivity extends AppCompatActivity imp
             Long medecinOfficielId = intent.getLongExtra("medecinOfficiel",0);
             //rdvAModif = Rdv.findById(Rdv.class,rdvAModifId);
             medecinOfficiel = MedecinOfficiel.findById(MedecinOfficiel.class,medecinOfficielId);
+
+
+
             //textDescription.setText(rdvAModif.getDetail());
             //textDate.setText(DateUtils.ecrireDate(rdvAModif.getDate()));
             //date = rdvAModif.getDate();

@@ -1,26 +1,18 @@
 package com.pouillos.monpilulier.entities;
 
-import android.content.Context;
-import android.location.Address;
-import android.location.Geocoder;
-
 import com.orm.SugarRecord;
-import com.orm.dsl.Ignore;
-import com.pouillos.monpilulier.activities.recherche.ChercherMedecinOfficielActivity;
-import com.pouillos.monpilulier.interfaces.AfficherDetail;
+import com.orm.dsl.Table;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.List;
-
-public class MedecinOfficiel extends SugarRecord implements Serializable, Comparable<MedecinOfficiel> {
+@Table (name = "Medecin_Officiel")
+public class MedecinOfficielLight extends SugarRecord implements Serializable, Comparable<MedecinOfficielLight> {
 
     private String idPP;
     private String codeCivilite;
     private String nom;
     private String prenom;
-    private Profession profession;
-    private SavoirFaire savoirFaire;
+    //private Profession profession;
+    //private SavoirFaire savoirFaire;
     private String raisonSocial;
     private String complement;
     private String adresse;
@@ -29,14 +21,11 @@ public class MedecinOfficiel extends SugarRecord implements Serializable, Compar
     private String telephone;
     private String fax;
     private String email;
-    private Departement departement;
-    private Region region;
-    private double latitude;
-    private double longitude;
+    //private Departement departement;
+    //private Region region;
 
-    public MedecinOfficiel() {
+    public MedecinOfficielLight() {
     }
-
 
     public String getIdPP() {
         return idPP;
@@ -70,7 +59,7 @@ public class MedecinOfficiel extends SugarRecord implements Serializable, Compar
         this.prenom = prenom;
     }
 
-    public Profession getProfession() {
+    /*public Profession getProfession() {
         return profession;
     }
 
@@ -84,7 +73,7 @@ public class MedecinOfficiel extends SugarRecord implements Serializable, Compar
 
     public void setSavoirFaire(SavoirFaire savoirFaire) {
         this.savoirFaire = savoirFaire;
-    }
+    }*/
 
     public String getRaisonSocial() {
         return raisonSocial;
@@ -117,8 +106,8 @@ public class MedecinOfficiel extends SugarRecord implements Serializable, Compar
     public void setCp(String cp) {
 
         this.cp = cp;
-        this.departement = Departement.find(Departement.class,"numero = ?",cp.substring(0,2)).get(0);
-        this.region = this.departement.getRegion();
+       // this.departement = Departement.find(Departement.class,"numero = ?",cp.substring(0,2)).get(0);
+       // this.region = this.departement.getRegion();
     }
 
     public String getVille() {
@@ -127,7 +116,6 @@ public class MedecinOfficiel extends SugarRecord implements Serializable, Compar
 
     public void setVille(String ville) {
         this.ville = ville;
-        //enregisterCoordonnees();
     }
 
     public String getTelephone() {
@@ -154,7 +142,7 @@ public class MedecinOfficiel extends SugarRecord implements Serializable, Compar
         this.email = email;
     }
 
-    public Departement getDepartement() {
+    /*public Departement getDepartement() {
         return departement;
     }
 
@@ -168,43 +156,12 @@ public class MedecinOfficiel extends SugarRecord implements Serializable, Compar
 
     public void setRegion(Region region) {
         this.region = region;
-    }
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
+    }*/
 
     @Override
-    public int compareTo(MedecinOfficiel o) {
+    public int compareTo(MedecinOfficielLight o) {
         return this.nom.compareTo(o.nom);
     }
 
-    public void enregisterCoordonnees(Context context) {
-        Geocoder coder = new Geocoder(context);
-        List<Address> address;
 
-        try {
-            address = coder.getFromLocationName(adresse+", "+cp+" "+ville+", FRANCE",1);
-            if (address.size()>0) {
-                Address location = address.get(0);
-                latitude = location.getLatitude();
-                longitude = location.getLongitude();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

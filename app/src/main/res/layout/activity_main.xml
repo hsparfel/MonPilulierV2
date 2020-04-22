@@ -49,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="+Rdv" />
+                android:text="+Rdv Autre" />
 
             <Button
                 android:id="@+id/buttonListAllRdv"
@@ -84,33 +84,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Ordonnances" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/buttonListAllOrdoPrescription"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="OrdoPrescr" />
-
-            <Button
-                android:id="@+id/buttonListAllOrdoExamen"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="OrdoExamen" />
-
-            <Button
-                android:id="@+id/buttonListAllOrdoAnalyse"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="OrdoAnalyse" />
         </LinearLayout>
 
         <LinearLayout
@@ -203,6 +176,19 @@
             android:layout_weight="1"
             android:text="Find Dr" />
     </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/my_progressBar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="false"
+            android:visibility="gone"
+            android:max="100"
+            android:progress="0"
+            />
+
+
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

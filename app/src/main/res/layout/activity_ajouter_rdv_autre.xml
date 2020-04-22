@@ -48,6 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Examen"
+            app:checkedIconVisible="false"
             app:chipIcon="@android:drawable/checkbox_on_background" />
 
         <com.google.android.material.chip.Chip
@@ -71,7 +72,7 @@
             android:id="@+id/selectionExamen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Selectionner"
+            android:hint="Selectionner Examen"
             android:inputType="none"
             android:focusable="false"
             />
@@ -89,7 +90,7 @@
             android:id="@+id/selectionAnalyse"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Selectionner"
+            android:hint="Selectionner Analyse"
             android:inputType="none"
             android:focusable="false"
             />

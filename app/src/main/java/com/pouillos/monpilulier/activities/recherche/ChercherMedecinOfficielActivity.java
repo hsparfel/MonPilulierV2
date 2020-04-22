@@ -142,6 +142,11 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
         chipDepartement.setOnClickListener(v -> {
             if (chipDepartement.isCheckable()) {
                 textRechercheIntervenant.setVisibility(View.GONE);
+                if (booleanDepartement && !booleanMesIntervenants) {
+                    buttonAppliquerFiltre.setVisibility(View.GONE);
+                } else {
+                    buttonAppliquerFiltre.setVisibility(View.VISIBLE);
+                }
                 if (!booleanDepartement) {
                     chipRegion.setVisibility(View.GONE);
                     listGeo.setVisibility(View.VISIBLE);
@@ -165,6 +170,11 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
         chipRegion.setOnClickListener(v -> {
             if (chipRegion.isCheckable()) {
                 textRechercheIntervenant.setVisibility(View.GONE);
+                if (booleanRegion && !booleanMesIntervenants) {
+                    buttonAppliquerFiltre.setVisibility(View.GONE);
+                } else {
+                    buttonAppliquerFiltre.setVisibility(View.VISIBLE);
+                }
                 if (!booleanRegion) {
                     chipDepartement.setVisibility(View.GONE);
                     listGeo.setVisibility(View.VISIBLE);
@@ -188,6 +198,7 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
         chipSpecialite.setOnClickListener(v -> {
             if (chipSpecialite.isCheckable()) {
                 textRechercheIntervenant.setVisibility(View.GONE);
+
                 if (booleanSpecialite) {
                     listMetier.setVisibility(View.GONE);
                 } else {
@@ -247,7 +258,7 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
                     chipSpecialite.setChecked(false);
                     chipDepartement.setVisibility(View.VISIBLE);
                     chipRegion.setVisibility(View.VISIBLE);
-                    buttonAppliquerFiltre.setVisibility(View.VISIBLE);
+                    //buttonAppliquerFiltre.setVisibility(View.VISIBLE);
                 }
                 booleanDepartement = false;
                 booleanRegion = false;
@@ -278,7 +289,7 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
                     chipActivite.setChecked(false);
                     chipDepartement.setVisibility(View.VISIBLE);
                     chipRegion.setVisibility(View.VISIBLE);
-                    buttonAppliquerFiltre.setVisibility(View.VISIBLE);
+                    //buttonAppliquerFiltre.setVisibility(View.VISIBLE);
                 }
                 booleanDepartement = false;
                 booleanRegion = false;
@@ -364,7 +375,7 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
                         affichageMedecinOfficiel += medecinOfficiel.getNom() + ", " + medecinOfficiel.getPrenom() + " (";
 
                         if (medecinOfficiel.getSavoirFaire() != null) {
-                            affichageMedecinOfficiel += medecinOfficiel.getSavoirFaire() + ") * ";
+                            affichageMedecinOfficiel += medecinOfficiel.getSavoirFaire().getName() + ") * ";
                         } else {
                             affichageMedecinOfficiel += medecinOfficiel.getProfession().getName() + ") * ";
                         }
@@ -443,7 +454,7 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
                     String affichageMedecinOfficiel = "";
                     affichageMedecinOfficiel += medecinOfficiel.getNom() + ", " + medecinOfficiel.getPrenom() + " (";
                     if (medecinOfficiel.getSavoirFaire() !=null) {
-                        affichageMedecinOfficiel += medecinOfficiel.getSavoirFaire() + ") * ";
+                        affichageMedecinOfficiel += medecinOfficiel.getSavoirFaire().getName() + ") * ";
                     } else {
                         affichageMedecinOfficiel += medecinOfficiel.getProfession().getName() + ") * ";
                     }
@@ -588,7 +599,10 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
             }
 
         }
-
+        if ((medecinOfficielSelectionne.getLongitude() == 0) && (medecinOfficielSelectionne.getLatitude() == 0)) {
+            medecinOfficielSelectionne.enregisterCoordonnees(this);
+            medecinOfficielSelectionne.save();
+        }
         buttonRdv.setVisibility((View.VISIBLE));
     }
 

@@ -3,35 +3,21 @@ package com.pouillos.monpilulier.activities.enregistrer;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.chip.Chip;
-import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
-import com.pouillos.monpilulier.entities.Analyse;
-import com.pouillos.monpilulier.entities.Departement;
-import com.pouillos.monpilulier.entities.Examen;
 import com.pouillos.monpilulier.entities.MedecinOfficiel;
-import com.pouillos.monpilulier.entities.Profession;
-import com.pouillos.monpilulier.entities.RdvAutre;
 import com.pouillos.monpilulier.entities.RdvOfficiel;
-import com.pouillos.monpilulier.entities.Region;
-import com.pouillos.monpilulier.entities.SavoirFaire;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
@@ -39,32 +25,36 @@ import com.pouillos.monpilulier.interfaces.BasicUtils;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
-public class EnregistrerRdvAutreActivity extends AppCompatActivity implements BasicUtils {
+public class EnregistrerPrescriptionActivity extends AppCompatActivity implements BasicUtils {
+
+    private MedecinOfficiel medecinOfficiel;
+    private TextView textDate;
 
     private TextView textNote;
+    private TextView textMedecin;
+    private TextView textProfession;
+    private TextView textSavoirFaire;
+    private TextView textCabinet;
+    private TextView textComplement;
+    private TextView textAdresse1;
+    private TextView textAdresse2;
+    private TextView textTel;
+    private TextView textFax;
+    private TextView textEmail;
+
 
     private Date date = new Date();
     private Intent intent;
-    private RdvAutre rdv;
+    private RdvOfficiel rdv;
     private Utilisateur utilisateur;
 
     TimePickerDialog picker;
     EditText editTextHeure;
     EditText editTextDate;
 
-    private boolean booleanAnalyse;
-    private boolean booleanExamen;
-    private List<Analyse> listAnalyses;
-    private List<Examen> listExamens;
-    private AutoCompleteTextView selectionAnalyse;
-    private AutoCompleteTextView selectionExamen;
-
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,62 +62,30 @@ public class EnregistrerRdvAutreActivity extends AppCompatActivity implements Ba
 
         utilisateur = (new Utilisateur()).findActifUser();
 
+
         editTextDate= findViewById(R.id.editTextDate);
         editTextHeure= findViewById(R.id.editTextHeure);
+        //editTextHeure.setInputType(InputType.TYPE_NULL);
+
+
 
         ImageButton buttonValider = (ImageButton) findViewById(R.id.buttonValider);
         ImageButton buttonAnnuler= (ImageButton) findViewById(R.id.buttonAnnuler);
 
         textNote = findViewById(R.id.textNote);
-
-        Chip chipAnalyse = (Chip) findViewById(R.id.chipAnalyse);
-        Chip chipExamen = (Chip) findViewById(R.id.chipExamen);
-
-        TextInputLayout listAnalyse = (TextInputLayout) findViewById(R.id.listAnalyse);
-        selectionAnalyse = (AutoCompleteTextView) findViewById(R.id.selectionAnalyse);
-        TextInputLayout listExamen = (TextInputLayout) findViewById(R.id.listExamen);
-        selectionExamen = (AutoCompleteTextView) findViewById(R.id.selectionExamen);
-
-        listAnalyses = Analyse.listAll(Analyse.class);
-        listExamens = Examen.listAll(Examen.class);
+        textMedecin = findViewById(R.id.textMedecin);
+        textProfession = findViewById(R.id.textProfession);
+        textSavoirFaire = findViewById(R.id.textSavoirFaire);
+        textCabinet = findViewById(R.id.textCabinet);
+        textComplement = findViewById(R.id.textComplement);
+        textAdresse1 = findViewById(R.id.textAdresse1);
+        textAdresse2 = findViewById(R.id.textAdresse2);
+        textTel = findViewById(R.id.textTel);
+        textFax = findViewById(R.id.textFax);
+        textEmail = findViewById(R.id.textEmail);
+        //textDate = findViewById(R.id.textDate);
 
         traiterIntent();
-
-        chipAnalyse.setOnClickListener(v -> {
-                if (booleanAnalyse) {
-                    listAnalyse.setVisibility(View.GONE);
-                    selectionAnalyse.setText("",false);
-                } else {
-                    listAnalyse.setVisibility(View.VISIBLE);
-                }
-                booleanAnalyse = !booleanAnalyse;
-            List<String> listAnalyseString = new ArrayList<>();
-            String[] listDeroulanteAnalyse = new String[listAnalyses.size()];
-            for (Analyse analyse : listAnalyses) {
-                listAnalyseString.add(analyse.getName());
-            }
-            listAnalyseString.toArray(listDeroulanteAnalyse);
-            ArrayAdapter adapter = new ArrayAdapter(this, R.layout.list_item, listDeroulanteAnalyse);
-            selectionAnalyse.setAdapter(adapter);
-        });
-
-        chipExamen.setOnClickListener(v -> {
-            if (booleanExamen) {
-                listExamen.setVisibility(View.GONE);
-                selectionExamen.setText("",false);
-            } else {
-                listExamen.setVisibility(View.VISIBLE);
-            }
-            booleanExamen = !booleanExamen;
-            List<String> listExamenString = new ArrayList<>();
-            String[] listDeroulanteExamen = new String[listExamens.size()];
-            for (Examen examen : listExamens) {
-                listExamenString.add(examen.getName());
-            }
-            listExamenString.toArray(listDeroulanteExamen);
-            ArrayAdapter adapter = new ArrayAdapter(this, R.layout.list_item, listDeroulanteExamen);
-            selectionExamen.setAdapter(adapter);
-        });
 
         editTextHeure.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,7 +96,7 @@ public class EnregistrerRdvAutreActivity extends AppCompatActivity implements Ba
                 int hour = 8;
                 int minutes = 0;
                 // time picker dialog
-                picker = new TimePickerDialog(EnregistrerRdvAutreActivity.this,
+                picker = new TimePickerDialog(EnregistrerPrescriptionActivity.this,
                         new TimePickerDialog.OnTimeSetListener() {
                             @Override
                             public void onTimeSet(TimePicker tp, int sHour, int sMinute) {
@@ -191,26 +149,19 @@ public class EnregistrerRdvAutreActivity extends AppCompatActivity implements Ba
 
     @Override
     public void retourPagePrecedente() {
+
         finish();
     }
 
+
+
     @Override
     public void saveToDb() {
-        RdvAutre rdv = new RdvAutre();
+        RdvOfficiel rdv = new RdvOfficiel();
         rdv.setNote(textNote.getText().toString());
-
+        rdv.setMedecinOfficiel(medecinOfficiel);
         rdv.setUtilisateur(utilisateur);
         rdv.setDate(date);
-
-        if (selectionAnalyse != null) {
-            Analyse analyse = Analyse.find(Analyse.class,"name = ?", selectionAnalyse.getText().toString()).get(0);
-            rdv.setAnalyse(analyse);
-        }
-        if (selectionExamen != null) {
-            Examen examen = Examen.find(Examen.class,"name = ?", selectionExamen.getText().toString()).get(0);
-            rdv.setExamen(examen);
-        }
-
         rdv.save();
     }
 
@@ -233,7 +184,75 @@ public class EnregistrerRdvAutreActivity extends AppCompatActivity implements Ba
     public void traiterIntent() {
         intent = getIntent();
       //  activitySource = (Class<?>) intent.getSerializableExtra("activitySource");
+        if (intent.hasExtra("medecinOfficiel")) {
 
+            Long medecinOfficielId = intent.getLongExtra("medecinOfficiel",0);
+            //rdvAModif = Rdv.findById(Rdv.class,rdvAModifId);
+            medecinOfficiel = MedecinOfficiel.findById(MedecinOfficiel.class,medecinOfficielId);
+            //textDescription.setText(rdvAModif.getDetail());
+            //textDate.setText(DateUtils.ecrireDate(rdvAModif.getDate()));
+            //date = rdvAModif.getDate();
+            String nomMedecin = "";
+            if (medecinOfficiel.getCodeCivilite() !=null){
+                nomMedecin += medecinOfficiel.getCodeCivilite();
+            }
+            nomMedecin += medecinOfficiel.getNom()+" "+medecinOfficiel.getPrenom();
+            textMedecin.setText(nomMedecin);
+            if (medecinOfficiel.getSavoirFaire() != null) {
+                textSavoirFaire.setText(medecinOfficiel.getSavoirFaire().getName());
+                textProfession.setVisibility(View.GONE);
+            } else {
+                textSavoirFaire.setVisibility(View.GONE);
+                textProfession.setText(medecinOfficiel.getProfession().getName());
+            }
+
+
+            if (!medecinOfficiel.getComplement().equals("")) {
+                textCabinet.setText(medecinOfficiel.getRaisonSocial());
+            } else {
+                textCabinet.setVisibility(View.GONE);
+            }
+
+
+
+            if (!medecinOfficiel.getComplement().equals("")) {
+                textComplement.setText(medecinOfficiel.getComplement());
+            } else {
+                textComplement.setVisibility(View.GONE);
+            }
+
+
+            if (!medecinOfficiel.getAdresse().equals("")) {
+                textAdresse1.setText(medecinOfficiel.getAdresse());
+            } else {
+                textAdresse1.setVisibility(View.GONE);
+            }
+
+            if (!medecinOfficiel.getCp().equals("") & !medecinOfficiel.getVille().equals("")) {
+                textAdresse2.setText(medecinOfficiel.getCp()+" "+medecinOfficiel.getVille());
+            } else {
+                textAdresse2.setVisibility(View.GONE);
+            }
+
+            if (!medecinOfficiel.getTelephone().equals("")) {
+                textTel.setText("Tel: "+medecinOfficiel.getTelephone());
+            } else {
+                textTel.setVisibility(View.GONE);
+            }
+
+            if (!medecinOfficiel.getFax().equals("")) {
+                textFax.setText("Fax: "+medecinOfficiel.getFax());
+            } else {
+                textFax.setVisibility(View.GONE);
+            }
+
+            if (!medecinOfficiel.getEmail().equals("")) {
+                textEmail.setText("@: "+medecinOfficiel.getEmail());
+            } else {
+                textEmail.setVisibility(View.GONE);
+            }
+
+        }
     }
 
 
