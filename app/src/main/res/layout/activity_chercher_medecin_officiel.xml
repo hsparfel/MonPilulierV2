@@ -246,6 +246,13 @@
             android:layout_height="wrap_content"
             android:text="+ RDV"
             android:visibility="gone" />
+
+        <Button
+            android:id="@+id/buttonPrescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+ Prescription"
+            android:visibility="gone" />
     </LinearLayout>
 
 </LinearLayout>

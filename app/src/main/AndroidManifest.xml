@@ -10,10 +10,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <meta-data android:name="DATABASE" android:value="mon_pilulier.db" />
-        <meta-data android:name="VERSION" android:value="45" />
-        <meta-data android:name="QUERY_LOG" android:value="true" />
-        <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.pouillos.monpilulier" />
+
+
+        <meta-data
+            android:name="DATABASE"
+            android:value="mon_pilulier.db" />
+        <meta-data
+            android:name="VERSION"
+            android:value="45" />
+        <meta-data
+            android:name="QUERY_LOG"
+            android:value="true" />
+        <meta-data
+            android:name="DOMAIN_PACKAGE_NAME"
+            android:value="com.pouillos.monpilulier" />
+
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,16 +32,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.newx.NewUserActivity"></activity>
+        <activity android:name=".activities.newx.NewUserActivity" />
         <activity android:name=".activities.listallx.ListAllUserActivity" />
-        <activity android:name=".activities.newx.NewAnalyseActivity"></activity>
-        <activity android:name=".activities.newx.NewExamenActivity"></activity>
+        <activity android:name=".activities.newx.NewAnalyseActivity" />
+        <activity android:name=".activities.newx.NewExamenActivity" />
         <activity android:name=".activities.MyProfilActivity" />
         <activity android:name=".activities.listallx.ListAllProfilActivity" />
         <activity android:name=".activities.listmyx.ListMyProfilActivity" />
         <activity android:name=".activities.recherche.ChercherMedecinOfficielActivity" />
         <activity android:name=".activities.enregistrer.EnregistrerRdvMedecinOfficielActivity" />
         <activity android:name=".activities.enregistrer.EnregistrerRdvAutreActivity" />
+        <activity android:name=".activities.enregistrer.EnregistrerPrescriptionActivity" />
+        <activity android:name=".activities.AuthentificationActivity" />
+        <activity android:name=".activities.add.AddUserActivity"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".activities.add.AddProfilActivity"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".activities.AccueilActivity" />
     </application>
 
 </manifest>

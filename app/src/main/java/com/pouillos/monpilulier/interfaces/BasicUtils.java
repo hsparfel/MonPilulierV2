@@ -7,11 +7,45 @@ import android.view.View;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.textfield.TextInputEditText;
+
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public interface BasicUtils {
+
+    public default boolean isChecked(ChipGroup chipGroup) {
+        boolean bool;
+        if (chipGroup.getCheckedChipId() != -1) {
+            bool = true;
+        } else {
+            bool = false;
+        }
+        return bool;
+    }
+
+
+    public default boolean isFilled(TextInputEditText textInputEditText){
+        boolean bool;
+        if (textInputEditText.length()>0) {
+            bool = true;
+        } else {
+            bool = false;
+        }
+        return bool;
+    }
+
+    public default boolean isFilled(Object object){
+        boolean bool;
+        if (object!=null) {
+            bool = true;
+        } else {
+            bool = false;
+        }
+        return bool;
+    }
 
     public default int getIndex(Spinner spinner, String myString){
         for (int i=0;i<spinner.getCount();i++){

@@ -4,7 +4,6 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -22,10 +21,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
 import com.facebook.stetho.Stetho;
-import com.orm.SchemaGenerator;
-import com.orm.SugarContext;
-import com.orm.SugarDb;
+import com.orm.SugarRecord;
 import com.pouillos.monpilulier.R;
+import com.pouillos.monpilulier.activities.add.AddProfilActivity;
+import com.pouillos.monpilulier.activities.enregistrer.EnregistrerPrescriptionActivity;
 import com.pouillos.monpilulier.activities.enregistrer.EnregistrerRdvAutreActivity;
 import com.pouillos.monpilulier.activities.listallx.ListAllProfilActivity;
 import com.pouillos.monpilulier.activities.listallx.ListAllUserActivity;
@@ -47,7 +46,6 @@ import com.pouillos.monpilulier.entities.Profession;
 import com.pouillos.monpilulier.entities.Region;
 import com.pouillos.monpilulier.entities.SavoirFaire;
 import com.pouillos.monpilulier.entities.Utilisateur;
-import com.pouillos.monpilulier.parser.ParseListMedecinOfficiel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -65,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     private static final int MY_NOTIFICATION_ID = 12345;
     private static final int MY_REQUEST_CODE = 100;
     private ProgressBar progressBar;
-private TextView textUser;
+    private TextView textUser;
     public ProgressBar getProgressBar() {
         return progressBar;
     }
@@ -83,24 +81,25 @@ private TextView textUser;
         Button buttonListAllUser = (Button) findViewById(R.id.buttonListAllUser);
         Button buttonNewUser = (Button) findViewById(R.id.buttonNewUser);
 
-        Button buttonNewOrdonnance = (Button) findViewById(R.id.buttonNewOrdonnance);
-        Button buttonListAllOrdonnance = (Button) findViewById(R.id.buttonListAllOrdonnance);
+
 
 
         Button buttonRAZ = (Button) findViewById(R.id.buttonRAZ);
         Button buttonNewRdv = (Button) findViewById(R.id.buttonNewRdv);
-        Button buttonListAllRdv = (Button) findViewById(R.id.buttonListAllRdv);
-        Button buttonListMyRdv = (Button) findViewById(R.id.buttonListMyRdv);
+
         Button buttonProfil = (Button) findViewById(R.id.buttonProfil);
         Button buttonListAllProfil = (Button) findViewById(R.id.buttonListAllProfil);
         Button buttonListMyProfil = (Button) findViewById(R.id.buttonListMyProfil);
-        Button buttonListMyPrise = (Button) findViewById(R.id.buttonListMyPrise);
+
         Button buttonCreerNotification = (Button) findViewById(R.id.buttonCreerNotification);
         Button buttonNewMedicamentOfficiel = (Button) findViewById(R.id.buttonMajMedicamentOfficiel);
         Button buttonNewMedecinOfficiel = (Button) findViewById(R.id.buttonMajMedecinOfficiel);
         Button buttonInfoDb = (Button) findViewById(R.id.buttonInfoDb);
         Button buttonChercherMedecinOfficiel = (Button) findViewById(R.id.buttonChercherMedecinOfficiel);
+        Button buttonAjouterPrescription = (Button) findViewById(R.id.buttonAjouterPrescription);
         progressBar = (ProgressBar) findViewById(R.id.my_progressBar);
+        Button buttonAuthentification = (Button) findViewById(R.id.buttonAuthentification);
+        Button buttonAccueil = (Button) findViewById(R.id.buttonAccueil);
 
         progressBar.setVisibility(View.VISIBLE);
 
@@ -157,6 +156,21 @@ private TextView textUser;
             notificationService.notify(MY_NOTIFICATION_ID, notification);
         });
 
+        buttonAccueil.setOnClickListener(v -> {
+            Intent myProfilActivity = new Intent(MainActivity.this, AccueilActivity.class);
+            startActivity(myProfilActivity);
+        });
+
+        buttonAuthentification.setOnClickListener(v -> {
+            Intent myProfilActivity = new Intent(MainActivity.this, AuthentificationActivity.class);
+            startActivity(myProfilActivity);
+        });
+
+        buttonAjouterPrescription.setOnClickListener(v -> {
+            Intent myProfilActivity = new Intent(MainActivity.this, EnregistrerPrescriptionActivity.class);
+            startActivity(myProfilActivity);
+        });
+
         buttonNewRdv.setOnClickListener(v -> {
             Intent myProfilActivity = new Intent(MainActivity.this, EnregistrerRdvAutreActivity.class);
             startActivity(myProfilActivity);
@@ -186,11 +200,8 @@ private TextView textUser;
         });
 
         buttonInfoDb.setOnClickListener(v -> {
-           // List<MedicamentOfficiel> listMedicamentOfficiel = MedicamentOfficiel.listAll(MedicamentOfficiel.class);
-            //List<MedecinOfficiel> listMedecinOfficiel = MedecinOfficiel.listAll(MedecinOfficiel.class);
             long size1 = MedicamentOfficiel.count(MedicamentOfficiel.class);
             long size2 = MedecinOfficiel.count(MedecinOfficiel.class);
-            //ProgressDialog dialog = ProgressDialog.show(MainActivity.this, "","nb medicament: "+size1+" - nb medecin: "+size2, false);
             Toast toast = Toast.makeText(MainActivity.this, "nb medicament: "+size1+" - nb medecin: "+size2, Toast.LENGTH_LONG);
             toast.show();
         });
@@ -202,7 +213,7 @@ private TextView textUser;
         });
 
         buttonListMyProfil.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, ListMyProfilActivity.class);
+            Intent myProfilActivity = new Intent(MainActivity.this, AddProfilActivity.class);
             myProfilActivity.putExtra("activitySource", MainActivity.class);
             startActivity(myProfilActivity);
         });
@@ -243,8 +254,13 @@ private TextView textUser;
             //SugarRecord.executeQuery("DROP TABLE PATIENT_MEDECIN");
             //SugarRecord.executeQuery("DELETE FROM RDV");
             //SugarRecord.executeQuery("DELETE FROM ASSOCIATION");
+            publishProgress(20);
+            //SugarRecord.executeQuery("DELETE FROM UTILISATEUR");
+            SugarRecord.executeQuery("DELETE FROM PROFIL");
 
-                SugarContext.terminate();
+
+
+           /*     SugarContext.terminate();
                 publishProgress(20);
                 SchemaGenerator schemaGenerator = new SchemaGenerator(getApplicationContext());
             publishProgress(40);
@@ -253,7 +269,7 @@ private TextView textUser;
                 SugarContext.init(getApplicationContext());
             publishProgress(80);
                 schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());
-            publishProgress(100);
+            publishProgress(100);*/
             return null;
         }
 
@@ -269,9 +285,9 @@ private TextView textUser;
         }
     }
 
-    private class AsyncTaskRunnerBD extends AsyncTask<Void, Integer, Void> {
+    private class AsyncTaskRunnerBD extends AsyncTask<Void, Integer, String> {
 
-        protected Void doInBackground(Void...voids) {
+        protected String doInBackground(Void...voids) {
                     //remplir BD avec valeur par defaut
 
             remplirFormePharmaceutiqueBD();
@@ -292,17 +308,19 @@ private TextView textUser;
 
                     //afficher le user actif
                     Utilisateur utilisateur = (new Utilisateur()).findActifUser();
+                    String userName;
                     if (utilisateur.getId() == null) {
-                        textUser.setText("user inconnu");
+                        userName = "user inconnu";
                     } else {
-                        textUser.setText(utilisateur.getName());
+                        userName = utilisateur.getName();
                     }
             publishProgress(100);
-            return null;
+            return userName;
         }
 
-        protected void onPostExecute(Void result) {
+        protected void onPostExecute(String result) {
             progressBar.setVisibility(View.GONE);
+            textUser.setText(result);
             Toast toast = Toast.makeText(MainActivity.this, "Creation BD fini", Toast.LENGTH_LONG);
             toast.show();
         }
@@ -523,6 +541,7 @@ private TextView textUser;
         listSavoirFaire = SavoirFaire.listAll(SavoirFaire.class);
         int listSize = listSavoirFaire.size();
     }
+
     public void remplirProfessionBD() {
         //remplir FormeProfession
         List<Profession> listProfession = Profession.listAll(Profession.class);
@@ -1361,8 +1380,6 @@ private TextView textUser;
             new Examen("autre").save();
         }
 
-
-
         List<AssociationFormeDose> listAssoc = AssociationFormeDose.listAll(AssociationFormeDose.class);
         if (listAssoc.size()==0) {
             new AssociationFormeDose("comprimé et solution(s) et granules et poudre","comprimé").save();
@@ -1943,14 +1960,12 @@ private TextView textUser;
             user.save();
             user = new Utilisateur("John",new Date(),"desc John");
             user.setDepartement(dep);
-            user.setActif(true);
+           // user.setActif(true);
             user.save();
             user = new Utilisateur("Bill",new Date(),"desc Bill");
             user.setDepartement(dep);
             user.save();
         }
-
-
     }
 
     private void createNotificationChannel() {

@@ -21,6 +21,7 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.MainActivity;
+import com.pouillos.monpilulier.activities.enregistrer.EnregistrerPrescriptionActivity;
 import com.pouillos.monpilulier.activities.enregistrer.EnregistrerRdvMedecinOfficielActivity;
 import com.pouillos.monpilulier.entities.AssociationOfficielle;
 import com.pouillos.monpilulier.entities.Departement;
@@ -57,6 +58,7 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
     private MedecinOfficiel medecinOfficielSelectionne;
     private Button buttonAssocier;
     private Button buttonRdv;
+    private Button buttonPrescription;
     private AutoCompleteTextView selectionMesIntervenants;
     //TextView tvDisplay;
 
@@ -90,6 +92,7 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
         TextInputLayout listGeo = (TextInputLayout) findViewById(R.id.listGeo);
         buttonAssocier = (Button) findViewById(R.id.buttonAssocier);
         buttonRdv = (Button) findViewById(R.id.buttonRdv);
+        buttonPrescription = (Button) findViewById(R.id.buttonPrescription);
         TextInputLayout listMesIntervenants = (TextInputLayout) findViewById(R.id.listMesIntervenants);
         selectionMesIntervenants = (AutoCompleteTextView) findViewById(R.id.selectionMesIntervenants);
 
@@ -99,7 +102,10 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
         listDepartement = Departement.listAll(Departement.class);
         listRegion = Region.listAll(Region.class);
 
-
+        buttonPrescription.setOnClickListener(v -> {
+            //TODO ouvrir nouvelle activite rdv
+            ouvrirActiviteSuivante(EnregistrerPrescriptionActivity.class, "medecinOfficiel", medecinOfficielSelectionne.getId());
+        });
 
 
         buttonRdv.setOnClickListener(v -> {
@@ -603,7 +609,10 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
             medecinOfficielSelectionne.enregisterCoordonnees(this);
             medecinOfficielSelectionne.save();
         }
+
         buttonRdv.setVisibility((View.VISIBLE));
+        //ajouter parametre medecin ou autre
+        buttonPrescription.setVisibility(View.VISIBLE);
     }
 
     @Override
