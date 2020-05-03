@@ -4,6 +4,7 @@
     <string name="text_name">Nom</string>
     <string name="text_birthday">Naissance</string>
     <string name="text_date">Date</string>
+    <string name="text_heure">Heure</string>
     <string name="text_man">Homme</string>
     <string name="text_woman">Femme</string>
     <string name="text_departement">Departement</string>
@@ -11,6 +12,23 @@
     <string name="text_imc">Imc</string>
     <string name="text_taille">Taille</string>
     <string name="text_poids">Poids</string>
+    <string name="text_my_profile">Mon profil</string>
+    <string name="text_my_account">Mon compte</string>
+    <string name="text_my_treatments">Mes Traitements</string>
+    <string name="text_my_contacts">Mes Contacts</string>
+    <string name="text_contact">Contact</string>
+    <string name="text_my_datas">Mes Données</string>
+    <string name="text_my_appointments">Mes rendez-vous</string>
+
+    <string name="text_note">Note</string>
+    <string name="text_job">Métier</string>
+    <string name="text_place">Lieu</string>
+    <string name="text_complement">Complément</string>
+    <string name="text_num_street">N° Rue</string>
+    <string name="text_zip_town">CP Ville</string>
+    <string name="text_phone">Tél</string>
+    <string name="text_fax">Fax</string>
+    <string name="text_email">email</string>
 
     <string name="title_activity_accueil">AccueilActivity</string>
     <string name="nav_header_title">Android Studio</string>

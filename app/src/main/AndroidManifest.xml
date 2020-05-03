@@ -17,7 +17,7 @@
             android:value="mon_pilulier.db" />
         <meta-data
             android:name="VERSION"
-            android:value="45" />
+            android:value="49" />
         <meta-data
             android:name="QUERY_LOG"
             android:value="true" />
@@ -39,7 +39,7 @@
         <activity android:name=".activities.MyProfilActivity" />
         <activity android:name=".activities.listallx.ListAllProfilActivity" />
         <activity android:name=".activities.listmyx.ListMyProfilActivity" />
-        <activity android:name=".activities.recherche.ChercherMedecinOfficielActivity" />
+        <activity android:name=".activities.recherche.ChercherContactActivity" />
         <activity android:name=".activities.enregistrer.EnregistrerRdvMedecinOfficielActivity" />
         <activity android:name=".activities.enregistrer.EnregistrerRdvAutreActivity" />
         <activity android:name=".activities.enregistrer.EnregistrerPrescriptionActivity" />
@@ -48,7 +48,12 @@
             android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".activities.add.AddProfilActivity"
             android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".activities.add.AddRdvActivity"
+            android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".activities.AccueilActivity" />
+        <activity android:name=".activities.afficher.AfficherContactActivity" />
+        <activity android:name=".activities.afficher.AfficherRdvActivity" />
+
     </application>
 
 </manifest>

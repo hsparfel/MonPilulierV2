@@ -1,6 +1,5 @@
 package com.pouillos.monpilulier.activities.enregistrer;
 
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -13,11 +12,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
@@ -26,41 +22,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
-import com.pouillos.monpilulier.activities.MainActivity;
-import com.pouillos.monpilulier.activities.recherche.ChercherMedecinOfficielActivity;
 import com.pouillos.monpilulier.entities.AssociationFormeDose;
-import com.pouillos.monpilulier.entities.Departement;
+import com.pouillos.monpilulier.entities.Contact;
 import com.pouillos.monpilulier.entities.Dose;
-import com.pouillos.monpilulier.entities.FormePharmaceutique;
-import com.pouillos.monpilulier.entities.MedecinOfficiel;
-import com.pouillos.monpilulier.entities.MedicamentOfficiel;
-import com.pouillos.monpilulier.entities.Profession;
-import com.pouillos.monpilulier.entities.RdvOfficiel;
-import com.pouillos.monpilulier.entities.Region;
-import com.pouillos.monpilulier.entities.SavoirFaire;
+import com.pouillos.monpilulier.entities.Medicament;
 import com.pouillos.monpilulier.entities.Utilisateur;
-import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class EnregistrerPrescriptionActivity extends AppCompatActivity implements BasicUtils, AdapterView.OnItemClickListener  {
 
     private Intent intent;
     private Utilisateur utilisateur;
-    private MedecinOfficiel medecinOfficiel;
+    private Contact mContact;
     private boolean booleanMatin = false;
     private boolean booleanMidi = false;
     private boolean booleanSoir = false;
@@ -75,7 +51,7 @@ public class EnregistrerPrescriptionActivity extends AppCompatActivity implement
     private boolean booleanSamedi = false;
     private boolean booleanDimanche = false;
     //private EditText nbDose;
-    private List<MedicamentOfficiel> listMedicament;
+    private List<Medicament> listMedicament;
     private List<Dose> listDose = new ArrayList<>();
     private AutoCompleteTextView textRechercheMedicament;
 private AutoCompleteTextView selectionDose;
@@ -226,7 +202,7 @@ private AutoCompleteTextView selectionDose;
         if (intent.hasExtra("medecinOfficiel")) {
             Long medecinOfficielId = intent.getLongExtra("medecinOfficiel", 0);
             //rdvAModif = Rdv.findById(Rdv.class,rdvAModifId);
-            medecinOfficiel = MedecinOfficiel.findById(MedecinOfficiel.class, medecinOfficielId);
+            mContact = Contact.findById(Contact.class, medecinOfficielId);
         }
     }
 
@@ -241,7 +217,7 @@ private AutoCompleteTextView selectionDose;
         // create Toast with user selected value
         Toast.makeText(EnregistrerPrescriptionActivity.this, "Selected : \t" + item, Toast.LENGTH_SHORT).show();
 
-        MedicamentOfficiel medicamentSelectionne = MedicamentOfficiel.find(MedicamentOfficiel.class,"denomination = ?",item).get(0);
+        Medicament medicamentSelectionne = Medicament.find(Medicament.class,"denomination = ?",item).get(0);
 
         /*String requete = "SELECT * FROM DOSE AS D JOIN ASSOCIATION_FORME_DOSE AS A ON D.NAME = A.DOSE WHERE A.FORME_PHARMACEUTIQUE = ?";
         //requete += medicamentSelectionne.getFormePharmaceutique().getName();
@@ -266,7 +242,7 @@ private AutoCompleteTextView selectionDose;
     private class AsyncTaskRunnerMedicament extends AsyncTask<Void, Integer, Void> {
 
         protected Void doInBackground(Void...voids) {
-            listMedicament = MedicamentOfficiel.listAll(MedicamentOfficiel.class);
+            listMedicament = Medicament.listAll(Medicament.class);
             return null;
         }
 
@@ -279,8 +255,8 @@ private AutoCompleteTextView selectionDose;
             } else {
                 List<String> listMedicamentString = new ArrayList<>();
                 String[] listDeroulanteMedicament = new String[listMedicament.size()];
-                for (MedicamentOfficiel medicamentOfficiel : listMedicament) {
-                    String affichageMedecinOfficiel = medicamentOfficiel.getDenomination();
+                for (Medicament medicament : listMedicament) {
+                    String affichageMedecinOfficiel = medicament.getDenomination();
                     listMedicamentString.add(affichageMedecinOfficiel);
                 }
                 listMedicamentString.toArray(listDeroulanteMedicament);

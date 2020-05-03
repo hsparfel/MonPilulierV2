@@ -4,8 +4,8 @@ import com.orm.SugarRecord;
 import com.orm.dsl.Table;
 
 import java.io.Serializable;
-@Table (name = "Medecin_Officiel")
-public class MedecinOfficielLight extends SugarRecord implements Serializable, Comparable<MedecinOfficielLight> {
+@Table (name = "Contact")
+public class ContactLight extends SugarRecord implements Serializable, Comparable<ContactLight> {
 
     private String idPP;
     private String codeCivilite;
@@ -24,7 +24,7 @@ public class MedecinOfficielLight extends SugarRecord implements Serializable, C
     //private Departement departement;
     //private Region region;
 
-    public MedecinOfficielLight() {
+    public ContactLight() {
     }
 
     public String getIdPP() {
@@ -59,22 +59,6 @@ public class MedecinOfficielLight extends SugarRecord implements Serializable, C
         this.prenom = prenom;
     }
 
-    /*public Profession getProfession() {
-        return profession;
-    }
-
-    public void setProfession(Profession profession) {
-        this.profession = profession;
-    }
-
-    public SavoirFaire getSavoirFaire() {
-        return savoirFaire;
-    }
-
-    public void setSavoirFaire(SavoirFaire savoirFaire) {
-        this.savoirFaire = savoirFaire;
-    }*/
-
     public String getRaisonSocial() {
         return raisonSocial;
     }
@@ -104,10 +88,7 @@ public class MedecinOfficielLight extends SugarRecord implements Serializable, C
     }
 
     public void setCp(String cp) {
-
         this.cp = cp;
-       // this.departement = Departement.find(Departement.class,"numero = ?",cp.substring(0,2)).get(0);
-       // this.region = this.departement.getRegion();
     }
 
     public String getVille() {
@@ -142,24 +123,8 @@ public class MedecinOfficielLight extends SugarRecord implements Serializable, C
         this.email = email;
     }
 
-    /*public Departement getDepartement() {
-        return departement;
-    }
-
-    public void setDepartement(Departement departement) {
-        this.departement = departement;
-    }
-
-    public Region getRegion() {
-        return region;
-    }
-
-    public void setRegion(Region region) {
-        this.region = region;
-    }*/
-
     @Override
-    public int compareTo(MedecinOfficielLight o) {
+    public int compareTo(ContactLight o) {
         return this.nom.compareTo(o.nom);
     }
 

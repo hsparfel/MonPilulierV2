@@ -1,34 +1,33 @@
 package com.pouillos.monpilulier.activities;
 
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
+        import android.content.Intent;
+        import android.os.AsyncTask;
+        import android.os.Bundle;
+        import android.view.View;
+        import android.widget.AdapterView;
+        import android.widget.ArrayAdapter;
+        import android.widget.AutoCompleteTextView;
 
-import androidx.appcompat.app.AppCompatActivity;
+        import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.textfield.TextInputLayout;
-import com.pouillos.monpilulier.R;
-import com.pouillos.monpilulier.activities.add.AddUserActivity;
-import com.pouillos.monpilulier.entities.Departement;
-import com.pouillos.monpilulier.entities.Utilisateur;
-import com.pouillos.monpilulier.interfaces.BasicUtils;
+        import com.google.android.material.floatingactionbutton.FloatingActionButton;
+        import com.google.android.material.textfield.TextInputLayout;
+        import com.pouillos.monpilulier.R;
+        import com.pouillos.monpilulier.activities.add.AddUserActivity;
+        import com.pouillos.monpilulier.entities.Departement;
+        import com.pouillos.monpilulier.entities.Utilisateur;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+        import java.io.Serializable;
+        import java.util.ArrayList;
+        import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import icepick.Icepick;
-import icepick.State;
+        import butterknife.BindView;
+        import butterknife.ButterKnife;
+        import butterknife.OnClick;
+        import icepick.Icepick;
+        import icepick.State;
 
-public class AuthentificationActivity extends NavDrawerActivity implements Serializable, BasicUtils, AdapterView.OnItemClickListener {
+public class AuthentificationSauvegardeActivity extends AppCompatActivity implements Serializable, AdapterView.OnItemClickListener {
 
     @State
     Utilisateur activeUser;
@@ -47,18 +46,11 @@ public class AuthentificationActivity extends NavDrawerActivity implements Seria
         super.onCreate(savedInstanceState);
         Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(R.layout.activity_authentification);
-        // 6 - Configure all views
-        this.configureToolBar();
-        this.configureDrawerLayout();
-        this.configureNavigationView();
-
-        setTitle("Connexion");
-
         List<Utilisateur> listUserActif = Utilisateur.find(Utilisateur.class, "actif = ?", "1");
         if (listUserActif.size() !=0){
             activeUser = listUserActif.get(0);
         }
-        AuthentificationActivity.AsyncTaskRunnerUser runnerUser = new AuthentificationActivity.AsyncTaskRunnerUser();
+        AuthentificationSauvegardeActivity.AsyncTaskRunnerUser runnerUser = new AuthentificationSauvegardeActivity.AsyncTaskRunnerUser();
         runnerUser.execute();
         ButterKnife.bind(this);
         selectedUser.setOnItemClickListener(this);
@@ -93,16 +85,18 @@ public class AuthentificationActivity extends NavDrawerActivity implements Seria
                     }
                 }
                 listUserString.toArray(listDeroulanteUser);
-                ArrayAdapter adapter = new ArrayAdapter(AuthentificationActivity.this, R.layout.list_item, listDeroulanteUser);
+                ArrayAdapter adapter = new ArrayAdapter(AuthentificationSauvegardeActivity.this, R.layout.list_item, listDeroulanteUser);
                 selectedUser.setAdapter(adapter);
                 listUser.setVisibility(View.VISIBLE);
-                }
             }
         }
+    }
 
     @OnClick(R.id.floating_action_button)
     public void fabClick() {
-        ouvrirActiviteSuivante(AuthentificationActivity.this, AddUserActivity.class);
+        Intent myProfilActivity = new Intent(AuthentificationSauvegardeActivity.this, AddUserActivity.class);
+        startActivity(myProfilActivity);
+        finish();
     }
 
     @Override
@@ -118,8 +112,8 @@ public class AuthentificationActivity extends NavDrawerActivity implements Seria
             activeUser.setActif(true);
             activeUser.save();
         }
-        ouvrirActiviteSuivante(AuthentificationActivity.this, AccueilActivity.class);
+        Intent myProfilActivity = new Intent(AuthentificationSauvegardeActivity.this, MainActivity.class);
+        startActivity(myProfilActivity);
+        finish();
     }
-
-
 }

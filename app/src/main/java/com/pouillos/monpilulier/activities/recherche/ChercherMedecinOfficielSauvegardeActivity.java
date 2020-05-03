@@ -2,40 +2,28 @@ package com.pouillos.monpilulier.activities.recherche;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
-import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.chip.Chip;
-import com.google.android.material.textfield.TextInputLayout;
-import com.pouillos.monpilulier.R;
-import com.pouillos.monpilulier.activities.MainActivity;
-import com.pouillos.monpilulier.activities.enregistrer.EnregistrerPrescriptionActivity;
-import com.pouillos.monpilulier.activities.enregistrer.EnregistrerRdvMedecinOfficielActivity;
-import com.pouillos.monpilulier.entities.AssociationOfficielle;
 import com.pouillos.monpilulier.entities.Departement;
-import com.pouillos.monpilulier.entities.MedecinOfficiel;
+import com.pouillos.monpilulier.entities.Contact;
 import com.pouillos.monpilulier.entities.Profession;
 import com.pouillos.monpilulier.entities.Region;
 import com.pouillos.monpilulier.entities.SavoirFaire;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class ChercherMedecinOfficielActivity extends AppCompatActivity implements BasicUtils, AdapterView.OnItemClickListener  {
+public class ChercherMedecinOfficielSauvegardeActivity extends AppCompatActivity implements BasicUtils, AdapterView.OnItemClickListener  {
 
     private Class<?> activitySource;
     private Intent intent;
@@ -55,7 +43,7 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
     private Departement utilisateurDepartement;
     private Region utilisateurRegion;
     private AutoCompleteTextView textRechercheIntervenant;
-    private MedecinOfficiel medecinOfficielSelectionne;
+    private Contact mContactSelectionne;
     private Button buttonAssocier;
     private Button buttonRdv;
     private Button buttonPrescription;
@@ -63,7 +51,7 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
     //TextView tvDisplay;
 
 
-
+/*
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -119,7 +107,7 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
                 if (!associationOfficielle.isExistante()) {
                     associationOfficielle.save();
                 }
-                Toast toast = Toast.makeText(ChercherMedecinOfficielActivity.this, utilisateur.getName()+" & "+medecinOfficielSelectionne.getNom()+" ont été associés", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(ChercherMedecinOfficielSauvegardeActivity.this, utilisateur.getName()+" & "+medecinOfficielSelectionne.getNom()+" ont été associés", Toast.LENGTH_LONG);
                 toast.show();
                 ouvrirActiviteSuivante(MainActivity.class);
             }
@@ -369,7 +357,7 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
 
                 listMedecinOfficiel = MedecinOfficiel.findWithQuery(MedecinOfficiel.class, requete);
                 if (listMedecinOfficiel.size() == 0) {
-                    Toast toast = Toast.makeText(ChercherMedecinOfficielActivity.this, "Aucune correspondance, modifier puis appliquer filtre", Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(ChercherMedecinOfficielSauvegardeActivity.this, "Aucune correspondance, modifier puis appliquer filtre", Toast.LENGTH_LONG);
                     toast.show();
                     listMesIntervenants.setVisibility(View.GONE);
                 } else {
@@ -448,7 +436,7 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
 
                 listMedecinOfficiel = MedecinOfficiel.findWithQuery(MedecinOfficiel.class, requete);
                 if (listMedecinOfficiel.size() == 0) {
-                    Toast toast = Toast.makeText(ChercherMedecinOfficielActivity.this, "Aucune correspondance, modifier puis appliquer filtre", Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(ChercherMedecinOfficielSauvegardeActivity.this, "Aucune correspondance, modifier puis appliquer filtre", Toast.LENGTH_LONG);
                     toast.show();
                     textRechercheIntervenant.setVisibility(View.GONE);
                 }
@@ -537,7 +525,7 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
             textRechercheIntervenant.setText(null);
         });
     }
-
+*/
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
@@ -546,7 +534,7 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
         //MedecinOfficiel medecinOfficiel = (MedecinOfficiel) parent.getItemAtPosition((position));
 
         // create Toast with user selected value
-        Toast.makeText(ChercherMedecinOfficielActivity.this, "Selected : \t" + item, Toast.LENGTH_SHORT).show();
+        Toast.makeText(ChercherMedecinOfficielSauvegardeActivity.this, "Selected : \t" + item, Toast.LENGTH_SHORT).show();
         //Toast.makeText(ChercherMedecinOfficielActivity.this, "Selected Item2 is: \t" + medecinOfficiel.getPrenom()+medecinOfficiel.getNom(), Toast.LENGTH_LONG).show();
         // set user selected value to the TextView
         //tvDisplay.setText(item);
@@ -566,12 +554,12 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
 
             if (booleanAutre) {
                 Profession profession = Profession.find(Profession.class, "name = ?", metier).get(0);
-                medecinOfficielSelectionne = MedecinOfficiel.find(MedecinOfficiel.class, "nom = ? and prenom = ? and profession = ? and ville = ?", nom, prenom, profession.getId().toString(), ville).get(0);
-                Toast.makeText(ChercherMedecinOfficielActivity.this, "Selected Item is: \t" + medecinOfficielSelectionne.getPrenom() + medecinOfficielSelectionne.getNom(), Toast.LENGTH_LONG).show();
+                mContactSelectionne = Contact.find(Contact.class, "nom = ? and prenom = ? and profession = ? and ville = ?", nom, prenom, profession.getId().toString(), ville).get(0);
+                Toast.makeText(ChercherMedecinOfficielSauvegardeActivity.this, "Selected Item is: \t" + mContactSelectionne.getPrenom() + mContactSelectionne.getNom(), Toast.LENGTH_LONG).show();
             } else if (booleanMedecin) {
                 SavoirFaire savoirFaire = SavoirFaire.find(SavoirFaire.class, "name = ?", metier).get(0);
-                medecinOfficielSelectionne = MedecinOfficiel.find(MedecinOfficiel.class, "nom = ? and prenom = ? and savoir_faire = ? and ville = ?", nom, prenom, savoirFaire.getId().toString(), ville).get(0);
-                Toast.makeText(ChercherMedecinOfficielActivity.this, "Selected Item is: \t" + medecinOfficielSelectionne.getPrenom() + medecinOfficielSelectionne.getNom(), Toast.LENGTH_LONG).show();
+                mContactSelectionne = Contact.find(Contact.class, "nom = ? and prenom = ? and savoir_faire = ? and ville = ?", nom, prenom, savoirFaire.getId().toString(), ville).get(0);
+                Toast.makeText(ChercherMedecinOfficielSauvegardeActivity.this, "Selected Item is: \t" + mContactSelectionne.getPrenom() + mContactSelectionne.getNom(), Toast.LENGTH_LONG).show();
 
             }
 
@@ -595,19 +583,19 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
             List <SavoirFaire> listSavoirFaire = SavoirFaire.find(SavoirFaire.class, "name = ?", metier);
             if (listProfession.size() !=0) {
                 Profession profession = listProfession.get(0);
-                medecinOfficielSelectionne = MedecinOfficiel.find(MedecinOfficiel.class, "nom = ? and prenom = ? and profession = ? and ville = ?", nom, prenom, profession.getId().toString(), ville).get(0);
-                Toast.makeText(ChercherMedecinOfficielActivity.this, "Selected Item is: \t" + medecinOfficielSelectionne.getPrenom() + medecinOfficielSelectionne.getNom(), Toast.LENGTH_LONG).show();
+                mContactSelectionne = Contact.find(Contact.class, "nom = ? and prenom = ? and profession = ? and ville = ?", nom, prenom, profession.getId().toString(), ville).get(0);
+                Toast.makeText(ChercherMedecinOfficielSauvegardeActivity.this, "Selected Item is: \t" + mContactSelectionne.getPrenom() + mContactSelectionne.getNom(), Toast.LENGTH_LONG).show();
             }
             if (listSavoirFaire.size() !=0) {
                 SavoirFaire savoirFaire = listSavoirFaire.get(0);
-                medecinOfficielSelectionne = MedecinOfficiel.find(MedecinOfficiel.class, "nom = ? and prenom = ? and savoir_faire = ? and ville = ?", nom, prenom, savoirFaire.getId().toString(), ville).get(0);
-                Toast.makeText(ChercherMedecinOfficielActivity.this, "Selected Item is: \t" + medecinOfficielSelectionne.getPrenom() + medecinOfficielSelectionne.getNom(), Toast.LENGTH_LONG).show();
+                mContactSelectionne = Contact.find(Contact.class, "nom = ? and prenom = ? and savoir_faire = ? and ville = ?", nom, prenom, savoirFaire.getId().toString(), ville).get(0);
+                Toast.makeText(ChercherMedecinOfficielSauvegardeActivity.this, "Selected Item is: \t" + mContactSelectionne.getPrenom() + mContactSelectionne.getNom(), Toast.LENGTH_LONG).show();
             }
 
         }
-        if ((medecinOfficielSelectionne.getLongitude() == 0) && (medecinOfficielSelectionne.getLatitude() == 0)) {
-            medecinOfficielSelectionne.enregisterCoordonnees(this);
-            medecinOfficielSelectionne.save();
+        if ((mContactSelectionne.getLongitude() == 0) && (mContactSelectionne.getLatitude() == 0)) {
+            mContactSelectionne.enregisterCoordonnees(this);
+            mContactSelectionne.save();
         }
 
         buttonRdv.setVisibility((View.VISIBLE));
@@ -630,13 +618,13 @@ public class ChercherMedecinOfficielActivity extends AppCompatActivity implement
     }
 
     public void ouvrirActiviteSuivante(Class classe){
-        Intent intent = new Intent(ChercherMedecinOfficielActivity.this, classe);
+        Intent intent = new Intent(ChercherMedecinOfficielSauvegardeActivity.this, classe);
         startActivity(intent);
         finish();
     }
 
     public void ouvrirActiviteSuivante(Class classe, String nomExtra, Long objetIdExtra ) {
-        Intent intent = new Intent(ChercherMedecinOfficielActivity.this, classe);
+        Intent intent = new Intent(ChercherMedecinOfficielSauvegardeActivity.this, classe);
         intent.putExtra(nomExtra, objetIdExtra);
         startActivity(intent);
         finish();

@@ -2,10 +2,7 @@ package com.pouillos.monpilulier.parser;
 
 import android.content.res.AssetManager;
 
-import com.facebook.stetho.common.StringUtil;
-import com.pouillos.monpilulier.entities.FormePharmaceutique;
-import com.pouillos.monpilulier.entities.MedecinOfficiel;
-import com.pouillos.monpilulier.entities.MedecinOfficiel;
+import com.pouillos.monpilulier.entities.Contact;
 import com.pouillos.monpilulier.entities.Profession;
 import com.pouillos.monpilulier.entities.SavoirFaire;
 
@@ -32,10 +29,10 @@ public class ParseListMedecinOfficiel {
             //contents = reader.readLine();
             String line = null;
 
-            List<MedecinOfficiel> listMedecinOfficiel = MedecinOfficiel.listAll(MedecinOfficiel.class);
-            Map<String, MedecinOfficiel> mapMedecinOfficiel = new HashMap<>();
-            for (MedecinOfficiel medecinOfficiel : listMedecinOfficiel) {
-                mapMedecinOfficiel.put(medecinOfficiel.getIdPP(), medecinOfficiel);
+            List<Contact> listContact = Contact.listAll(Contact.class);
+            Map<String, Contact> mapMedecinOfficiel = new HashMap<>();
+            for (Contact contact : listContact) {
+                mapMedecinOfficiel.put(contact.getIdPP(), contact);
             }
 
             List<Profession> listProfession = Profession.listAll(Profession.class);
@@ -58,12 +55,12 @@ public class ParseListMedecinOfficiel {
                 if (lineSplitted[1].equals("Identifiant PP")) {
                     continue;
                 }
-                MedecinOfficiel medecinOfficiel = new MedecinOfficiel();
+                Contact contact = new Contact();
                 
                 //verif si existant
-                MedecinOfficiel verifMedecinOfficiel = null;
-                verifMedecinOfficiel = mapMedecinOfficiel.get(lineSplitted[2]);
-                if (verifMedecinOfficiel != null){
+                Contact verifContact = null;
+                verifContact = mapMedecinOfficiel.get(lineSplitted[2]);
+                if (verifContact != null){
                     continue;
                 }
 
@@ -73,25 +70,25 @@ public class ParseListMedecinOfficiel {
                     //medecinOfficiel = listMedecinOfficiel.get(0);
                 }*/
 
-                medecinOfficiel.setIdPP(lineSplitted[2]);
-                medecinOfficiel.setCodeCivilite(lineSplitted[3]);
-                medecinOfficiel.setNom(lineSplitted[7].toUpperCase());
+                contact.setIdPP(lineSplitted[2]);
+                contact.setCodeCivilite(lineSplitted[3]);
+                contact.setNom(lineSplitted[7].toUpperCase());
                 if (lineSplitted[8].length()>1) {
                     String prenom = lineSplitted[8].substring(0,1).toUpperCase()+lineSplitted[8].substring(1,lineSplitted[8].length()-1).toLowerCase();
                 }
-                medecinOfficiel.setPrenom(lineSplitted[8]);
-                medecinOfficiel.setProfession(mapProfession.get(lineSplitted[10]));
+                contact.setPrenom(lineSplitted[8]);
+                contact.setProfession(mapProfession.get(lineSplitted[10]));
 
                 if (lineSplitted[16].equals("Qualifié en Médecine Générale") || lineSplitted[16].equals("Spécialiste en Médecine Générale")) {
-                    medecinOfficiel.setSavoirFaire(mapSavoirFaire.get("Médecine Générale"));
+                    contact.setSavoirFaire(mapSavoirFaire.get("Médecine Générale"));
                 } else {
-                    medecinOfficiel.setSavoirFaire(mapSavoirFaire.get(lineSplitted[16]));
+                    contact.setSavoirFaire(mapSavoirFaire.get(lineSplitted[16]));
                 }
                 if (lineSplitted.length>24) {
-                    medecinOfficiel.setRaisonSocial(lineSplitted[24]);
+                    contact.setRaisonSocial(lineSplitted[24]);
                 }
                 if (lineSplitted.length>26) {
-                    medecinOfficiel.setComplement(lineSplitted[26]);
+                    contact.setComplement(lineSplitted[26]);
                 }
                 String adresse = "";
                 if ((lineSplitted.length>28) && (!lineSplitted[28].isEmpty())){
@@ -104,7 +101,7 @@ public class ParseListMedecinOfficiel {
                 if ((lineSplitted.length>32) && (!lineSplitted[32].isEmpty())){
                     adresse += lineSplitted[32];
                 }
-                medecinOfficiel.setAdresse(adresse.toUpperCase());
+                contact.setAdresse(adresse.toUpperCase());
                 /*if (lineSplitted.length>35) {
                     if (lineSplitted[35].length() == 4) {
                         medecinOfficiel.setCp("0" + lineSplitted[35]);
@@ -116,31 +113,31 @@ public class ParseListMedecinOfficiel {
                     medecinOfficiel.setVille(lineSplitted[37].toUpperCase());
                 }*/
                 if (lineSplitted.length>35) {
-                    medecinOfficiel.setCp(lineSplitted[34].substring(0,5));
-                    medecinOfficiel.setVille(lineSplitted[34].substring(6));
+                    contact.setCp(lineSplitted[34].substring(0,5));
+                    contact.setVille(lineSplitted[34].substring(6));
                 }
                 if (lineSplitted.length>40) {
                     lineSplitted[40] = lineSplitted[40].replace(" ", "");
                     lineSplitted[40] = lineSplitted[40].replace(".", "");
                     if (lineSplitted[40].length() == 9) {
-                        medecinOfficiel.setTelephone("0" + lineSplitted[40]);
+                        contact.setTelephone("0" + lineSplitted[40]);
                     } else if (lineSplitted[40].length() == 10) {
-                        medecinOfficiel.setTelephone(lineSplitted[40]);
+                        contact.setTelephone(lineSplitted[40]);
                     }
                 }
                 if (lineSplitted.length>42) {
                     lineSplitted[42] = lineSplitted[42].replace(" ", "");
                     lineSplitted[42] = lineSplitted[42].replace(".", "");
                     if (lineSplitted[42].length() == 9) {
-                        medecinOfficiel.setFax("0" + lineSplitted[42]);
+                        contact.setFax("0" + lineSplitted[42]);
                     } else if (lineSplitted[42].length() == 10) {
-                        medecinOfficiel.setFax(lineSplitted[42]);
+                        contact.setFax(lineSplitted[42]);
                     }
                 }
                 if (lineSplitted.length>43) {
-                    medecinOfficiel.setEmail(lineSplitted[43]);
+                    contact.setEmail(lineSplitted[43]);
                 }
-                medecinOfficiel.save();
+                contact.save();
             }
         } catch (final Exception e) {
             e.printStackTrace();

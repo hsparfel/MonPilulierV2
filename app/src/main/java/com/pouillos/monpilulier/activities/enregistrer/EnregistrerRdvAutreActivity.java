@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -24,14 +23,8 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.entities.Analyse;
-import com.pouillos.monpilulier.entities.Departement;
 import com.pouillos.monpilulier.entities.Examen;
-import com.pouillos.monpilulier.entities.MedecinOfficiel;
-import com.pouillos.monpilulier.entities.Profession;
-import com.pouillos.monpilulier.entities.RdvAutre;
-import com.pouillos.monpilulier.entities.RdvOfficiel;
-import com.pouillos.monpilulier.entities.Region;
-import com.pouillos.monpilulier.entities.SavoirFaire;
+import com.pouillos.monpilulier.entities.RdvActeMedical;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
@@ -50,7 +43,7 @@ public class EnregistrerRdvAutreActivity extends AppCompatActivity implements Ba
 
     private Date date = new Date();
     private Intent intent;
-    private RdvAutre rdv;
+    private RdvActeMedical rdv;
     private Utilisateur utilisateur;
 
     TimePickerDialog picker;
@@ -196,7 +189,7 @@ public class EnregistrerRdvAutreActivity extends AppCompatActivity implements Ba
 
     @Override
     public void saveToDb() {
-        RdvAutre rdv = new RdvAutre();
+        RdvActeMedical rdv = new RdvActeMedical();
         rdv.setNote(textNote.getText().toString());
 
         rdv.setUtilisateur(utilisateur);

@@ -1,46 +1,47 @@
 package com.pouillos.monpilulier.activities.add;
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.Toast;
+        import android.content.Context;
+        import android.content.Intent;
+        import android.os.AsyncTask;
+        import android.os.Bundle;
+        import android.view.MotionEvent;
+        import android.view.View;
+        import android.view.inputmethod.InputMethodManager;
+        import android.widget.AdapterView;
+        import android.widget.ArrayAdapter;
+        import android.widget.AutoCompleteTextView;
+        import android.widget.DatePicker;
+        import android.widget.EditText;
+        import android.widget.Toast;
 
-import com.google.android.material.chip.Chip;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-import com.pouillos.monpilulier.R;
+        import androidx.appcompat.app.AppCompatActivity;
 
-import com.pouillos.monpilulier.activities.NavDrawerActivity;
-import com.pouillos.monpilulier.entities.Departement;
-import com.pouillos.monpilulier.entities.Utilisateur;
-import com.pouillos.monpilulier.fragments.DatePickerFragment;
-import com.pouillos.monpilulier.interfaces.BasicUtils;
+        import com.google.android.material.chip.Chip;
+        import com.google.android.material.floatingactionbutton.FloatingActionButton;
+        import com.google.android.material.textfield.TextInputEditText;
+        import com.google.android.material.textfield.TextInputLayout;
+        import com.pouillos.monpilulier.R;
 
-import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+        import com.pouillos.monpilulier.entities.Departement;
+        import com.pouillos.monpilulier.entities.Utilisateur;
+        import com.pouillos.monpilulier.fragments.DatePickerFragment;
+        import com.pouillos.monpilulier.interfaces.BasicUtils;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import icepick.Icepick;
-import icepick.State;
+        import java.io.Serializable;
+        import java.text.DateFormat;
+        import java.text.ParseException;
+        import java.text.SimpleDateFormat;
+        import java.util.ArrayList;
+        import java.util.Date;
+        import java.util.List;
 
-public class AddUserActivity extends NavDrawerActivity implements Serializable, AdapterView.OnItemClickListener, BasicUtils {
+        import butterknife.BindView;
+        import butterknife.ButterKnife;
+        import butterknife.OnClick;
+        import icepick.Icepick;
+        import icepick.State;
+
+public class AddUserSauvegardeActivity extends AppCompatActivity implements Serializable, AdapterView.OnItemClickListener, BasicUtils {
 
     @State
     Utilisateur activeUser;
@@ -86,16 +87,10 @@ public class AddUserActivity extends NavDrawerActivity implements Serializable, 
         super.onCreate(savedInstanceState);
         Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(R.layout.activity_add_user);
-        // 6 - Configure all views
-        this.configureToolBar();
-        this.configureDrawerLayout();
-        this.configureNavigationView();
-
-
 
         listUserBD = Utilisateur.listAll(Utilisateur.class);
 
-        AddUserActivity.AsyncTaskRunnerDepartement runnerDepartement = new AddUserActivity.AsyncTaskRunnerDepartement();
+        AddUserSauvegardeActivity.AsyncTaskRunnerDepartement runnerDepartement = new AddUserSauvegardeActivity.AsyncTaskRunnerDepartement();
         runnerDepartement.execute();
 
         ButterKnife.bind(this);
@@ -136,17 +131,17 @@ public class AddUserActivity extends NavDrawerActivity implements Serializable, 
                 currentUser.save();
             }
             Long userToCreateId = userToCreate.save();
-            Intent intent = new Intent(AddUserActivity.this, AddProfilActivity.class);
+            Intent intent = new Intent(AddUserSauvegardeActivity.this, AddProfilActivity.class);
             intent.putExtra("userId", userToCreateId);
             startActivity(intent);
             finish();
         } else {
-            Toast toast = Toast.makeText(AddUserActivity.this, "Saisie non valide", Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(AddUserSauvegardeActivity.this, "Saisie non valide", Toast.LENGTH_LONG);
             toast.show();
         }
     }
 
-    @Override
+@Override
     public boolean checkFields(){
         boolean bool;
         if (!isFilled(textName)) {
@@ -207,7 +202,7 @@ public class AddUserActivity extends NavDrawerActivity implements Serializable, 
                     listDepartementString.add(departement.getNumero()+" - "+departement.getNom());
                 }
                 listDepartementString.toArray(listDeroulanteDepartement);
-                ArrayAdapter adapter = new ArrayAdapter(AddUserActivity.this, R.layout.list_item, listDeroulanteDepartement);
+                ArrayAdapter adapter = new ArrayAdapter(AddUserSauvegardeActivity.this, R.layout.list_item, listDeroulanteDepartement);
                 selectedDepartement.setAdapter(adapter);
                 listDepartement.setVisibility(View.VISIBLE);
             }

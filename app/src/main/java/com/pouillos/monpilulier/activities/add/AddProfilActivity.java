@@ -25,6 +25,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.MainActivity;
+import com.pouillos.monpilulier.activities.NavDrawerActivity;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.Departement;
 import com.pouillos.monpilulier.entities.Profil;
@@ -49,7 +50,7 @@ import icepick.State;
 
 import static java.lang.Math.*;
 
-public class AddProfilActivity extends AppCompatActivity implements Serializable, BasicUtils {
+public class AddProfilActivity extends NavDrawerActivity implements Serializable, BasicUtils {
 
     @State
     Utilisateur activeUser;
@@ -88,6 +89,12 @@ public class AddProfilActivity extends AppCompatActivity implements Serializable
         super.onCreate(savedInstanceState);
         Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(R.layout.activity_add_profil);
+        // 6 - Configure all views
+        this.configureToolBar();
+        this.configureDrawerLayout();
+        this.configureNavigationView();
+
+
         ButterKnife.bind(this);
         List<Utilisateur> listUserActif = Utilisateur.find(Utilisateur.class, "actif = ?", "1");
         if (listUserActif.size() !=0){
@@ -199,6 +206,10 @@ public class AddProfilActivity extends AppCompatActivity implements Serializable
         Intent intent = new Intent(AddProfilActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    public void showTimePickerDialog(View view) {
+        //non necessaire dans cette classe mais à cause de l'id textHeure dans les layout je dois la declarer à priori
     }
 }
 

@@ -8,14 +8,15 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:openDrawer="start"
-    tools:context=".activities.AccueilActivity">
+    tools:context=".activities.afficher.AfficherRdvActivity"
+    >
 
     <!-- 1 | MainActivity RootView -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        >
+        android:focusableInTouchMode="true">
 
         <!-- Toolbar -->
         <androidx.appcompat.widget.Toolbar
@@ -23,43 +24,28 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:theme="@style/ToolBarStyle"/>
+            app:theme="@style/ToolBarStyle" />
 
-        <ImageView
-            android:id="@+id/imageUser"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/outline_emoji_people_black_48dp" />
+
+
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/listRdv"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:id="@+id/listUser"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="3">
+            android:layout_height="wrap_content">
 
             <AutoCompleteTextView
-                android:id="@+id/selectUser"
+                android:id="@+id/selectRdv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="80dip"
                 android:focusable="false"
-                android:hint="@string/select"
-                android:inputType="none"
-                />
+                android:hint="Selectionner"
+                android:inputType="none" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floating_action_button"
-            style="@style/Widget.MaterialComponents.FloatingActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center"
-            android:layout_margin="80dip"
-            app:srcCompat="@drawable/outline_person_add_black_24dp" />
+
 
     </LinearLayout>
 

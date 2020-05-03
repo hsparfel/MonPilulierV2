@@ -5,15 +5,14 @@ import com.orm.SugarRecord;
 import java.io.Serializable;
 import java.util.Date;
 
-public class RdvAutre extends SugarRecord implements Serializable, Comparable<RdvAutre> {
+public class Rdv extends SugarRecord implements Serializable, Comparable<Rdv> {
 
     private String note;
     private Utilisateur utilisateur;
-    private Analyse analyse;
-    private Examen examen;
+    private Contact contact;
     private Date date;
 
-    public RdvAutre() {
+    public Rdv() {
     }
 
     public String getNote() {
@@ -32,20 +31,12 @@ public class RdvAutre extends SugarRecord implements Serializable, Comparable<Rd
         this.utilisateur = utilisateur;
     }
 
-    public Analyse getAnalyse() {
-        return analyse;
+    public Contact getContact() {
+        return contact;
     }
 
-    public void setAnalyse(Analyse analyse) {
-        this.analyse = analyse;
-    }
-
-    public Examen getExamen() {
-        return examen;
-    }
-
-    public void setExamen(Examen examen) {
-        this.examen = examen;
+    public void setContact(Contact contact) {
+        this.contact = contact;
     }
 
     public Date getDate() {
@@ -57,7 +48,7 @@ public class RdvAutre extends SugarRecord implements Serializable, Comparable<Rd
     }
 
     @Override
-    public int compareTo(RdvAutre o) {
+    public int compareTo(Rdv o) {
         return this.getId().compareTo(o.getId());
     }
 

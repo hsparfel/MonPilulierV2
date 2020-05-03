@@ -1,21 +1,18 @@
 package com.pouillos.monpilulier.entities;
 
 import com.orm.SugarRecord;
-import com.orm.dsl.Ignore;
-import com.pouillos.monpilulier.interfaces.AfficherDetail;
 
 import java.io.Serializable;
-import java.util.List;
 
 
-public class MedicamentOfficiel extends SugarRecord implements Serializable, Comparable<MedicamentOfficiel> {
+public class Medicament extends SugarRecord implements Serializable, Comparable<Medicament> {
 
 private Long codeCIS;
 private String denomination;
 private FormePharmaceutique formePharmaceutique;
 private String titulaire;
 
-    public MedicamentOfficiel() {
+    public Medicament() {
     }
 
     public Long getCodeCIS() {
@@ -51,7 +48,7 @@ private String titulaire;
     }
 
     @Override
-    public int compareTo(MedicamentOfficiel o) {
+    public int compareTo(Medicament o) {
         return this.denomination.compareTo(o.denomination);
     }
 

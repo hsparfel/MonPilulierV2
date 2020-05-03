@@ -1,16 +1,9 @@
 package com.pouillos.monpilulier.parser;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.res.AssetManager;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import com.pouillos.monpilulier.activities.MainActivity;
 import com.pouillos.monpilulier.entities.FormePharmaceutique;
-import com.pouillos.monpilulier.entities.MedecinOfficiel;
-import com.pouillos.monpilulier.entities.MedicamentOfficiel;
+import com.pouillos.monpilulier.entities.Medicament;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,10 +34,10 @@ public class ParseListMedicamentOfficiel {
             //contents = reader.readLine();
             String line = null;
 
-            List<MedicamentOfficiel> listMedicamentOfficiel = MedicamentOfficiel.listAll(MedicamentOfficiel.class);
-            Map<Long, MedicamentOfficiel> mapMedicamentOfficiel = new HashMap<>();
-            for (MedicamentOfficiel medicamentOfficiel : listMedicamentOfficiel) {
-                mapMedicamentOfficiel.put(medicamentOfficiel.getCodeCIS(), medicamentOfficiel);
+            List<Medicament> listMedicament = Medicament.listAll(Medicament.class);
+            Map<Long, Medicament> mapMedicamentOfficiel = new HashMap<>();
+            for (Medicament medicament : listMedicament) {
+                mapMedicamentOfficiel.put(medicament.getCodeCIS(), medicament);
             }
 
             List<FormePharmaceutique> listFormePharamaceutique = FormePharmaceutique.listAll(FormePharmaceutique.class);
@@ -58,40 +51,40 @@ public class ParseListMedicamentOfficiel {
                 final String SEPARATEUR = "\t";
                 String lineSplitted[] = line.split(SEPARATEUR);
 
-                MedicamentOfficiel medicamentOfficiel = new MedicamentOfficiel();
+                Medicament medicament = new Medicament();
                 //verif si commercialise
                 if (!lineSplitted[6].equals("Commercialisée") ) {
                     continue;
                 }
 
                 //verif si existant
-                MedicamentOfficiel verifMedicamentOfficiel = null;
-                verifMedicamentOfficiel = mapMedicamentOfficiel.get(Long.parseLong(lineSplitted[0]));
-                if (verifMedicamentOfficiel != null){
+                Medicament verifMedicament = null;
+                verifMedicament = mapMedicamentOfficiel.get(Long.parseLong(lineSplitted[0]));
+                if (verifMedicament != null){
                     continue;
                 }
 
-                medicamentOfficiel.setCodeCIS(Long.parseLong(lineSplitted[0]));
+                medicament.setCodeCIS(Long.parseLong(lineSplitted[0]));
 
                 int positionVirgule = lineSplitted[1].indexOf(",");
                 if (positionVirgule >=0){
-                    medicamentOfficiel.setDenomination(lineSplitted[1].substring(0,positionVirgule));
+                    medicament.setDenomination(lineSplitted[1].substring(0,positionVirgule));
                 } else {
-                    medicamentOfficiel.setDenomination(lineSplitted[1]);
+                    medicament.setDenomination(lineSplitted[1]);
                 }
                 if (lineSplitted[2].substring(0,1).equals(" ")) {
                     lineSplitted[2] = lineSplitted[2].substring(1,lineSplitted[2].length());
                 }
 
-                medicamentOfficiel.setFormePharmaceutique(mapFormePharamaceutique.get(lineSplitted[2]));
+                medicament.setFormePharmaceutique(mapFormePharamaceutique.get(lineSplitted[2]));
 
                 int positionPointVirgule = lineSplitted[10].indexOf(";");
                 if (positionPointVirgule >=0){
-                    medicamentOfficiel.setTitulaire(lineSplitted[10].substring(0,positionPointVirgule));
+                    medicament.setTitulaire(lineSplitted[10].substring(0,positionPointVirgule));
                 } else {
-                    medicamentOfficiel.setTitulaire(lineSplitted[10]);
+                    medicament.setTitulaire(lineSplitted[10]);
                 }
-                medicamentOfficiel.save();
+                medicament.save();
             }
         } catch (final Exception e) {
             e.printStackTrace();

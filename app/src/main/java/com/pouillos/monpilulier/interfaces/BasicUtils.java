@@ -1,5 +1,6 @@
 package com.pouillos.monpilulier.interfaces;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.text.TextUtils;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
+import com.pouillos.monpilulier.activities.NavDrawerActivity;
 
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -105,9 +107,12 @@ public interface BasicUtils {
         }
     }
 
+    public default boolean isExistant() { return false; };
+    public default boolean checkFields() { return false; };
     public default void traiterIntent() {};
     public default void showDatePickerDialog(View v) {};
-
+    public default void showTimePickerDialog(View v) {};
+    public default void displayFabs() {};
     public default void alertOnSpinners() {};
     public default void alertOffSpinners() {};
     public default void alertOnSpinner(Spinner spinner) {
@@ -124,4 +129,8 @@ public interface BasicUtils {
     public default void saveToDb(TextView textNom, Date date, String sexe) {};
     public default void saveToDb() {};
     public default void createSpinners() {};
+
+
+    public default void ouvrirActiviteSuivante(Context context,Class classe){};
+    public default void ouvrirActiviteSuivante(Context context,Class classe, String nomExtra, Long objetIdExtra ) {};
 }

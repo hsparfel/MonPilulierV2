@@ -19,8 +19,8 @@ import android.widget.TimePicker;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.pouillos.monpilulier.R;
-import com.pouillos.monpilulier.entities.MedecinOfficiel;
-import com.pouillos.monpilulier.entities.RdvOfficiel;
+import com.pouillos.monpilulier.entities.Contact;
+import com.pouillos.monpilulier.entities.Rdv;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
@@ -33,7 +33,7 @@ import java.util.Date;
 
 public class EnregistrerRdvMedecinOfficielActivity extends AppCompatActivity implements BasicUtils {
 
-    private MedecinOfficiel medecinOfficiel;
+    private Contact mContact;
     private TextView textDate;
 
     private TextView textNote;
@@ -51,7 +51,7 @@ public class EnregistrerRdvMedecinOfficielActivity extends AppCompatActivity imp
 
     private Date date = new Date();
     private Intent intent;
-    private RdvOfficiel rdv;
+    private Rdv rdv;
     private Utilisateur utilisateur;
 
     TimePickerDialog picker;
@@ -101,11 +101,11 @@ public class EnregistrerRdvMedecinOfficielActivity extends AppCompatActivity imp
                     //String url = "https://www.google.com/maps/search/?api=1&query=";
                     String url = "geo:";
                     String addr = "";
-                    if (medecinOfficiel.getLatitude() != 0 && medecinOfficiel.getLongitude() != 0) {
-                        url += medecinOfficiel.getLatitude()+","+medecinOfficiel.getLongitude();
-                    } else if (medecinOfficiel.getAdresse() != null && medecinOfficiel.getCp() != null && medecinOfficiel.getVille() != null) {
+                    if (mContact.getLatitude() != 0 && mContact.getLongitude() != 0) {
+                        url += mContact.getLatitude()+","+ mContact.getLongitude();
+                    } else if (mContact.getAdresse() != null && mContact.getCp() != null && mContact.getVille() != null) {
                         url += "0,0?q=";
-                        addr += Uri.parse(medecinOfficiel.getAdresse()+", "+medecinOfficiel.getCp()+", "+medecinOfficiel.getVille()+", FRANCE");
+                        addr += Uri.parse(mContact.getAdresse()+", "+ mContact.getCp()+", "+ mContact.getVille()+", FRANCE");
                         url += addr;
                     }
                     Intent intent = new Intent( Intent.ACTION_VIEW, Uri.parse( url ) );
@@ -131,7 +131,7 @@ public class EnregistrerRdvMedecinOfficielActivity extends AppCompatActivity imp
                     // Launch Waze to look for Hawaii:
 
                     String url = "https://waze.com/ul?q=";
-                    url += medecinOfficiel.getAdresse()+"%20"+medecinOfficiel.getCp()+"%20"+medecinOfficiel.getVille();
+                    url += mContact.getAdresse()+"%20"+ mContact.getCp()+"%20"+ mContact.getVille();
 
                     Intent intent = new Intent( Intent.ACTION_VIEW, Uri.parse( url ) );
                     startActivity( intent );
@@ -216,9 +216,9 @@ public class EnregistrerRdvMedecinOfficielActivity extends AppCompatActivity imp
 
     @Override
     public void saveToDb() {
-        RdvOfficiel rdv = new RdvOfficiel();
+        Rdv rdv = new Rdv();
         rdv.setNote(textNote.getText().toString());
-        rdv.setMedecinOfficiel(medecinOfficiel);
+        rdv.setContact(mContact);
         rdv.setUtilisateur(utilisateur);
         rdv.setDate(date);
         rdv.save();
@@ -247,7 +247,7 @@ public class EnregistrerRdvMedecinOfficielActivity extends AppCompatActivity imp
 
             Long medecinOfficielId = intent.getLongExtra("medecinOfficiel",0);
             //rdvAModif = Rdv.findById(Rdv.class,rdvAModifId);
-            medecinOfficiel = MedecinOfficiel.findById(MedecinOfficiel.class,medecinOfficielId);
+            mContact = Contact.findById(Contact.class,medecinOfficielId);
 
 
 
@@ -255,61 +255,61 @@ public class EnregistrerRdvMedecinOfficielActivity extends AppCompatActivity imp
             //textDate.setText(DateUtils.ecrireDate(rdvAModif.getDate()));
             //date = rdvAModif.getDate();
             String nomMedecin = "";
-            if (medecinOfficiel.getCodeCivilite() !=null){
-                nomMedecin += medecinOfficiel.getCodeCivilite();
+            if (mContact.getCodeCivilite() !=null){
+                nomMedecin += mContact.getCodeCivilite();
             }
-            nomMedecin += medecinOfficiel.getNom()+" "+medecinOfficiel.getPrenom();
+            nomMedecin += mContact.getNom()+" "+ mContact.getPrenom();
             textMedecin.setText(nomMedecin);
-            if (medecinOfficiel.getSavoirFaire() != null) {
-                textSavoirFaire.setText(medecinOfficiel.getSavoirFaire().getName());
+            if (mContact.getSavoirFaire() != null) {
+                textSavoirFaire.setText(mContact.getSavoirFaire().getName());
                 textProfession.setVisibility(View.GONE);
             } else {
                 textSavoirFaire.setVisibility(View.GONE);
-                textProfession.setText(medecinOfficiel.getProfession().getName());
+                textProfession.setText(mContact.getProfession().getName());
             }
 
 
-            if (!medecinOfficiel.getComplement().equals("")) {
-                textCabinet.setText(medecinOfficiel.getRaisonSocial());
+            if (!mContact.getComplement().equals("")) {
+                textCabinet.setText(mContact.getRaisonSocial());
             } else {
                 textCabinet.setVisibility(View.GONE);
             }
 
 
 
-            if (!medecinOfficiel.getComplement().equals("")) {
-                textComplement.setText(medecinOfficiel.getComplement());
+            if (!mContact.getComplement().equals("")) {
+                textComplement.setText(mContact.getComplement());
             } else {
                 textComplement.setVisibility(View.GONE);
             }
 
 
-            if (!medecinOfficiel.getAdresse().equals("")) {
-                textAdresse1.setText(medecinOfficiel.getAdresse());
+            if (!mContact.getAdresse().equals("")) {
+                textAdresse1.setText(mContact.getAdresse());
             } else {
                 textAdresse1.setVisibility(View.GONE);
             }
 
-            if (!medecinOfficiel.getCp().equals("") & !medecinOfficiel.getVille().equals("")) {
-                textAdresse2.setText(medecinOfficiel.getCp()+" "+medecinOfficiel.getVille());
+            if (!mContact.getCp().equals("") & !mContact.getVille().equals("")) {
+                textAdresse2.setText(mContact.getCp()+" "+ mContact.getVille());
             } else {
                 textAdresse2.setVisibility(View.GONE);
             }
 
-            if (!medecinOfficiel.getTelephone().equals("")) {
-                textTel.setText("Tel: "+medecinOfficiel.getTelephone());
+            if (!mContact.getTelephone().equals("")) {
+                textTel.setText("Tel: "+ mContact.getTelephone());
             } else {
                 textTel.setVisibility(View.GONE);
             }
 
-            if (!medecinOfficiel.getFax().equals("")) {
-                textFax.setText("Fax: "+medecinOfficiel.getFax());
+            if (!mContact.getFax().equals("")) {
+                textFax.setText("Fax: "+ mContact.getFax());
             } else {
                 textFax.setVisibility(View.GONE);
             }
 
-            if (!medecinOfficiel.getEmail().equals("")) {
-                textEmail.setText("@: "+medecinOfficiel.getEmail());
+            if (!mContact.getEmail().equals("")) {
+                textEmail.setText("@: "+ mContact.getEmail());
             } else {
                 textEmail.setVisibility(View.GONE);
             }

@@ -5,15 +5,12 @@ import android.location.Address;
 import android.location.Geocoder;
 
 import com.orm.SugarRecord;
-import com.orm.dsl.Ignore;
-import com.pouillos.monpilulier.activities.recherche.ChercherMedecinOfficielActivity;
-import com.pouillos.monpilulier.interfaces.AfficherDetail;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
-public class MedecinOfficiel extends SugarRecord implements Serializable, Comparable<MedecinOfficiel> {
+public class Contact extends SugarRecord implements Serializable, Comparable<Contact> {
 
     private String idPP;
     private String codeCivilite;
@@ -34,7 +31,7 @@ public class MedecinOfficiel extends SugarRecord implements Serializable, Compar
     private double latitude;
     private double longitude;
 
-    public MedecinOfficiel() {
+    public Contact() {
     }
 
 
@@ -117,7 +114,11 @@ public class MedecinOfficiel extends SugarRecord implements Serializable, Compar
     public void setCp(String cp) {
 
         this.cp = cp;
-        this.departement = Departement.find(Departement.class,"numero = ?",cp.substring(0,2)).get(0);
+        if (!cp.equalsIgnoreCase("")) {
+            this.departement = Departement.find(Departement.class,"numero = ?",cp.substring(0,2)).get(0);
+        } else {
+            this.departement = Departement.find(Departement.class,"numero = ?","XX").get(0);
+        }
         this.region = this.departement.getRegion();
     }
 
@@ -187,7 +188,7 @@ public class MedecinOfficiel extends SugarRecord implements Serializable, Compar
     }
 
     @Override
-    public int compareTo(MedecinOfficiel o) {
+    public int compareTo(Contact o) {
         return this.nom.compareTo(o.nom);
     }
 

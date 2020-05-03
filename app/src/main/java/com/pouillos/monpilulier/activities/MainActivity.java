@@ -24,24 +24,23 @@ import com.facebook.stetho.Stetho;
 import com.orm.SugarRecord;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.add.AddProfilActivity;
+import com.pouillos.monpilulier.activities.add.AddRdvActivity;
 import com.pouillos.monpilulier.activities.enregistrer.EnregistrerPrescriptionActivity;
-import com.pouillos.monpilulier.activities.enregistrer.EnregistrerRdvAutreActivity;
 import com.pouillos.monpilulier.activities.listallx.ListAllProfilActivity;
 import com.pouillos.monpilulier.activities.listallx.ListAllUserActivity;
-import com.pouillos.monpilulier.activities.listmyx.ListMyProfilActivity;
 import com.pouillos.monpilulier.activities.newx.NewUserActivity;
-import com.pouillos.monpilulier.activities.recherche.ChercherMedecinOfficielActivity;
+import com.pouillos.monpilulier.activities.recherche.ChercherContactActivity;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.Analyse;
 import com.pouillos.monpilulier.entities.AssociationFormeDose;
+import com.pouillos.monpilulier.entities.Contact;
 import com.pouillos.monpilulier.entities.Departement;
 import com.pouillos.monpilulier.entities.Dose;
 import com.pouillos.monpilulier.entities.Duree;
 import com.pouillos.monpilulier.entities.Examen;
 import com.pouillos.monpilulier.entities.FormePharmaceutique;
-import com.pouillos.monpilulier.entities.MedecinOfficiel;
-import com.pouillos.monpilulier.entities.MedecinOfficielLight;
-import com.pouillos.monpilulier.entities.MedicamentOfficiel;
+import com.pouillos.monpilulier.entities.ContactLight;
+import com.pouillos.monpilulier.entities.Medicament;
 import com.pouillos.monpilulier.entities.Profession;
 import com.pouillos.monpilulier.entities.Region;
 import com.pouillos.monpilulier.entities.SavoirFaire;
@@ -101,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         Button buttonAuthentification = (Button) findViewById(R.id.buttonAuthentification);
         Button buttonAccueil = (Button) findViewById(R.id.buttonAccueil);
 
+
         progressBar.setVisibility(View.VISIBLE);
 
         AsyncTaskRunnerBD runnerBD = new AsyncTaskRunnerBD();
@@ -156,6 +156,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             notificationService.notify(MY_NOTIFICATION_ID, notification);
         });
 
+
+
         buttonAccueil.setOnClickListener(v -> {
             Intent myProfilActivity = new Intent(MainActivity.this, AccueilActivity.class);
             startActivity(myProfilActivity);
@@ -172,12 +174,12 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         });
 
         buttonNewRdv.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, EnregistrerRdvAutreActivity.class);
+            Intent myProfilActivity = new Intent(MainActivity.this, AddRdvActivity.class);
             startActivity(myProfilActivity);
         });
 
         buttonChercherMedecinOfficiel.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, ChercherMedecinOfficielActivity.class);
+            Intent myProfilActivity = new Intent(MainActivity.this, ChercherContactActivity.class);
             //myProfilActivity.putExtra("activitySource", MainActivity.class);
             startActivity(myProfilActivity);
         });
@@ -200,8 +202,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         });
 
         buttonInfoDb.setOnClickListener(v -> {
-            long size1 = MedicamentOfficiel.count(MedicamentOfficiel.class);
-            long size2 = MedecinOfficiel.count(MedecinOfficiel.class);
+            long size1 = Medicament.count(Medicament.class);
+            long size2 = Contact.count(Contact.class);
             Toast toast = Toast.makeText(MainActivity.this, "nb medicament: "+size1+" - nb medecin: "+size2, Toast.LENGTH_LONG);
             toast.show();
         });
@@ -256,11 +258,24 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             //SugarRecord.executeQuery("DELETE FROM ASSOCIATION");
             publishProgress(20);
             //SugarRecord.executeQuery("DELETE FROM UTILISATEUR");
-            SugarRecord.executeQuery("DELETE FROM PROFIL");
-
-
-
-           /*     SugarContext.terminate();
+            //SugarRecord.executeQuery("DELETE FROM PROFIL");
+            //SugarRecord.executeQuery("DELETE FROM DEPARTEMENT");
+            //SugarRecord.executeQuery("DELETE FROM REGION");
+            //SugarRecord.executeQuery("DROP TABLE MEDECIN");
+            //SugarRecord.executeQuery("DROP TABLE MEDECIN_OFFICIEL");
+            //SugarRecord.executeQuery("DROP TABLE MEDICAMENT");
+            SugarRecord.executeQuery("DROP TABLE MEDICAMENT_OFFICIEL");
+            //SugarRecord.executeQuery("DROP TABLE ASSOCIATION");
+            //SugarRecord.executeQuery("DROP TABLE ASSOCIATION_OFFICIELLE");
+            //SugarRecord.executeQuery("DROP TABLE CABINET");
+            //SugarRecord.executeQuery("DROP TABLE ORDONNANCE");
+            //SugarRecord.executeQuery("DROP TABLE ORDO_PRESCRIPTION");
+            //SugarRecord.executeQuery("DROP TABLE ORDO_ANALYSE");
+            //SugarRecord.executeQuery("DROP TABLE ORDO_EXAMEN");
+            //SugarRecord.executeQuery("DROP TABLE RDV");
+            //SugarRecord.executeQuery("DROP TABLE RDV_AUTRE");
+            //SugarRecord.executeQuery("DROP TABLE RDV_OFFICIEL");
+            /*    SugarContext.terminate();
                 publishProgress(20);
                 SchemaGenerator schemaGenerator = new SchemaGenerator(getApplicationContext());
             publishProgress(40);
@@ -268,8 +283,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             publishProgress(60);
                 SugarContext.init(getApplicationContext());
             publishProgress(80);
-                schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());
-            publishProgress(100);*/
+                schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());*/
+            publishProgress(100);
             return null;
         }
 
@@ -333,8 +348,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
     public void remplirDepartementBD() {
         //remplir Departement
-        List<Departement> listDepartement = Departement.listAll(Departement.class);
-        if (listDepartement.size()==0) {
+        Long count = Departement.count(Departement.class);
+        if (count ==0) {
             new Departement("01","Ain",Region.find(Region.class,"nom = ?","Auvergne-Rhône-Alpes").get(0)).save();
             new Departement("02","Aisne",Region.find(Region.class,"nom = ?","Hauts-de-France").get(0)).save();
             new Departement("03","Allier",Region.find(Region.class,"nom = ?","Auvergne-Rhône-Alpes").get(0)).save();
@@ -432,16 +447,15 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             new Departement("95","Val-D'Oise",Region.find(Region.class,"nom = ?","Ile-de-France").get(0)).save();
             new Departement("97","Outre-Mer",Region.find(Region.class,"nom = ?","Dom-Tom").get(0)).save();
             new Departement("98","Autre",Region.find(Region.class,"nom = ?","Autre").get(0)).save();
+            new Departement("XX","Indéfini",Region.find(Region.class,"nom = ?","Indéfini").get(0)).save();
+
         }
-        //verif a suppr
-        listDepartement = Departement.listAll(Departement.class);
-        int listSize = listDepartement.size();
     }
 
     public void remplirRegionBD() {
         //remplir Region
-        List<Region> listRegion = Region.listAll(Region.class);
-        if (listRegion.size()==0) {
+        Long count = Region.count(Region.class);
+        if (count ==0) {
             new Region("Auvergne-Rhône-Alpes").save();
             new Region("Bourgogne-Franche-Comté").save();
             new Region("Bretagne").save();
@@ -457,16 +471,14 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             new Region("Provence-Alpes-Côte d'Azur").save();
             new Region("Dom-Tom").save();
             new Region("Autre").save();
+            new Region("Indéfini").save();
         }
-        //verif a suppr
-        listRegion = Region.listAll(Region.class);
-        int listSize = listRegion.size();
     }
 
     public void remplirSavoirFaireBD() {
         //remplir SavoirFaire
-        List<SavoirFaire> listSavoirFaire = SavoirFaire.listAll(SavoirFaire.class);
-        if (listSavoirFaire.size()==0) {
+        Long count = SavoirFaire.count(SavoirFaire.class);
+        if (count ==0) {
             new SavoirFaire("Allergologie").save();
             new SavoirFaire("Anatomie et cytologie pathologiques").save();
             new SavoirFaire("Anesthesie-réanimation").save();
@@ -537,15 +549,12 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             new SavoirFaire("Urologie").save();
 
         }
-        //verif a suppr
-        listSavoirFaire = SavoirFaire.listAll(SavoirFaire.class);
-        int listSize = listSavoirFaire.size();
     }
 
     public void remplirProfessionBD() {
         //remplir FormeProfession
-        List<Profession> listProfession = Profession.listAll(Profession.class);
-        if (listProfession.size()==0) {
+        Long count = Profession.count(Profession.class);
+        if (count ==0) {
             new Profession("Audioprothésiste").save();
             new Profession("Chirurgien-Dentiste").save();
             new Profession("Diététicien").save();
@@ -569,16 +578,13 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             new Profession("Technicien de laboratoire médical").save();
 
         }
-        //verif a suppr
-        listProfession = Profession.listAll(Profession.class);
-        int listSize = listProfession.size();
     }
 
     public void remplirFormePharmaceutiqueBD() {
 
         //remplir FormePharmaceutique
-        List<FormePharmaceutique> listFormePharmaceutique = FormePharmaceutique.listAll(FormePharmaceutique.class);
-        if (listFormePharmaceutique.size()==0) {
+        Long count = FormePharmaceutique.count(FormePharmaceutique.class);
+        if (count ==0) {
             new FormePharmaceutique("comprimé et solution(s) et granules et poudre").save();
             new FormePharmaceutique("comprimé et solution(s) et granules et poudre et pommade").save();
             new FormePharmaceutique("crème et solution et granules et poudre").save();
@@ -989,9 +995,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             new FormePharmaceutique("trousse radiopharmaceutique").save();
             new FormePharmaceutique("vernis à ongles médicamenteux(se)").save();
         }
-        //verif a suppr
-        listFormePharmaceutique = FormePharmaceutique.listAll(FormePharmaceutique.class);
-        int listSize = listFormePharmaceutique.size();
     }
 
 
@@ -1008,10 +1011,10 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     reader = new BufferedReader(new InputStreamReader(is,"iso-8859-1"));
                     String line = null;
 
-                    List<MedicamentOfficiel> listMedicamentOfficiel = MedicamentOfficiel.listAll(MedicamentOfficiel.class);
-                    Map<Long, MedicamentOfficiel> mapMedicamentOfficiel = new HashMap<>();
-                    for (MedicamentOfficiel medicamentOfficiel : listMedicamentOfficiel) {
-                        mapMedicamentOfficiel.put(medicamentOfficiel.getCodeCIS(), medicamentOfficiel);
+                    List<Medicament> listMedicament = Medicament.listAll(Medicament.class);
+                    Map<Long, Medicament> mapMedicamentOfficiel = new HashMap<>();
+                    for (Medicament medicament : listMedicament) {
+                        mapMedicamentOfficiel.put(medicament.getCodeCIS(), medicament);
                     }
 
                     List<FormePharmaceutique> listFormePharamaceutique = FormePharmaceutique.listAll(FormePharmaceutique.class);
@@ -1031,40 +1034,40 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                         final String SEPARATEUR = "\t";
                         String lineSplitted[] = line.split(SEPARATEUR);
 
-                        MedicamentOfficiel medicamentOfficiel = new MedicamentOfficiel();
+                        Medicament medicament = new Medicament();
                         //verif si commercialise
                         if (!lineSplitted[6].equals("Commercialisée") ) {
                             continue;
                         }
 
                         //verif si existant
-                        MedicamentOfficiel verifMedicamentOfficiel = null;
-                        verifMedicamentOfficiel = mapMedicamentOfficiel.get(Long.parseLong(lineSplitted[0]));
-                        if (verifMedicamentOfficiel != null){
+                        Medicament verifMedicament = null;
+                        verifMedicament = mapMedicamentOfficiel.get(Long.parseLong(lineSplitted[0]));
+                        if (verifMedicament != null){
                             continue;
                         }
 
-                        medicamentOfficiel.setCodeCIS(Long.parseLong(lineSplitted[0]));
+                        medicament.setCodeCIS(Long.parseLong(lineSplitted[0]));
 
                         int positionVirgule = lineSplitted[1].indexOf(",");
                         if (positionVirgule >=0){
-                            medicamentOfficiel.setDenomination(lineSplitted[1].substring(0,positionVirgule));
+                            medicament.setDenomination(lineSplitted[1].substring(0,positionVirgule));
                         } else {
-                            medicamentOfficiel.setDenomination(lineSplitted[1]);
+                            medicament.setDenomination(lineSplitted[1]);
                         }
                         if (lineSplitted[2].substring(0,1).equals(" ")) {
                             lineSplitted[2] = lineSplitted[2].substring(1,lineSplitted[2].length());
                         }
 
-                        medicamentOfficiel.setFormePharmaceutique(mapFormePharamaceutique.get(lineSplitted[2]));
+                        medicament.setFormePharmaceutique(mapFormePharamaceutique.get(lineSplitted[2]));
 
                         int positionPointVirgule = lineSplitted[10].indexOf(";");
                         if (positionPointVirgule >=0){
-                            medicamentOfficiel.setTitulaire(lineSplitted[10].substring(0,positionPointVirgule));
+                            medicament.setTitulaire(lineSplitted[10].substring(0,positionPointVirgule));
                         } else {
-                            medicamentOfficiel.setTitulaire(lineSplitted[10]);
+                            medicament.setTitulaire(lineSplitted[10]);
                         }
-                        medicamentOfficiel.save();
+                        medicament.save();
                     }
                 } catch (final Exception e) {
                     e.printStackTrace();
@@ -1116,20 +1119,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
             try {
                 is = getAssets().open("PS_LibreAcces_Personne_activite_0.txt");
-                //reader = new BufferedReader(new InputStreamReader(is,"iso-8859-1"));
-                //reader = new BufferedReader(new InputStreamReader(is,"windows-1252"));
                 reader = new BufferedReader(new InputStreamReader(is,"UTF-8"));
-                //contents = reader.readLine();
                 String line = null;
-
-                //TODO remplacer le listAll par unee requete qui ne ramene que l'IdPP et le nom par exemple
-                /*List<MedecinOfficiel> listMedecinOfficiel = MedecinOfficiel.listAll(MedecinOfficiel.class);
-                Map<String, MedecinOfficiel> mapMedecinOfficiel = new HashMap<>();
-                for (MedecinOfficiel medecinOfficiel : listMedecinOfficiel) {
-                    mapMedecinOfficiel.put(medecinOfficiel.getIdPP(), medecinOfficiel);
-                }*/
-
-                //List<String> listIdPP = MedecinOfficiel.findWithQuery(String.class,"Select id_pp from Medecin_Officiel");
 
                 List<Profession> listProfession = Profession.listAll(Profession.class);
                 Map<String, Profession> mapProfession = new HashMap<>();
@@ -1154,55 +1145,29 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     String lineSplitted[] = line.split(SEPARATEUR);
 
                     if (lineSplitted[1].equals("Identifiant PP")) {
-
-
                         continue;
                     }
 
-
-                    //verif si existant
-                    //TODO ne travailler que l'idPP et le nom
-                    /*MedecinOfficiel verifMedecinOfficiel = null;
-                    verifMedecinOfficiel = mapMedecinOfficiel.get(lineSplitted[2]);
-
-                    if (verifMedecinOfficiel != null){
-                        continue;
-                    }*/
-
-                   /* if (listIdPP.contains(lineSplitted[2])) {
-                        continue;
-                        //medecinOfficiel = listMedecinOfficiel.get(0);
-                    }*/
-
-
-                //ne fct pas => pas de verif de l'existant car trop long
-
-                  /*  List<MedecinOfficiel> listMedecinOfficiel = MedecinOfficiel.find(MedecinOfficiel.class,"id_pp = ?", lineSplitted[2]);
-                if (listMedecinOfficiel.size()>0) {
-                    continue;
-                    //medecinOfficiel = listMedecinOfficiel.get(0);
-                }*/
-
-                    MedecinOfficiel medecinOfficiel = new MedecinOfficiel();
-                    medecinOfficiel.setIdPP(lineSplitted[2]);
-                    medecinOfficiel.setCodeCivilite(lineSplitted[3]);
-                    medecinOfficiel.setNom(lineSplitted[7].toUpperCase());
+                    Contact contact = new Contact();
+                    contact.setIdPP(lineSplitted[2]);
+                    contact.setCodeCivilite(lineSplitted[3]);
+                    contact.setNom(lineSplitted[7].toUpperCase());
                     if (lineSplitted[8].length()>1) {
                         String prenom = lineSplitted[8].substring(0,1).toUpperCase()+lineSplitted[8].substring(1,lineSplitted[8].length()-1).toLowerCase();
                     }
-                    medecinOfficiel.setPrenom(lineSplitted[8]);
-                    medecinOfficiel.setProfession(mapProfession.get(lineSplitted[10]));
+                    contact.setPrenom(lineSplitted[8]);
+                    contact.setProfession(mapProfession.get(lineSplitted[10]));
 
                     if (lineSplitted[16].equals("Qualifié en Médecine Générale") || lineSplitted[16].equals("Spécialiste en Médecine Générale")) {
-                        medecinOfficiel.setSavoirFaire(mapSavoirFaire.get("Médecine Générale"));
+                        contact.setSavoirFaire(mapSavoirFaire.get("Médecine Générale"));
                     } else {
-                        medecinOfficiel.setSavoirFaire(mapSavoirFaire.get(lineSplitted[16]));
+                        contact.setSavoirFaire(mapSavoirFaire.get(lineSplitted[16]));
                     }
                     if (lineSplitted.length>24) {
-                        medecinOfficiel.setRaisonSocial(lineSplitted[24]);
+                        contact.setRaisonSocial(lineSplitted[24]);
                     }
                     if (lineSplitted.length>26) {
-                        medecinOfficiel.setComplement(lineSplitted[26]);
+                        contact.setComplement(lineSplitted[26]);
                     }
                     String adresse = "";
                     if ((lineSplitted.length>28) && (!lineSplitted[28].isEmpty())){
@@ -1215,60 +1180,43 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     if ((lineSplitted.length>32) && (!lineSplitted[32].isEmpty())){
                         adresse += lineSplitted[32];
                     }
-                    medecinOfficiel.setAdresse(adresse.toUpperCase());
-                /*if (lineSplitted.length>35) {
-                    if (lineSplitted[35].length() == 4) {
-                        medecinOfficiel.setCp("0" + lineSplitted[35]);
-                    } else {
-                        medecinOfficiel.setCp(lineSplitted[35]);
-                    }
-                }
-                if (lineSplitted.length>37) {
-                    medecinOfficiel.setVille(lineSplitted[37].toUpperCase());
-                }*/
+                    contact.setAdresse(adresse.toUpperCase());
+
                     if (lineSplitted.length>35 && !lineSplitted[34].isEmpty())  {
 
-                        //pr correction bug
-                       // String test = lineSplitted[34];
-                       // String testCp = lineSplitted[34].substring(0,5);
-                      //  String testVille = lineSplitted[34].substring(6);
-                        //fin correction
-                        medecinOfficiel.setCp(lineSplitted[34].substring(0,5));
-                        medecinOfficiel.setVille(lineSplitted[34].substring(6));
+                        contact.setCp(lineSplitted[34].substring(0,5));
+                        contact.setVille(lineSplitted[34].substring(6));
 
-                        //medecinOfficiel.setCp(testCp);
-                       // medecinOfficiel.setVille(testVille);
                     }
                     if (lineSplitted.length>40 && !lineSplitted[40].isEmpty())  {
                         lineSplitted[40] = lineSplitted[40].replace(" ", "");
                         lineSplitted[40] = lineSplitted[40].replace(".", "");
                         if (lineSplitted[40].length() == 9) {
-                            medecinOfficiel.setTelephone("0" + lineSplitted[40]);
+                            contact.setTelephone("0" + lineSplitted[40]);
                         } else if (lineSplitted[40].length() == 10) {
-                            medecinOfficiel.setTelephone(lineSplitted[40]);
+                            contact.setTelephone(lineSplitted[40]);
                         }
                     }
                     if (lineSplitted.length>42 && !lineSplitted[42].isEmpty())  {
                         lineSplitted[42] = lineSplitted[42].replace(" ", "");
                         lineSplitted[42] = lineSplitted[42].replace(".", "");
                         if (lineSplitted[42].length() == 9) {
-                            medecinOfficiel.setFax("0" + lineSplitted[42]);
+                            contact.setFax("0" + lineSplitted[42]);
                         } else if (lineSplitted[42].length() == 10) {
-                            medecinOfficiel.setFax(lineSplitted[42]);
+                            contact.setFax(lineSplitted[42]);
                         }
                     }
                     if (lineSplitted.length>43 && !lineSplitted[43].isEmpty())  {
-                        medecinOfficiel.setEmail(lineSplitted[43]);
+                        contact.setEmail(lineSplitted[43]);
                     }
 
-                    List<MedecinOfficielLight> listMedecinOfficielLight = MedecinOfficielLight.find(MedecinOfficielLight.class, "id_pp = ?",lineSplitted[2]);
-                    if (listMedecinOfficielLight.size()>0) {
-                        //TODO deplacer juste avant le save et verif si eisantdans cete liste
-                        boolean bool = false;
-                        for (MedecinOfficielLight medecinOfficielLight : listMedecinOfficielLight){
-                            if (comparer(medecinOfficielLight,medecinOfficiel)){
-                                Log.i("existant","medecin deja cree: "+lineSplitted[2]);
+                    List<ContactLight> listContactLight = ContactLight.find(ContactLight.class, "id_pp = ?",lineSplitted[2]);
+                    if (listContactLight.size()>0) {
 
+                        boolean bool = false;
+                        for (ContactLight contactLight : listContactLight){
+                            if (comparer(contactLight, contact)){
+                                Log.i("existant","medecin deja cree: "+lineSplitted[2]);
                                 bool = true;
                                 continue;
                             }
@@ -1277,11 +1225,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                             continue;
                         }
                     }
-                    if (medecinOfficiel.getAdresse() != null && medecinOfficiel.getCp() != null && medecinOfficiel.getVille() != null) {
-                        medecinOfficiel.enregisterCoordonnees(context);
+                    if (contact.getAdresse() != null && contact.getCp() != null && contact.getVille() != null) {
+                        contact.enregisterCoordonnees(context);
                     }
                     Log.i("enregistre","medecin new: "+lineSplitted[2]);
-                    medecinOfficiel.save();
+                    contact.save();
                 }
             } catch (final Exception e) {
                 e.printStackTrace();
@@ -1318,16 +1266,16 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
     public void remplirDefaultBD() {
 
-        List<Duree> listDuree = Duree.listAll(Duree.class);
-        if (listDuree.size()==0) {
+        Long count = Duree.count(Duree.class);
+        if (count ==0) {
             new Duree("jour").save();
             new Duree("semaine").save();
             new Duree("mois").save();
             new Duree("an").save();
         }
 
-        List<Analyse> listAnalyse = Analyse.listAll(Analyse.class);
-        if (listAnalyse.size()==0) {
+        count = Analyse.count(Analyse.class);
+        if (count ==0) {
             new Analyse("sang").save();
             new Analyse("urine").save();
             new Analyse("selle").save();
@@ -1335,8 +1283,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             new Analyse("autre").save();
         }
 
-        List<Dose> listDose = Dose.listAll(Dose.class);
-        if (listAnalyse.size()==0) {
+        count = Dose.count(Dose.class);
+        if (count ==0) {
             new Dose("application").save();
             new Dose("bâton").save();
             new Dose("capsule").save();
@@ -1361,8 +1309,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             new Dose("trousse").save();
         }
 
-        List<Examen> listExamen = Examen.listAll(Examen.class);
-        if (listExamen.size()==0) {
+        count = Examen.count(Examen.class);
+        if (count ==0) {
             new Examen("radiologie").save();
             new Examen("échographie").save();
             new Examen("irm").save();
@@ -1380,8 +1328,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             new Examen("autre").save();
         }
 
-        List<AssociationFormeDose> listAssoc = AssociationFormeDose.listAll(AssociationFormeDose.class);
-        if (listAssoc.size()==0) {
+        count = AssociationFormeDose.count(AssociationFormeDose.class);
+        if (count ==0) {
             new AssociationFormeDose("comprimé et solution(s) et granules et poudre","comprimé").save();
             new AssociationFormeDose("comprimé et solution(s) et granules et poudre et pommade","comprimé").save();
             new AssociationFormeDose("crème et solution et granules et poudre","application").save();
@@ -1950,8 +1898,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
     public void remplirExempleBD() {
 
-        List<Utilisateur> listUtilisateur = Utilisateur.listAll(Utilisateur.class);
-        if (listUtilisateur.size()==0) {
+        Long count = Utilisateur.count(Utilisateur.class);
+        if (count ==0) {
             Utilisateur user = new Utilisateur("Bob",new Date(),"desc Bob");
             List<Departement> listDep = Departement.findWithQuery(Departement.class, "Select * from Departement where numero like '06'");
             Departement dep = listDep.get(0);
@@ -1986,7 +1934,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         }
     }
 
-    private boolean comparer(MedecinOfficielLight medecinLight, MedecinOfficiel medecin){
+    private boolean comparer(ContactLight medecinLight, Contact medecin){
         boolean bool = true;
         if (medecinLight.getIdPP() != null && medecin.getIdPP() != null) {
             bool = bool && medecinLight.getIdPP().equalsIgnoreCase(medecin.getIdPP());
