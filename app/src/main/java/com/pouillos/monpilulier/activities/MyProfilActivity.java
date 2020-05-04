@@ -86,7 +86,7 @@ public class MyProfilActivity extends AppCompatActivity {
         buttonTaille = findViewById(R.id.buttonTaille);
         buttonImc = findViewById(R.id.buttonImc);
         buttonPoids = findViewById(R.id.buttonPoids);
-        utilisateur  = (new Utilisateur()).findActifUser();
+       // utilisateur  = (new Utilisateur()).findActifUser();
 
 
 

@@ -133,4 +133,6 @@ public interface BasicUtils {
 
     public default void ouvrirActiviteSuivante(Context context,Class classe){};
     public default void ouvrirActiviteSuivante(Context context,Class classe, String nomExtra, Long objetIdExtra ) {};
+
+    public default void enableItems(Boolean bool) {};
 }

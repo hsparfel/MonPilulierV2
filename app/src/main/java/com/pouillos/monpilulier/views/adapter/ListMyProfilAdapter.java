@@ -33,7 +33,7 @@ public class ListMyProfilAdapter extends RecyclerView.Adapter<ListAllProfilViewH
 
         // CONSTRUCTOR
         public ListMyProfilAdapter( ) {
-            this.utilisateur  = (new Utilisateur()).findActifUser();
+            //this.utilisateur  = (new Utilisateur()).findActifUser();
             //listAllAssociation = Association.find(Association.class,"utilisateur = ?", utilisateur.getId().toString());
             this.listMyProfil = Profil.find(Profil.class,"utilisateur = ?", utilisateur.getId().toString());
 

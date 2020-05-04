@@ -21,13 +21,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
 import com.facebook.stetho.Stetho;
+import com.orm.SchemaGenerator;
+import com.orm.SugarContext;
+import com.orm.SugarDb;
 import com.orm.SugarRecord;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.add.AddProfilActivity;
 import com.pouillos.monpilulier.activities.add.AddRdvActivity;
 import com.pouillos.monpilulier.activities.enregistrer.EnregistrerPrescriptionActivity;
 import com.pouillos.monpilulier.activities.listallx.ListAllProfilActivity;
-import com.pouillos.monpilulier.activities.listallx.ListAllUserActivity;
 import com.pouillos.monpilulier.activities.newx.NewUserActivity;
 import com.pouillos.monpilulier.activities.recherche.ChercherContactActivity;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
@@ -77,7 +79,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         setContentView(R.layout.activity_main);
         Stetho.initializeWithDefaults(this);
         textUser = (TextView) findViewById(R.id.textUser);
-        Button buttonListAllUser = (Button) findViewById(R.id.buttonListAllUser);
         Button buttonNewUser = (Button) findViewById(R.id.buttonNewUser);
 
 
@@ -99,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         progressBar = (ProgressBar) findViewById(R.id.my_progressBar);
         Button buttonAuthentification = (Button) findViewById(R.id.buttonAuthentification);
         Button buttonAccueil = (Button) findViewById(R.id.buttonAccueil);
-
 
         progressBar.setVisibility(View.VISIBLE);
 
@@ -240,23 +240,17 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             runnerRAZ.execute();
         });
 
-        buttonListAllUser.setOnClickListener(v -> {
-            Intent listAllUserActivity = new Intent(MainActivity.this, ListAllUserActivity.class);
-            listAllUserActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(listAllUserActivity);
-        });
-
     }
 
     private class AsyncTaskRunnerRAZ extends AsyncTask<Void, Integer, Void> {
 
         protected Void doInBackground(Void...voids) {
+            publishProgress(0);
 
             //RAZ A LA DEMANDE
             //SugarRecord.executeQuery("DROP TABLE PATIENT_MEDECIN");
             //SugarRecord.executeQuery("DELETE FROM RDV");
             //SugarRecord.executeQuery("DELETE FROM ASSOCIATION");
-            publishProgress(20);
             //SugarRecord.executeQuery("DELETE FROM UTILISATEUR");
             //SugarRecord.executeQuery("DELETE FROM PROFIL");
             //SugarRecord.executeQuery("DELETE FROM DEPARTEMENT");
@@ -264,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             //SugarRecord.executeQuery("DROP TABLE MEDECIN");
             //SugarRecord.executeQuery("DROP TABLE MEDECIN_OFFICIEL");
             //SugarRecord.executeQuery("DROP TABLE MEDICAMENT");
-            SugarRecord.executeQuery("DROP TABLE MEDICAMENT_OFFICIEL");
+            //SugarRecord.executeQuery("DROP TABLE MEDICAMENT_OFFICIEL");
             //SugarRecord.executeQuery("DROP TABLE ASSOCIATION");
             //SugarRecord.executeQuery("DROP TABLE ASSOCIATION_OFFICIELLE");
             //SugarRecord.executeQuery("DROP TABLE CABINET");
@@ -275,23 +269,27 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             //SugarRecord.executeQuery("DROP TABLE RDV");
             //SugarRecord.executeQuery("DROP TABLE RDV_AUTRE");
             //SugarRecord.executeQuery("DROP TABLE RDV_OFFICIEL");
-            /*    SugarContext.terminate();
-                publishProgress(20);
-                SchemaGenerator schemaGenerator = new SchemaGenerator(getApplicationContext());
+            //SugarRecord.executeQuery("DROP TABLE SPECIALITE");
+            //RAZ TOTAL
+            SugarContext.terminate();
+            publishProgress(20);
+            SchemaGenerator schemaGenerator = new SchemaGenerator(getApplicationContext());
             publishProgress(40);
-                schemaGenerator.deleteTables(new SugarDb(getApplicationContext()).getDB());
+            schemaGenerator.deleteTables(new SugarDb(getApplicationContext()).getDB());
             publishProgress(60);
-                SugarContext.init(getApplicationContext());
+            SugarContext.init(getApplicationContext());
             publishProgress(80);
-                schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());*/
+            schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());
             publishProgress(100);
+
+
+            finish();
             return null;
         }
 
         protected void onPostExecute(Void result) {
             progressBar.setVisibility(View.GONE);
-            Toast toast = Toast.makeText(MainActivity.this, "RAZ fini", Toast.LENGTH_LONG);
-            toast.show();
+            Toast.makeText(MainActivity.this, "RAZ fini", Toast.LENGTH_LONG).show();
         }
 
         @RequiresApi(api = Build.VERSION_CODES.N)
@@ -318,11 +316,16 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             publishProgress(50);
                     remplirDepartementBD();
             publishProgress(70);
-                    remplirExempleBD();
+                  // pas de creation de user  remplirExempleBD();
             publishProgress(90);
 
                     //afficher le user actif
-                    Utilisateur utilisateur = (new Utilisateur()).findActifUser();
+                    //Utilisateur utilisateur = (new Utilisateur()).findActifUser();
+            List<Utilisateur> listUserActif = Utilisateur.find(Utilisateur.class, "actif = ?", "1");
+            Utilisateur utilisateur = null;
+            if (listUserActif.size() !=0){
+                utilisateur = listUserActif.get(0);
+            }
                     String userName;
                     if (utilisateur.getId() == null) {
                         userName = "user inconnu";
@@ -1118,7 +1121,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             BufferedReader reader = null;
 
             try {
-                is = getAssets().open("PS_LibreAcces_Personne_activite_0.txt");
+                is = getAssets().open("PS_LibreAcces_Personne_activite_0.csv");
                 reader = new BufferedReader(new InputStreamReader(is,"UTF-8"));
                 String line = null;
 
@@ -1133,7 +1136,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                 for (SavoirFaire savoirFaire : listSavoirFaire) {
                     mapSavoirFaire.put(savoirFaire.getName(), savoirFaire);
                 }
-                int readerSize = 100000;
+                int readerSize = 5000;
                 int readerCount = 0;
                 int compteur = 0;
                 publishProgress(compteur);
@@ -1182,11 +1185,13 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     }
                     contact.setAdresse(adresse.toUpperCase());
 
-                    if (lineSplitted.length>35 && !lineSplitted[34].isEmpty())  {
+                    if (lineSplitted.length>34 && !lineSplitted[34].isEmpty())  {
 
                         contact.setCp(lineSplitted[34].substring(0,5));
                         contact.setVille(lineSplitted[34].substring(6));
 
+                    } else {
+                        contact.setCp("");
                     }
                     if (lineSplitted.length>40 && !lineSplitted[40].isEmpty())  {
                         lineSplitted[40] = lineSplitted[40].replace(" ", "");

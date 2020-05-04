@@ -24,6 +24,7 @@ import com.google.android.material.slider.Slider;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
+import com.pouillos.monpilulier.activities.AccueilActivity;
 import com.pouillos.monpilulier.activities.MainActivity;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
@@ -203,7 +204,7 @@ public class AddProfilActivity extends NavDrawerActivity implements Serializable
     @OnClick(R.id.floating_action_button)
     public void fabClick() {
         Long profilToCreateId = profilToCreate.save();
-        Intent intent = new Intent(AddProfilActivity.this, MainActivity.class);
+        Intent intent = new Intent(AddProfilActivity.this, AccueilActivity.class);
         startActivity(intent);
         finish();
     }

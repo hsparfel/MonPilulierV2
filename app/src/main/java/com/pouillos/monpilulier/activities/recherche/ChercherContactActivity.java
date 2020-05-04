@@ -1,7 +1,6 @@
 package com.pouillos.monpilulier.activities.recherche;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
@@ -28,10 +28,9 @@ import com.pouillos.monpilulier.entities.Departement;
 import com.pouillos.monpilulier.entities.Profession;
 import com.pouillos.monpilulier.entities.Region;
 import com.pouillos.monpilulier.entities.SavoirFaire;
-import com.pouillos.monpilulier.entities.Utilisateur;
-import com.pouillos.monpilulier.interfaces.BasicUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -40,12 +39,8 @@ import butterknife.OnClick;
 import icepick.Icepick;
 import icepick.State;
 
-public class ChercherContactActivity extends NavDrawerActivity implements BasicUtils, AdapterView.OnItemClickListener  {
+public class ChercherContactActivity extends NavDrawerActivity implements AdapterView.OnItemClickListener  {
 
-    //todo rajouter departement et region indefini pour requete plus large sur contact sans adresse
-
-    @State
-    Utilisateur utilisateur;
     @State
     boolean booleanMedecin;
     @State
@@ -61,19 +56,19 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
     @State
     String[] listAutocompletion;
 
-    private List<Profession> listProfession;
-    private List<SavoirFaire> listSavoirFaire;
-    private List<Departement> listDepartement;
-    private List<Region> listRegion;
+    private List<Profession> listProfessionBD;
+    private List<SavoirFaire> listSavoirFaireBD;
+    private List<Departement> listDepartementBD;
+    private List<Region> listRegionBD;
 
-    List<Contact> mListContact;
+    List<Contact> listContact;
 
     @State
     Departement utilisateurDepartement;
     @State
     Region utilisateurRegion;
     @State
-    Contact mContactSelectionne;
+    Contact contactSelected;
 
     @BindView(R.id.textRechercheIntervenant)
     AutoCompleteTextView textRechercheIntervenant;
@@ -102,7 +97,8 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
     AutoCompleteTextView selectionGeo;
     @BindView(R.id.listGeo)
     TextInputLayout listGeo;
-
+    @BindView(R.id.my_progressBar)
+    ProgressBar progressBar;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -117,30 +113,66 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
 
         ButterKnife.bind(this);
 
-        utilisateur = (new Utilisateur()).findActifUser();
-        utilisateurDepartement = utilisateur.getDepartement();
-        utilisateurRegion = utilisateur.getDepartement().getRegion();
-        listProfession = Profession.listAll(Profession.class);
-        listSavoirFaire = SavoirFaire.listAll(SavoirFaire.class);
-        listDepartement = Departement.listAll(Departement.class);
-        listRegion = Region.listAll(Region.class);
+        progressBar.setVisibility(View.VISIBLE);
+
+        ChercherContactActivity.AsyncTaskRunnerBD runnerBD = new ChercherContactActivity.AsyncTaskRunnerBD();
+        runnerBD.execute();
 
         fabChercher.hide();
         fabRaz.hide();
+
+        setTitle(getString(R.string.text_search_contact));
     }
 
+    public class AsyncTaskRunnerBD extends AsyncTask<Void, Integer, Void> {
 
+        protected Void doInBackground(Void...voids) {
+            publishProgress(0);
+            activeUser = findActiveUser();
+            publishProgress(10);
+            utilisateurDepartement = activeUser.getDepartement();
+            utilisateurRegion = activeUser.getDepartement().getRegion();
+            listProfessionBD = Profession.listAll(Profession.class);
+            Collections.sort(listProfessionBD);
+            publishProgress(25);
+            listSavoirFaireBD = SavoirFaire.listAll(SavoirFaire.class);
+            Collections.sort(listSavoirFaireBD);
+            publishProgress(50);
+            listDepartementBD = Departement.listAll(Departement.class);
+            Collections.sort(listDepartementBD);
+            publishProgress(75);
+            listRegionBD = Region.listAll(Region.class);
+            Collections.sort(listRegionBD);
+            publishProgress(100);
+            return null;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+        protected void onPostExecute(Void result) {
+            progressBar.setVisibility(View.GONE);
+            }
+        }
+
+    private void displayFab(FloatingActionButton fab, boolean bool) {
+        if (bool) {
+            fab.hide();
+        } else {
+            fab.show();
+        }
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @OnClick(R.id.chipDepartement)
     public void chipDepartementClick() {
         if (chipDepartement.isCheckable()) {
             textRechercheIntervenant.setVisibility(View.GONE);
-            if (booleanDepartement) {
+            /*if (booleanDepartement) {
                 fabChercher.hide();
             } else {
                 fabChercher.show();
-            }
+            }*/
+            displayFab(fabChercher, booleanDepartement);
+
             if (!booleanDepartement) {
                 chipRegion.setVisibility(View.GONE);
                 listGeo.setVisibility(View.VISIBLE);
@@ -149,7 +181,10 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
                 listGeo.setVisibility(View.GONE);
             }
             booleanDepartement = !booleanDepartement;
-            List<String> listGeoString = new ArrayList<>();
+
+            buildDropdownMenu(listDepartementBD, ChercherContactActivity.this,selectionGeo);
+            selectionGeo.setText(utilisateurDepartement.toString(), false);
+            /*List<String> listGeoString = new ArrayList<>();
             String[] listDeroulanteGeo = new String[listDepartement.size()];
             for (Departement departement : listDepartement) {
                 listGeoString.add(departement.getNom() + " (" + departement.getNumero() + ")");
@@ -157,7 +192,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
             listGeoString.toArray(listDeroulanteGeo);
             selectionGeo.setText(utilisateurDepartement.getNom() + " (" + utilisateurDepartement.getNumero() + ")", false);
             ArrayAdapter adapter = new ArrayAdapter(this, R.layout.list_item, listDeroulanteGeo);
-            selectionGeo.setAdapter(adapter);
+            selectionGeo.setAdapter(adapter);*/
         }
     }
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -165,11 +200,12 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
     public void chipRegionClick() {
         if (chipRegion.isCheckable()) {
             textRechercheIntervenant.setVisibility(View.GONE);
-            if (booleanRegion) {
+            displayFab(fabChercher,booleanRegion);
+           /* if (booleanRegion) {
                 fabChercher.hide();
             } else {
                 fabChercher.show();
-            }
+            }*/
             if (!booleanRegion) {
                 chipDepartement.setVisibility(View.GONE);
                 listGeo.setVisibility(View.VISIBLE);
@@ -178,7 +214,10 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
                 listGeo.setVisibility(View.GONE);
             }
             booleanRegion = !booleanRegion;
-            List<String> listGeoString = new ArrayList<>();
+
+            buildDropdownMenu(listRegionBD, ChercherContactActivity.this,selectionGeo);
+            selectionGeo.setText(utilisateurRegion.toString(), false);
+            /*List<String> listGeoString = new ArrayList<>();
             String[] listDeroulanteGeo = new String[listRegion.size()];
             for (Region region : listRegion) {
                 listGeoString.add(region.getNom());
@@ -186,7 +225,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
             listGeoString.toArray(listDeroulanteGeo);
             selectionGeo.setText(utilisateurRegion.getNom(), false);
             ArrayAdapter adapter = new ArrayAdapter(this, R.layout.list_item, listDeroulanteGeo);
-            selectionGeo.setAdapter(adapter);
+            selectionGeo.setAdapter(adapter);*/
         }
     }
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -201,7 +240,10 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
                 listMetier.setVisibility(View.VISIBLE);
             }
             booleanSpecialite = !booleanSpecialite;
-            List<String> listMetierString = new ArrayList<>();
+
+            buildDropdownMenu(listSavoirFaireBD, ChercherContactActivity.this,selectionMetier);
+            selectionMetier.setText("Médecine Générale", false);
+            /*List<String> listMetierString = new ArrayList<>();
             String[] listDeroulanteMetier = new String[listSavoirFaire.size()];
             for (SavoirFaire savoirFaire : listSavoirFaire) {
                 listMetierString.add(savoirFaire.getName());
@@ -209,7 +251,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
             listMetierString.toArray(listDeroulanteMetier);
             selectionMetier.setText("Médecine Générale", false);
             ArrayAdapter adapter = new ArrayAdapter(this, R.layout.list_item, listDeroulanteMetier);
-            selectionMetier.setAdapter(adapter);
+            selectionMetier.setAdapter(adapter);*/
         }
     }
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -223,7 +265,11 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
                 listMetier.setVisibility(View.VISIBLE);
             }
             booleanActivite = !booleanActivite;
-            List<String> listMetierString = new ArrayList<>();
+
+            buildDropdownMenu(listProfessionBD, ChercherContactActivity.this,selectionMetier);
+            selectionMetier.setText("Infirmier", false);
+
+            /*List<String> listMetierString = new ArrayList<>();
             String[] listDeroulanteMetier = new String[listProfession.size()];
             for (Profession profession : listProfession) {
                 listMetierString.add(profession.getName());
@@ -231,7 +277,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
             listMetierString.toArray(listDeroulanteMetier);
             selectionMetier.setText("Infirmier", false);
             ArrayAdapter adapter = new ArrayAdapter(this, R.layout.list_item, listDeroulanteMetier);
-            selectionMetier.setAdapter(adapter);
+            selectionMetier.setAdapter(adapter);*/
 
         }
     }
@@ -307,18 +353,17 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
         fabRaz.show();
         fabChercher.hide();
 
-
-        ChercherContactActivity.AsyncTaskRunner runner = new ChercherContactActivity.AsyncTaskRunner();
-        runner.execute();
+        ChercherContactActivity.AsyncTaskRunnerContact runnerContact = new ChercherContactActivity.AsyncTaskRunnerContact();
+        runnerContact.execute();
 
     }
 
-    public class AsyncTaskRunner extends AsyncTask<Void, Integer, Void> {
+    public class AsyncTaskRunnerContact extends AsyncTask<Void, Integer, Void> {
 
         protected Void doInBackground(Void...voids) {
             String requete = "";
 
-            mListContact = new ArrayList<>();
+            listContact = new ArrayList<>();
 //TODO revoir la requete pour exclure les contacts deja associés.
             requete += "SELECT * FROM CONTACT ";
             if (booleanMedecin) {
@@ -366,20 +411,23 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
                 listGeo.setClickable(false);
             }
 
-            mListContact = Contact.findWithQuery(Contact.class, requete);
+            listContact = Contact.findWithQuery(Contact.class, requete);
 
 
             List<String> listMedecinOfficielString = new ArrayList<>();
-            listAutocompletion = new String[mListContact.size()];
-            for (Contact contact : mListContact) {
+            listAutocompletion = new String[listContact.size()];
+            for (Contact contact : listContact) {
                 String affichageMedecinOfficiel = "";
                 affichageMedecinOfficiel += contact.getNom() + ", " + contact.getPrenom() + " (";
                 if (contact.getSavoirFaire() !=null) {
-                    affichageMedecinOfficiel += contact.getSavoirFaire().getName() + ") * ";
+                    affichageMedecinOfficiel += contact.getSavoirFaire().getName() + ")";
                 } else {
-                    affichageMedecinOfficiel += contact.getProfession().getName() + ") * ";
+                    affichageMedecinOfficiel += contact.getProfession().getName() + ")";
                 }
-                affichageMedecinOfficiel += contact.getVille();
+                if (contact.getVille() != null) {
+                    affichageMedecinOfficiel += " * "+contact.getVille();
+                }
+
                 listMedecinOfficielString.add(affichageMedecinOfficiel);
             }
             listMedecinOfficielString.toArray(listAutocompletion);
@@ -389,10 +437,11 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
         }
 
         protected void onPostExecute(Void result) {
-            if (mListContact.size() == 0) {
+            if (listContact.size() == 0) {
                 Toast toast = Toast.makeText(ChercherContactActivity.this, "Aucune correspondance, modifier puis appliquer filtre", Toast.LENGTH_LONG);
                 toast.show();
                 textRechercheIntervenant.setVisibility(View.GONE);
+                //todo visibility sur layout plutot
             }
 
             //ArrayAdapter adapterMedecins = new ArrayAdapter(ChercherMedecinOfficielActivity.this, android.R.layout.simple_list_item_1, listAutocompletion);
@@ -424,6 +473,11 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
                 listMetier.setVisibility(View.GONE);
                 listGeo.setVisibility(View.GONE);
             //}
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        protected void onProgressUpdate(Integer... integer) {
+            progressBar.setProgress(integer[0],true);
         }
     }
 
@@ -463,11 +517,6 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
         textRechercheIntervenant.setText(null);
     }
 
-    @Override public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Icepick.saveInstanceState(this, outState);
-    }
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
@@ -485,32 +534,44 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
         String nom = textRechercheIntervenant.getText().toString().substring(0, positionVirgule);
         String prenom = textRechercheIntervenant.getText().toString().substring(positionVirgule + 2, positionParentheseOuverte - 1);
         String metier = textRechercheIntervenant.getText().toString().substring(positionParentheseOuverte + 1, positionParentheseFermee);
-        String ville = textRechercheIntervenant.getText().toString().substring(positionEtoile + 2);
+        String ville="";
+        if (positionEtoile != -1) {
+            ville = textRechercheIntervenant.getText().toString().substring(positionEtoile + 2);
+        }
+        //String ville = textRechercheIntervenant.getText().toString().substring(positionEtoile + 2);
 
         if (booleanAutre) {
             Profession profession = Profession.find(Profession.class, "name = ?", metier).get(0);
-            mContactSelectionne = Contact.find(Contact.class, "nom = ? and prenom = ? and profession = ? and ville = ?", nom, prenom, profession.getId().toString(), ville).get(0);
-            Toast.makeText(ChercherContactActivity.this, "Selected Item is: \t" + mContactSelectionne.getPrenom() + mContactSelectionne.getNom(), Toast.LENGTH_LONG).show();
+
+            if (ville.equalsIgnoreCase("")) {
+                contactSelected = Contact.find(Contact.class, "nom = ? and prenom = ? and profession = ?", nom, prenom, profession.getId().toString()).get(0);
+            } else {
+                contactSelected = Contact.find(Contact.class, "nom = ? and prenom = ? and profession = ? and ville = ?", nom, prenom, profession.getId().toString(), ville).get(0);
+            }
+
+            Toast.makeText(ChercherContactActivity.this, "Selected Item is: \t" + contactSelected.getPrenom() + contactSelected.getNom(), Toast.LENGTH_LONG).show();
         } else if (booleanMedecin) {
             SavoirFaire savoirFaire = SavoirFaire.find(SavoirFaire.class, "name = ?", metier).get(0);
-            mContactSelectionne = Contact.find(Contact.class, "nom = ? and prenom = ? and savoir_faire = ? and ville = ?", nom, prenom, savoirFaire.getId().toString(), ville).get(0);
-            Toast.makeText(ChercherContactActivity.this, "Selected Item is: \t" + mContactSelectionne.getPrenom() + mContactSelectionne.getNom(), Toast.LENGTH_LONG).show();
+
+            if (ville.equalsIgnoreCase("")) {
+                contactSelected = Contact.find(Contact.class, "nom = ? and prenom = ? and savoir_faire = ?", nom, prenom, savoirFaire.getId().toString()).get(0);
+            } else {
+                contactSelected = Contact.find(Contact.class, "nom = ? and prenom = ? and savoir_faire = ? and ville = ?", nom, prenom, savoirFaire.getId().toString(), ville).get(0);
+            }
+
+            //mContactSelectionne = Contact.find(Contact.class, "nom = ? and prenom = ? and savoir_faire = ? and ville = ?", nom, prenom, savoirFaire.getId().toString(), ville).get(0);
+            Toast.makeText(ChercherContactActivity.this, "Selected Item is: \t" + contactSelected.getPrenom() + contactSelected.getNom(), Toast.LENGTH_LONG).show();
 
         }
 
-
-
-        if (mContactSelectionne != null) {
-            AssociationUtilisateurContact associationUtilisateurContact = new AssociationUtilisateurContact(utilisateur, mContactSelectionne);
+        if (contactSelected != null) {
+            AssociationUtilisateurContact associationUtilisateurContact = new AssociationUtilisateurContact(activeUser, contactSelected);
             if (!associationUtilisateurContact.isExistante()) {
                 associationUtilisateurContact.save();
             }
-            Toast toast = Toast.makeText(ChercherContactActivity.this, utilisateur.getName()+" & "+ mContactSelectionne.getNom()+" ont été associés", Toast.LENGTH_LONG);
-            toast.show();
+            Toast.makeText(ChercherContactActivity.this, activeUser.getName()+" & "+ contactSelected.getNom()+" ont été associés", Toast.LENGTH_LONG).show();
 
-
-
-            ouvrirActiviteSuivante(AfficherContactActivity.class,"contactId", mContactSelectionne.getId());
+            ouvrirActiviteSuivante(ChercherContactActivity.this,AfficherContactActivity.class,"contactId", contactSelected.getId());
         }
 
 
@@ -530,18 +591,4 @@ public class ChercherContactActivity extends NavDrawerActivity implements BasicU
         }
         return super.dispatchTouchEvent(ev);
     }
-
-    public void ouvrirActiviteSuivante(Class classe){
-        Intent intent = new Intent(ChercherContactActivity.this, classe);
-        startActivity(intent);
-        finish();
-    }
-
-    public void ouvrirActiviteSuivante(Class classe, String nomExtra, Long objetIdExtra ) {
-        Intent intent = new Intent(ChercherContactActivity.this, classe);
-        intent.putExtra(nomExtra, objetIdExtra);
-        startActivity(intent);
-        finish();
-    }
-
 }

@@ -27,6 +27,17 @@
                 android:background="?attr/colorPrimary"
                 app:theme="@style/ToolBarStyle"/>
 
+            <ProgressBar
+                android:id="@+id/my_progressBar"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="false"
+                android:visibility="gone"
+                android:max="100"
+                android:progress="0"
+                />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

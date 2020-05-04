@@ -2,13 +2,18 @@ package com.pouillos.monpilulier.activities;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
@@ -20,6 +25,7 @@ import com.pouillos.monpilulier.interfaces.BasicUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -33,12 +39,14 @@ public class AuthentificationActivity extends NavDrawerActivity implements Seria
     @State
     Utilisateur activeUser;
 
+    @BindView(R.id.my_progressBar)
+    ProgressBar progressBar;
     @BindView(R.id.selectUser)
     AutoCompleteTextView selectedUser;
     @BindView(R.id.listUser)
     TextInputLayout listUser;
-    @BindView(R.id.floating_action_button)
-    FloatingActionButton fab;
+    @BindView(R.id.authFab)
+    FloatingActionButton authFab;
 
     private List<Utilisateur> listUserBD;
 
@@ -47,60 +55,60 @@ public class AuthentificationActivity extends NavDrawerActivity implements Seria
         super.onCreate(savedInstanceState);
         Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(R.layout.activity_authentification);
-        // 6 - Configure all views
+
         this.configureToolBar();
         this.configureDrawerLayout();
         this.configureNavigationView();
 
-        setTitle("Connexion");
+        ButterKnife.bind(this);
 
-        List<Utilisateur> listUserActif = Utilisateur.find(Utilisateur.class, "actif = ?", "1");
-        if (listUserActif.size() !=0){
-            activeUser = listUserActif.get(0);
+        activeUser=findActiveUser();
+
+        if (activeUser == null) {
+            getSupportActionBar().hide();
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         }
+
+        setTitle(getResources().getString(R.string.title_connexion));
+
         AuthentificationActivity.AsyncTaskRunnerUser runnerUser = new AuthentificationActivity.AsyncTaskRunnerUser();
         runnerUser.execute();
-        ButterKnife.bind(this);
-        selectedUser.setOnItemClickListener(this);
-    }
 
-    @Override public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Icepick.saveInstanceState(this, outState);
+        selectedUser.setOnItemClickListener(this);
     }
 
     public class AsyncTaskRunnerUser extends AsyncTask<Void, Integer, Void> {
 
         protected Void doInBackground(Void...voids) {
             listUserBD = Utilisateur.listAll(Utilisateur.class);
+            if (activeUser != null) {
+              for (Utilisateur user : listUserBD) {
+                  if (user.getId()==activeUser.getId()){
+                      listUserBD.remove(user);
+                      break;
+                  }
+              }
+            }
+            Collections.sort(listUserBD);
             return null;
         }
 
         protected void onPostExecute(Void result) {
             if (listUserBD.size() == 0) {
-                listUser.setVisibility(View.INVISIBLE);
+                listUser.setVisibility(View.GONE);
             } else {
-                List<String> listUserString = new ArrayList<>();
-                String[] listDeroulanteUser;
-                if (activeUser != null) {
-                    listDeroulanteUser = new String[listUserBD.size()-1];
-                } else {
-                    listDeroulanteUser = new String[listUserBD.size()];
-                }
-                for (Utilisateur user : listUserBD) {
-                    if (activeUser== null || !user.getName().equalsIgnoreCase(activeUser.getName())){
-                        listUserString.add(user.getName());
-                    }
-                }
-                listUserString.toArray(listDeroulanteUser);
-                ArrayAdapter adapter = new ArrayAdapter(AuthentificationActivity.this, R.layout.list_item, listDeroulanteUser);
-                selectedUser.setAdapter(adapter);
+                buildDropdownMenu(listUserBD,AuthentificationActivity.this,selectedUser);
                 listUser.setVisibility(View.VISIBLE);
                 }
             }
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        protected void onProgressUpdate(Integer... integer) {
+            progressBar.setProgress(integer[0],true);
+        }
         }
 
-    @OnClick(R.id.floating_action_button)
+    @OnClick(R.id.authFab)
     public void fabClick() {
         ouvrirActiviteSuivante(AuthentificationActivity.this, AddUserActivity.class);
     }
@@ -112,12 +120,18 @@ public class AuthentificationActivity extends NavDrawerActivity implements Seria
             activeUser.setActif(false);
             activeUser.save();
         }
+        activeUser = listUserBD.get(position);
+        activeUser.setActif(true);
+        activeUser.save();
+//////////////////////
+       /*
         List<Utilisateur> listUserSelected = Utilisateur.find(Utilisateur.class, "name = ?", item);
         if (listUserSelected.size() !=0){
             activeUser = listUserSelected.get(0);
             activeUser.setActif(true);
             activeUser.save();
-        }
+        }*/
+        /////////////////
         ouvrirActiviteSuivante(AuthentificationActivity.this, AccueilActivity.class);
     }
 

@@ -48,8 +48,13 @@ public class Departement extends SugarRecord implements Serializable, Comparable
     }
 
     @Override
+    public String toString() {
+        return numero+" - "+nom;
+    }
+
+    @Override
     public int compareTo(Departement o) {
-        return this.nom.compareTo(o.nom);
+        return this.numero.compareTo(o.numero);
     }
 
 }

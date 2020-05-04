@@ -5,6 +5,10 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/activity_main_drawer_home"
+            android:icon="@drawable/outline_home_black_24dp"
+            android:title="@string/home" />
+        <item
             android:id="@+id/activity_main_drawer_profile"
             android:icon="@drawable/outline_face_black_24dp"
             android:title="@string/text_my_profile" />
@@ -12,6 +16,10 @@
             android:id="@+id/activity_main_drawer_account"
             android:icon="@drawable/id_card_icon_124180"
             android:title="@string/text_my_account" />
+        <item
+            android:id="@+id/activity_main_drawer_change_account"
+            android:icon="@drawable/account_convert"
+            android:title="@string/text_change_account" />
     </group>
 
     <item android:title="@string/text_my_datas">
@@ -29,6 +37,17 @@
                     android:id="@+id/activity_main_drawer_contacts"
                     android:icon="@drawable/outline_import_contacts_black_18dp"
                     android:title="@string/text_my_contacts" />
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="temporaire">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/activity_main_drawer_oldAccueil"
+                    android:title="Ancien Accueil" />
+
             </group>
         </menu>
     </item>

@@ -74,18 +74,23 @@ private boolean actif;
     }
 
     @Override
+    public String toString() {
+        return name;
+    }
+
+    @Override
     public int compareTo(Utilisateur o) {
         return this.name.compareTo(o.name);
     }
 
-    public Utilisateur findActifUser() {
+    /*public Utilisateur findActifUser() {
         Utilisateur utilisateur = new Utilisateur();
         try {
             utilisateur = (Utilisateur) find(Utilisateur.class, "actif = ?", "1").get(0);
         } catch (Exception e) {
         }
         return utilisateur;
-    }
+    }*/
 
     @Override
     public String afficherTitre() {

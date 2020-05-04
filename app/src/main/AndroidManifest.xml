@@ -25,15 +25,9 @@
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="com.pouillos.monpilulier" />
 
-        <activity android:name=".activities.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <activity android:name=".activities.MainActivity" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity android:name=".activities.newx.NewUserActivity" />
-        <activity android:name=".activities.listallx.ListAllUserActivity" />
         <activity android:name=".activities.newx.NewAnalyseActivity" />
         <activity android:name=".activities.newx.NewExamenActivity" />
         <activity android:name=".activities.MyProfilActivity" />
@@ -50,7 +44,12 @@
             android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".activities.add.AddRdvActivity"
             android:windowSoftInputMode="stateHidden"/>
-        <activity android:name=".activities.AccueilActivity" />
+        <activity android:name=".activities.AccueilActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".activities.afficher.AfficherContactActivity" />
         <activity android:name=".activities.afficher.AfficherRdvActivity" />
 

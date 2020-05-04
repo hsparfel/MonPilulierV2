@@ -66,7 +66,7 @@ private AutoCompleteTextView selectionDose;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ajouter_prescription);
 
-        utilisateur = (new Utilisateur()).findActifUser();
+        //utilisateur = (new Utilisateur()).findActifUser();
 
         Chip chipMatin = (Chip) findViewById(R.id.chipMatin);
         Chip chipMidi = (Chip) findViewById(R.id.chipMidi);

@@ -1,7 +1,29 @@
 <resources>
+
+    <string name="dialog_delete_title">Suppression</string>
+    <string name="dialog_delete_message">Attention ! La suppression est définitive</string>
+    <string name="dialog_delete_negative">Refuser</string>
+    <string name="dialog_delete_positive">Accepter</string>
+    <string name="dialog_delete_negative_toast">La suppression a été annulée</string>
+    <string name="dialog_delete_positive_toast">La suppression a été effectuée</string>
+
+    <string name="title_connexion">Connexion</string>
+    <string name="text_change_account">Changer de compte</string>
+    <string name="id_user">userId</string>
+
+    <string name="welcome">Bienvenue</string>
+    <string name="home">Accueil</string>
+
+    <string name="format_date">dd/MM/yy</string>
+
+    <string name="error">error</string>
+    <string name="text_no_validation">Saisie non valide</string>
+    <string name="text_already_exist">Déjà existant</string>
     <string name="app_name">Mon Pilulier</string>
     <string name="select">Sélectionner</string>
     <string name="text_name">Nom</string>
+    <string name="text_firstname">Prenom</string>
+    <string name="text_doctor">Titre</string>
     <string name="text_birthday">Naissance</string>
     <string name="text_date">Date</string>
     <string name="text_heure">Heure</string>
@@ -15,7 +37,6 @@
     <string name="text_my_profile">Mon profil</string>
     <string name="text_my_account">Mon compte</string>
     <string name="text_my_treatments">Mes Traitements</string>
-    <string name="text_my_contacts">Mes Contacts</string>
     <string name="text_contact">Contact</string>
     <string name="text_my_datas">Mes Données</string>
     <string name="text_my_appointments">Mes rendez-vous</string>
@@ -25,7 +46,8 @@
     <string name="text_place">Lieu</string>
     <string name="text_complement">Complément</string>
     <string name="text_num_street">N° Rue</string>
-    <string name="text_zip_town">CP Ville</string>
+    <string name="text_zip">CP</string>
+    <string name="text_town">Ville</string>
     <string name="text_phone">Tél</string>
     <string name="text_fax">Fax</string>
     <string name="text_email">email</string>
@@ -45,4 +67,8 @@
     <!-- Used in NavigationDrawer -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="text_DB_created">Creation BD terminée</string>
+    <string name="text_my_contacts">Mes Contacts</string>
+    <string name="text_no_matching">Aucune correspondance, rechercher d\'abord un contact</string>
+    <string name="text_search_contact">Rechercher Contact</string>
 </resources>

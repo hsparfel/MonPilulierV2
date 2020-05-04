@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
@@ -19,6 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
+import com.pouillos.monpilulier.activities.AuthentificationActivity;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
 import com.pouillos.monpilulier.activities.add.AddRdvActivity;
 import com.pouillos.monpilulier.entities.Contact;
@@ -40,9 +42,8 @@ import icepick.State;
 import static java.lang.Math.round;
 
 public class AfficherContactActivity extends NavDrawerActivity implements Serializable, BasicUtils, AdapterView.OnItemClickListener {
+    //TODO rajouter fab cancel avec icone fleche retour
 
-    @State
-    Utilisateur activeUser;
     @State
     Contact contactSelected;
 
@@ -54,10 +55,18 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
     @BindView(R.id.listContacts)
     TextInputLayout listContacts;
 
+    @BindView(R.id.layoutDr)
+    TextInputLayout layoutDr;
+    @BindView(R.id.textDr)
+    TextInputEditText textDr;
     @BindView(R.id.layoutName)
     TextInputLayout layoutName;
     @BindView(R.id.textName)
     TextInputEditText textName;
+    @BindView(R.id.layoutFirstName)
+    TextInputLayout layoutFirstName;
+    @BindView(R.id.textFirstName)
+    TextInputEditText textFirstName;
 
     @BindView(R.id.layoutJob)
     TextInputLayout layoutJob;
@@ -79,10 +88,14 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
     @BindView(R.id.textNumStreet)
     TextInputEditText textNumStreet;
 
-    @BindView(R.id.layoutZipTown)
-    TextInputLayout layoutZipTown;
-    @BindView(R.id.textZipTown)
-    TextInputEditText textZipTown;
+    @BindView(R.id.layoutZip)
+    TextInputLayout layoutZip;
+    @BindView(R.id.textZip)
+    TextInputEditText textZip;
+    @BindView(R.id.layoutTown)
+    TextInputLayout layoutTown;
+    @BindView(R.id.textTown)
+    TextInputEditText textTown;
 
     @BindView(R.id.layoutPhone)
     TextInputLayout layoutPhone;
@@ -107,8 +120,16 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
     FloatingActionButton fabGoogleMap;
     @BindView(R.id.fabWaze)
     FloatingActionButton fabWaze;
+    @BindView(R.id.fabSave)
+    FloatingActionButton fabSave;
+    @BindView(R.id.fabCancel)
+    FloatingActionButton fabCancel;
     @BindView(R.id.fabEdit)
     FloatingActionButton fabEdit;
+    @BindView(R.id.fabDelete)
+    FloatingActionButton fabDelete;
+    @BindView(R.id.my_progressBar)
+    ProgressBar progressBar;
 
     @BindView(R.id.activity_main_toolbar)
     Toolbar toolbar;
@@ -125,40 +146,52 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
         this.configureNavigationView();
 
         ButterKnife.bind(this);
-//todo methode masquer les boutons optionnels
+        displayfabs();
 
+        progressBar.setVisibility(View.VISIBLE);
 
-
-        List<Utilisateur> listUserActif = Utilisateur.find(Utilisateur.class, "actif = ?", "1");
+        /*List<Utilisateur> listUserActif = Utilisateur.find(Utilisateur.class, "actif = ?", "1");
         if (listUserActif.size() !=0){
             activeUser = listUserActif.get(0);
-        }
+        }*/
 
-        displayfabs();
+        //displayfabs();
 
         AfficherContactActivity.AsyncTaskRunner runner = new AfficherContactActivity.AsyncTaskRunner();
         runner.execute();
 
        // ButterKnife.bind(this);
+        layoutDr.setVisibility(View.GONE);
         layoutName.setVisibility(View.GONE);
+        layoutFirstName.setVisibility(View.GONE);
         layoutJob.setVisibility(View.GONE);
         layoutPlace.setVisibility(View.GONE);
         layoutComplement.setVisibility(View.GONE);
         layoutNumStreet.setVisibility(View.GONE);
-        layoutZipTown.setVisibility(View.GONE);
+        layoutZip.setVisibility(View.GONE);
+        layoutTown.setVisibility(View.GONE);
         layoutPhone.setVisibility(View.GONE);
         layoutFax.setVisibility(View.GONE);
         layoutEmail.setVisibility(View.GONE);
 
-        //traiterIntent();
-        setTitle("Mes Contacts");
+        layoutDr.setEnabled(false);
+        layoutName.setEnabled(false);
+        layoutFirstName.setEnabled(false);
+        layoutJob.setEnabled(false);
+        layoutPlace.setEnabled(false);
+        layoutComplement.setEnabled(false);
+        layoutNumStreet.setEnabled(false);
+        layoutZip.setEnabled(false);
+        layoutTown.setEnabled(false);
+        layoutPhone.setEnabled(false);
+        layoutFax.setEnabled(false);
+        layoutEmail.setEnabled(false);
+
+        setTitle(getString(R.string.text_my_contacts));
        // toolbar.setTitle("Mes Contacts");
        // getSupportActionBar().setTitle("Mes Contacts");
 
-
         selectedContact.setOnItemClickListener(this);
-
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -235,7 +268,17 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
                 layoutNumStreet.setVisibility(View.VISIBLE);
             }
 
-            String stringCpVille = "";
+            if (contactSelected.getCp() != null) {
+                textZip.setText(contactSelected.getCp());
+                layoutZip.setVisibility(View.VISIBLE);
+            }
+
+            if (contactSelected.getVille() != null) {
+                textTown.setText(contactSelected.getVille());
+                layoutTown.setVisibility(View.VISIBLE);
+            }
+
+            /*String stringCpVille = "";
             if (!contactSelected.getCp().equalsIgnoreCase("")) {
                 stringCpVille += contactSelected.getCp() + " ";
             }
@@ -245,7 +288,7 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
             if (stringCpVille.length()>0) {
                 textZipTown.setText(stringCpVille);
                 layoutZipTown.setVisibility(View.VISIBLE);
-            }
+            }*/
 
 
             if (contactSelected.getTelephone() != null) {
@@ -269,15 +312,19 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
     }
 
     private void displayfabs() {
+        fabSave.hide();
+        fabCancel.hide();
         if (contactSelected == null) {
             fabEdit.hide();
             fabGoogleMap.hide();
             fabPrescription.hide();
             fabRdv.hide();
             fabWaze.hide();
+            fabDelete.hide();
         } else {
             fabRdv.show();
             fabEdit.show();
+            fabDelete.show();
             if (contactSelected.getSavoirFaire() != null) {
                 fabPrescription.show();
             } else {
@@ -293,58 +340,52 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
         }
     }
 
-    @Override public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Icepick.saveInstanceState(this, outState);
-    }
-
     public class AsyncTaskRunner extends AsyncTask<Void, Integer, Void> {
 
         protected Void doInBackground(Void...voids) {
-
-
+            publishProgress(0);
+            activeUser = findActiveUser();
+            publishProgress(10);
             String requete = "";
-
             listContactsBD = new ArrayList<>();
-
             requete += "SELECT C.* FROM CONTACT AS C INNER JOIN ASSOCIATION_UTILISATEUR_CONTACT AS AUC ON C.ID = AUC.CONTACT WHERE AUC.UTILISATEUR = "+activeUser.getId().toString();
             requete += " ORDER BY NOM";
-
             listContactsBD = Contact.findWithQuery(Contact.class, requete);
-
-
-
+            publishProgress(100);
             return null;
         }
 
         @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
         protected void onPostExecute(Void result) {
+            progressBar.setVisibility(View.GONE);
             if (listContactsBD.size() == 0) {
-                Toast toast = Toast.makeText(AfficherContactActivity.this, "Aucune correspondance, modifier puis appliquer filtre", Toast.LENGTH_LONG);
-                toast.show();
-                //listMesIntervenants.setVisibility(View.GONE);
+                Toast.makeText(AfficherContactActivity.this, R.string.text_no_matching, Toast.LENGTH_LONG).show();
+                listContacts.setVisibility(View.GONE);
             } else {
+                buildDropdownMenu(listContactsBD, AfficherContactActivity.this,selectedContact);
 
-                List<String> listContactString = new ArrayList<>();
+                /*List<String> listContactString = new ArrayList<>();
 
                 String[] listDeroulanteContact = new String[listContactsBD.size()];
                 for (Contact contact : listContactsBD) {
                     String affichageContact = "";
                     affichageContact += contact.getNom() + ", " + contact.getPrenom() + " (";
-
                     if (contact.getSavoirFaire() != null) {
-                        affichageContact += contact.getSavoirFaire().getName() + ") * ";
+                        affichageContact += contact.getSavoirFaire().getName() + ")";
                     } else {
-                        affichageContact += contact.getProfession().getName() + ") * ";
+                        affichageContact += contact.getProfession().getName() + ")";
                     }
-                    affichageContact += contact.getVille();
+                    //affichageContact += contact.getVille();
+                    if (contact.getVille() != null) {
+                        affichageContact += " * "+contact.getVille();
+                    }
                     listContactString.add(affichageContact);
                 }
                 listContactString.toArray(listDeroulanteContact);
                 //selectionMetier.setText("Infirmier", false);
                 //selectionMesIntervenants.setText(listDeroulanteMedecinOfficiel[0], false);
                 adapter = new ArrayAdapter(AfficherContactActivity.this, R.layout.list_item, listDeroulanteContact);
-                selectedContact.setAdapter(adapter);
+                selectedContact.setAdapter(adapter);*/
                 //textRechercheIntervenant.setOnItemClickListener(this);
                 //textRechercheIntervenant.setOnItemClickListener((AdapterView.OnItemClickListener) this);
                 // Set the minimum number of characters, to show suggestions
@@ -353,11 +394,15 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
                 traiterIntent();
             }
         }
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        protected void onProgressUpdate(Integer... integer) {
+            progressBar.setProgress(integer[0],true);
+        }
     }
 
     @OnClick(R.id.fabRdv)
     public void fabRdvClick() {
-        //Toast.makeText(AfficherContactsActivity.this, "à implementer 1", Toast.LENGTH_LONG).show();
         ouvrirActiviteSuivante(AfficherContactActivity.this, AddRdvActivity.class,"contactId",contactSelected.getId());
     }
 
@@ -418,9 +463,40 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
         }
     }
 
+    @OnClick(R.id.fabSave)
+    public void fabSaveClick() {
+        Toast.makeText(AfficherContactActivity.this, "à implementer 5a", Toast.LENGTH_LONG).show();
+    }
+
+    @OnClick(R.id.fabCancel)
+    public void fabCancelClick() {
+        Toast.makeText(AfficherContactActivity.this, "à implementer 8", Toast.LENGTH_LONG).show();
+    }
+
     @OnClick(R.id.fabEdit)
     public void fabEditClick() {
-        Toast.makeText(AfficherContactActivity.this, "à implementer 5", Toast.LENGTH_LONG).show();
+        layoutPlace.setEnabled(true);
+        layoutComplement.setEnabled(true);
+        layoutNumStreet.setEnabled(true);
+        layoutZip.setEnabled(true);
+        layoutTown.setEnabled(true);
+        layoutPhone.setEnabled(true);
+        layoutFax.setEnabled(true);
+        layoutEmail.setEnabled(true);
+
+        fabSave.show();
+        fabCancel.show();
+        fabEdit.hide();
+        fabDelete.hide();
+        fabPrescription.hide();
+        fabWaze.hide();
+        fabGoogleMap.hide();
+        fabRdv.hide();
+    }
+
+    @OnClick(R.id.fabDelete)
+    public void fabDeleteClick() {
+        Toast.makeText(AfficherContactActivity.this, "à implementer 7", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -435,24 +511,35 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
         String nom = selectedContact.getText().toString().substring(0, positionVirgule);
         String prenom = selectedContact.getText().toString().substring(positionVirgule + 2, positionParentheseOuverte - 1);
         String metier = selectedContact.getText().toString().substring(positionParentheseOuverte + 1, positionParentheseFermee);
-        String ville = selectedContact.getText().toString().substring(positionEtoile + 2);
-
+        //String ville = selectedContact.getText().toString().substring(positionEtoile + 2);
+        String ville="";
+        if (positionEtoile != -1) {
+            ville = selectedContact.getText().toString().substring(positionEtoile + 2);
+        }
 
         List<Profession> listProfession = Profession.find(Profession.class, "name = ?", metier);
         List<SavoirFaire> listSavoirFaire = SavoirFaire.find(SavoirFaire.class, "name = ?", metier);
         if (listProfession.size() != 0) {
             Profession profession = listProfession.get(0);
-            contactSelected = Contact.find(Contact.class, "nom = ? and prenom = ? and profession = ? and ville = ?", nom, prenom, profession.getId().toString(), ville).get(0);
-
+            //contactSelected = Contact.find(Contact.class, "nom = ? and prenom = ? and profession = ? and ville = ?", nom, prenom, profession.getId().toString(), ville).get(0);
+            if (ville.equalsIgnoreCase("")) {
+                contactSelected = Contact.find(Contact.class, "nom = ? and prenom = ? and profession = ?", nom, prenom, profession.getId().toString()).get(0);
+            } else {
+                contactSelected = Contact.find(Contact.class, "nom = ? and prenom = ? and profession = ? and ville = ?", nom, prenom, profession.getId().toString(), ville).get(0);
+            }
         }
         if (listSavoirFaire.size() != 0) {
             SavoirFaire savoirFaire = listSavoirFaire.get(0);
-            contactSelected = Contact.find(Contact.class, "nom = ? and prenom = ? and savoir_faire = ? and ville = ?", nom, prenom, savoirFaire.getId().toString(), ville).get(0);
-
+            //contactSelected = Contact.find(Contact.class, "nom = ? and prenom = ? and savoir_faire = ? and ville = ?", nom, prenom, savoirFaire.getId().toString(), ville).get(0);
+            if (ville.equalsIgnoreCase("")) {
+                contactSelected = Contact.find(Contact.class, "nom = ? and prenom = ? and savoir_faire = ?", nom, prenom, savoirFaire.getId().toString()).get(0);
+            } else {
+                contactSelected = Contact.find(Contact.class, "nom = ? and prenom = ? and savoir_faire = ? and ville = ?", nom, prenom, savoirFaire.getId().toString(), ville).get(0);
+            }
         }
         Toast.makeText(AfficherContactActivity.this, "Selected Item is: \t" + contactSelected.getPrenom() + contactSelected.getNom(), Toast.LENGTH_LONG).show();
 
-        String stringName ="";
+        /*String stringName ="";
         if (!contactSelected.getCodeCivilite().equalsIgnoreCase("")) {
             stringName += contactSelected.getCodeCivilite() + " ";
         }
@@ -465,6 +552,18 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
         if (stringName.length()>0) {
             textName.setText(stringName);
             layoutName.setVisibility(View.VISIBLE);
+        }*/
+        if (contactSelected.getCodeCivilite() != null) {
+            textDr.setText(contactSelected.getCodeCivilite());
+            layoutDr.setVisibility(View.VISIBLE);
+        }
+        if (contactSelected.getNom() != null) {
+            textName.setText(contactSelected.getNom());
+            layoutName.setVisibility(View.VISIBLE);
+        }
+        if (contactSelected.getPrenom() != null) {
+            textFirstName.setText(contactSelected.getPrenom());
+            layoutFirstName.setVisibility(View.VISIBLE);
         }
 
         if (contactSelected.getProfession() != null) {
@@ -486,12 +585,22 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
             layoutComplement.setVisibility(View.VISIBLE);
         }
 
-        if (contactSelected.getAdresse() != null) {
+        if (contactSelected.getAdresse().equalsIgnoreCase("")) {
             textNumStreet.setText(contactSelected.getAdresse());
             layoutNumStreet.setVisibility(View.VISIBLE);
         }
 
-        String stringCpVille = "";
+        if (contactSelected.getCp().equalsIgnoreCase("")) {
+            textZip.setText(contactSelected.getCp());
+            layoutZip.setVisibility(View.VISIBLE);
+        }
+
+        if (contactSelected.getVille().equalsIgnoreCase("")) {
+            textTown.setText(contactSelected.getVille());
+            layoutTown.setVisibility(View.VISIBLE);
+        }
+
+        /*String stringCpVille = "";
         if (!contactSelected.getCp().equalsIgnoreCase("")) {
             stringCpVille += contactSelected.getCp() + " ";
         }
@@ -501,7 +610,7 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
         if (stringCpVille.length()>0) {
             textZipTown.setText(stringCpVille);
             layoutZipTown.setVisibility(View.VISIBLE);
-        }
+        }*/
 
 
         if (contactSelected.getTelephone() != null) {
@@ -520,7 +629,5 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
         }
         displayfabs();
     }
-
-
 }
 

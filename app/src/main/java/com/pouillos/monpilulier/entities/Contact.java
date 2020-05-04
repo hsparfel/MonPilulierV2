@@ -128,7 +128,6 @@ public class Contact extends SugarRecord implements Serializable, Comparable<Con
 
     public void setVille(String ville) {
         this.ville = ville;
-        //enregisterCoordonnees();
     }
 
     public String getTelephone() {

@@ -27,7 +27,11 @@ public class Region extends SugarRecord implements Serializable, Comparable<com.
 
         @Override
     public int compareTo(com.pouillos.monpilulier.entities.Region o) {
-        return this.nom.compareTo(o.nom);
+        return this.getId().compareTo(o.getId());
     }
 
+    @Override
+    public String toString() {
+        return nom;
+    }
 }

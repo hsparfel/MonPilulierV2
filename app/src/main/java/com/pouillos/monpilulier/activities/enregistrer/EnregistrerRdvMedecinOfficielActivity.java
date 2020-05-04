@@ -63,7 +63,7 @@ public class EnregistrerRdvMedecinOfficielActivity extends AppCompatActivity imp
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ajouter_rdv);
 
-        utilisateur = (new Utilisateur()).findActifUser();
+        //utilisateur = (new Utilisateur()).findActifUser();
 
 
         editTextDate= findViewById(R.id.editTextDate);

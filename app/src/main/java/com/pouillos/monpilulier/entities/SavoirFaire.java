@@ -30,4 +30,8 @@ public class SavoirFaire extends SugarRecord implements Serializable, Comparable
         return this.name.compareTo(o.name);
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }

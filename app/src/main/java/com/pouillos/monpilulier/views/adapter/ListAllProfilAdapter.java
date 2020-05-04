@@ -30,7 +30,7 @@ public class ListAllProfilAdapter extends RecyclerView.Adapter<ListAllProfilView
 
         // CONSTRUCTOR
         public ListAllProfilAdapter( ) {
-            this.utilisateur  = (new Utilisateur()).findActifUser();
+            //this.utilisateur  = (new Utilisateur()).findActifUser();
             this.listAllProfil = Profil.listAll(Profil.class,"date");
             Collections.sort(this.listAllProfil);
         }
