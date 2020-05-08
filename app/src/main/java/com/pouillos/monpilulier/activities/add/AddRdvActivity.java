@@ -40,6 +40,9 @@ import icepick.Icepick;
 import icepick.State;
 
 public class AddRdvActivity extends NavDrawerActivity implements Serializable, BasicUtils {
+//TODO sur les 3 classes de RDV pb si selection de l'heure avant la date metre enable(false ) puis enable true pour palier à ça
+ //TODO implementer les rappels / notif pour les 3 aussi
+
 
     @State
     Utilisateur activeUser;

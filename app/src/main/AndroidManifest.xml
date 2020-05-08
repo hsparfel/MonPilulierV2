@@ -30,7 +30,6 @@
         <activity android:name=".activities.newx.NewUserActivity" />
         <activity android:name=".activities.newx.NewAnalyseActivity" />
         <activity android:name=".activities.newx.NewExamenActivity" />
-        <activity android:name=".activities.MyProfilActivity" />
         <activity android:name=".activities.listallx.ListAllProfilActivity" />
         <activity android:name=".activities.listmyx.ListMyProfilActivity" />
         <activity android:name=".activities.recherche.ChercherContactActivity" />

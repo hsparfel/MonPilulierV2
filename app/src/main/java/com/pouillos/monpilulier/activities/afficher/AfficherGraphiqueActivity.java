@@ -1,6 +1,5 @@
 package com.pouillos.monpilulier.activities.afficher;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -8,8 +7,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
@@ -17,15 +14,9 @@ import androidx.annotation.RequiresApi;
 
 import com.google.android.material.chip.Chip;
 import com.pouillos.monpilulier.R;
-import com.pouillos.monpilulier.activities.MyProfilActivity;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
-import com.pouillos.monpilulier.activities.recherche.ChercherContactActivity;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
-import com.pouillos.monpilulier.entities.Departement;
-import com.pouillos.monpilulier.entities.Profession;
 import com.pouillos.monpilulier.entities.Profil;
-import com.pouillos.monpilulier.entities.Region;
-import com.pouillos.monpilulier.entities.SavoirFaire;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
 
@@ -39,7 +30,6 @@ import org.achartengine.renderer.XYSeriesRenderer;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -129,7 +119,114 @@ public class AfficherGraphiqueActivity extends NavDrawerActivity implements Seri
     }
 
     public void creerGraphiqueTaille() {
-        //TODO remplacer tout ça par la methode poids ou imc e adapte pour non flaot si besoin
+
+
+        //creer datas
+        int tailleMin = listProfil.get(0).getTaille();
+        int tailleMax = listProfil.get(0).getTaille();
+
+        int xValueMax = 0;
+        List<Integer> xList = new ArrayList<>();
+
+        //calculer nb jour entre date debut et date fin
+        Date dateDebut = listProfil.get(0).getDate();
+        Date dateFin = listProfil.get(listProfil.size()-1).getDate();
+        long diff = dateFin.getTime() - dateDebut.getTime();
+        float res = (diff / (1000*60*60*24));
+        int res2 = (int) res +1;
+        int compt = 0;
+        List<Integer> tailleList = new ArrayList<>();
+        List<String> dateList = new ArrayList<>();
+        Map<Integer,Integer> tailleMap = new HashMap<>();
+        Map<Integer,String> dateMap = new HashMap<>();
+
+        Calendar c = Calendar.getInstance();
+
+        for (int i=0; i<=res2;i++) {
+            xList.add(i);
+            c.setTime(dateDebut);
+            c.add(Calendar.DATE, i); //same with c.add(Calendar.DAY_OF_MONTH, 1);
+            // convert calendar to date
+            Date dateEnCours = c.getTime();
+
+            if (compt<listProfil.size() && listProfil.get(compt).getDate().equals(dateEnCours)) {
+                tailleMap.put(i,listProfil.get(compt).getTaille());
+                dateMap.put(i,new DateUtils().ecrireDate(listProfil.get(compt).getDate()));
+                compt++;
+                xValueMax = i;
+            }
+        }
+
+        for (int i=0; i<listProfil.size();i++) {
+            tailleList.add(listProfil.get(i).getTaille());
+            if (listProfil.get(i).getTaille()>tailleMax){
+                tailleMax = listProfil.get(i).getTaille();
+            } else if (listProfil.get(i).getTaille()<tailleMin) {
+                tailleMin = listProfil.get(i).getTaille();
+            }
+        }
+
+        // Creating an XYSeries for Height
+        XYSeries tailleSeries = new XYSeries("Taille");
+        // Adding data to Height Series
+        for (int i = 0; i < xList.size(); i++) {
+            if (tailleMap.get(i)!=null) {
+                tailleSeries.add(i, tailleMap.get(i));
+            }
+        }
+
+        // Creating a dataset to hold taille series
+        XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
+        // Adding Height Series to dataset
+        dataset.addSeries(tailleSeries);
+
+        // Creating XYSeriesRenderer to customize tailleSeries
+        XYSeriesRenderer tailleRenderer = new XYSeriesRenderer();
+        tailleRenderer.setColor(Color.BLUE);
+        tailleRenderer.setFillPoints(true);
+        tailleRenderer.setDisplayChartValues(false);
+        tailleRenderer.setPointStyle(PointStyle.CIRCLE);
+        tailleRenderer.setLineWidth(2);
+
+        // Creating a XYMultipleSeriesRenderer to customize the whole chart
+        XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
+        renderer.setXLabels(0);
+        renderer.setLabelsTextSize(25);
+        renderer.setZoomButtonsVisible(false);
+        renderer.setPanEnabled(false, false);
+        renderer.setClickEnabled(false);
+        renderer.setZoomEnabled(false, false);
+        renderer.setShowGridY(true);
+        renderer.setShowGridX(true);
+        renderer.setFitLegend(true);
+        renderer.setShowGrid(true);
+        renderer.setZoomEnabled(false);
+        renderer.setExternalZoomEnabled(false);
+        renderer.setAntialiasing(true);
+        renderer.setInScroll(false);
+        renderer.setXLabelsAlign(Paint.Align.CENTER);
+        renderer.setYLabelsAlign(Paint.Align.LEFT);
+        renderer.setTextTypeface("sans_serif", Typeface.NORMAL);
+        renderer.setYLabels(20);
+        renderer.setYAxisMin(tailleMin-5);
+        renderer.setYAxisMax(tailleMax+5);
+        renderer.setXAxisMin(-xList.size()*12/100);
+        renderer.setXAxisMax(xList.size()+xList.size()*12/100);
+        renderer.setBackgroundColor(Color.TRANSPARENT);
+        renderer.setMarginsColor(getResources().getColor(android.R.color.transparent));
+        renderer.setApplyBackgroundColor(true);
+        renderer.setMargins(new int[] { 0, 0, 0, 0 });
+        renderer.addXTextLabel(0, dateMap.get(0));
+        renderer.addXTextLabel(xList.size()-1, dateMap.get(xValueMax));
+        renderer.addSeriesRenderer(tailleRenderer);
+        renderer.setShowLegend(false);
+
+        LinearLayout chartContainer = (LinearLayout) findViewById(R.id.graphique);
+        chartContainer.removeAllViews();
+        chart = ChartFactory.getLineChartView(AfficherGraphiqueActivity.this, dataset, renderer);
+        chartContainer.addView(chart);
+    }
+        /*
         //creer datas
         int tailleMin = listProfil.get(0).getTaille();
         int tailleMax = listProfil.get(0).getTaille();
@@ -205,7 +302,7 @@ public class AfficherGraphiqueActivity extends NavDrawerActivity implements Seri
          * Customizing graphs
          */
         // setting text size of the title
-        renderer.setChartTitleTextSize(28);
+       /* renderer.setChartTitleTextSize(28);
         // setting text size of the axis title
         renderer.setAxisTitleTextSize(24);
         // setting text size of the graph lable
@@ -292,7 +389,7 @@ public class AfficherGraphiqueActivity extends NavDrawerActivity implements Seri
         //drawing bar chart
         chart = ChartFactory.getLineChartView(AfficherGraphiqueActivity.this, dataset, renderer);
         chartContainer.addView(chart);
-    }
+    }*/
 
     public void creerGraphiqueImc() {
         //creer datas

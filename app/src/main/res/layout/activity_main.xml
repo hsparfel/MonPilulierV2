@@ -11,114 +11,18 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textUser"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextUser" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:orientation="horizontal">
 
 
-            <Button
-                android:id="@+id/buttonNewUser"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="+Utilisateur" />
 
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/buttonNewRdv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="+Rdv" />
-
-            <Button
-                android:id="@+id/buttonListAllRdv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Rdv" />
-
-            <Button
-                android:id="@+id/buttonListMyRdv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Mes Rdv" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/buttonNewOrdonnance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="+Ordonnance" />
-
-            <Button
-                android:id="@+id/buttonListAllOrdonnance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Ordonnances" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/buttonProfil"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Modif Profil" />
-
-            <Button
-                android:id="@+id/buttonListAllProfil"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Profils" />
-
-            <Button
-                android:id="@+id/buttonListMyProfil"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Mes Profils" />
 
 
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/buttonListMyPrise"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Mes Prises" />
+
+
+
+
+
 
             <Button
                 android:id="@+id/buttonCreerNotification"
@@ -128,11 +32,8 @@
                 android:text="Test Notif" />
 
 
-        </LinearLayout>
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:orientation="horizontal">
+
+
         <Button
             android:id="@+id/buttonRAZ"
             android:layout_width="wrap_content"
@@ -158,34 +59,10 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Info DB" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:orientation="horizontal">
-        <Button
-            android:id="@+id/buttonChercherMedecinOfficiel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Find Dr" />
-        <Button
-            android:id="@+id/buttonAjouterPrescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="+ Prescription" />
-    </LinearLayout>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:orientation="horizontal">
-            <Button
-                android:id="@+id/buttonAuthentification"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Authentifier" />
+
+
+
+
             <Button
                 android:id="@+id/buttonAccueil"
                 android:layout_width="wrap_content"
@@ -194,7 +71,6 @@
                 android:text="Accueil" />
 
 
-        </LinearLayout>
         <ProgressBar
             android:id="@+id/my_progressBar"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"

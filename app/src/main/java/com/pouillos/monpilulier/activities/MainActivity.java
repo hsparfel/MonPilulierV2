@@ -78,28 +78,17 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Stetho.initializeWithDefaults(this);
-        textUser = (TextView) findViewById(R.id.textUser);
-        Button buttonNewUser = (Button) findViewById(R.id.buttonNewUser);
-
-
 
 
         Button buttonRAZ = (Button) findViewById(R.id.buttonRAZ);
-        Button buttonNewRdv = (Button) findViewById(R.id.buttonNewRdv);
-
-        Button buttonProfil = (Button) findViewById(R.id.buttonProfil);
-        Button buttonListAllProfil = (Button) findViewById(R.id.buttonListAllProfil);
-        Button buttonListMyProfil = (Button) findViewById(R.id.buttonListMyProfil);
-
         Button buttonCreerNotification = (Button) findViewById(R.id.buttonCreerNotification);
         Button buttonNewMedicamentOfficiel = (Button) findViewById(R.id.buttonMajMedicamentOfficiel);
         Button buttonNewMedecinOfficiel = (Button) findViewById(R.id.buttonMajMedecinOfficiel);
         Button buttonInfoDb = (Button) findViewById(R.id.buttonInfoDb);
-        Button buttonChercherMedecinOfficiel = (Button) findViewById(R.id.buttonChercherMedecinOfficiel);
-        Button buttonAjouterPrescription = (Button) findViewById(R.id.buttonAjouterPrescription);
-        progressBar = (ProgressBar) findViewById(R.id.my_progressBar);
-        Button buttonAuthentification = (Button) findViewById(R.id.buttonAuthentification);
         Button buttonAccueil = (Button) findViewById(R.id.buttonAccueil);
+
+        progressBar = (ProgressBar) findViewById(R.id.my_progressBar);
+
 
         progressBar.setVisibility(View.VISIBLE);
 
@@ -158,32 +147,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
 
 
-        buttonAccueil.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, AccueilActivity.class);
-            startActivity(myProfilActivity);
-        });
-
-        buttonAuthentification.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, AuthentificationActivity.class);
-            startActivity(myProfilActivity);
-        });
-
-        buttonAjouterPrescription.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, EnregistrerPrescriptionActivity.class);
-            startActivity(myProfilActivity);
-        });
-
-        buttonNewRdv.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, AddRdvActivity.class);
-            startActivity(myProfilActivity);
-        });
-
-        buttonChercherMedecinOfficiel.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, ChercherContactActivity.class);
-            //myProfilActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(myProfilActivity);
-        });
-
         buttonNewMedicamentOfficiel.setOnClickListener(v -> {
             progressBar.setVisibility(View.VISIBLE);
             //remplirMedicamentOfficielBD();
@@ -201,35 +164,17 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             runnerMedecin.execute();
         });
 
+        buttonNewMedecinOfficiel.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, AccueilActivity.class);
+            startActivity(intent);
+            finish();
+        });
+
         buttonInfoDb.setOnClickListener(v -> {
             long size1 = Medicament.count(Medicament.class);
             long size2 = Contact.count(Contact.class);
             Toast toast = Toast.makeText(MainActivity.this, "nb medicament: "+size1+" - nb medecin: "+size2, Toast.LENGTH_LONG);
             toast.show();
-        });
-
-     /*   buttonListAllProfil.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, ListAllProfilActivity.class);
-            myProfilActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(myProfilActivity);
-        });*/
-
-        buttonListMyProfil.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, AddProfilActivity.class);
-            myProfilActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(myProfilActivity);
-        });
-
-    /*    buttonNewUser.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, NewUserActivity.class);
-            myProfilActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(myProfilActivity);
-        });*/
-
-        buttonProfil.setOnClickListener(v -> {
-            Intent myProfilActivity = new Intent(MainActivity.this, MyProfilActivity.class);
-            myProfilActivity.putExtra("activitySource", MainActivity.class);
-            startActivity(myProfilActivity);
         });
 
         buttonRAZ.setOnClickListener(v -> {
@@ -261,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             //SugarRecord.executeQuery("DROP TABLE MEDECIN_OFFICIEL");
             //SugarRecord.executeQuery("DROP TABLE MEDICAMENT");
             //SugarRecord.executeQuery("DROP TABLE MEDICAMENT_OFFICIEL");
-            //SugarRecord.executeQuery("DROP TABLE ASSOCIATION");
+           // SugarRecord.executeQuery("DROP TABLE ASSOCIATION");
             //SugarRecord.executeQuery("DROP TABLE ASSOCIATION_OFFICIELLE");
             //SugarRecord.executeQuery("DROP TABLE CABINET");
             //SugarRecord.executeQuery("DROP TABLE ORDONNANCE");
@@ -271,10 +216,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             //SugarRecord.executeQuery("DROP TABLE RDV");
             //SugarRecord.executeQuery("DROP TABLE RDV_AUTRE");
             //SugarRecord.executeQuery("DROP TABLE RDV_OFFICIEL");
-            //SugarRecord.executeQuery("DROP TABLE SPECIALITE");
-            SugarRecord.executeQuery("DROP TABLE RDV_EXAMEN");
+           // SugarRecord.executeQuery("DROP TABLE SPECIALITE");
+            //
+           // SugarRecord.executeQuery("DROP TABLE RDV_ACTE_MEDICAL");
             //RAZ TOTAL
-           /* SugarContext.terminate();
+            /*SugarContext.terminate();
             publishProgress(20);
             SchemaGenerator schemaGenerator = new SchemaGenerator(getApplicationContext());
             publishProgress(40);
@@ -282,9 +228,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             publishProgress(60);
             SugarContext.init(getApplicationContext());
             publishProgress(80);
-            schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());*/
-            publishProgress(100);
-
+            schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());
+            publishProgress(100);*/
 
             finish();
             return null;
@@ -341,9 +286,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         protected void onPostExecute(String result) {
             progressBar.setVisibility(View.GONE);
-            textUser.setText(result);
-            Toast toast = Toast.makeText(MainActivity.this, "Creation BD fini", Toast.LENGTH_LONG);
-            toast.show();
+          //  textUser.setText(result);
+            Toast.makeText(MainActivity.this, "Creation BD fini", Toast.LENGTH_LONG).show();
+
         }
 
         @RequiresApi(api = Build.VERSION_CODES.N)
