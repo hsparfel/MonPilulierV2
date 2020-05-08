@@ -29,8 +29,8 @@ import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.add.AddProfilActivity;
 import com.pouillos.monpilulier.activities.add.AddRdvActivity;
 import com.pouillos.monpilulier.activities.enregistrer.EnregistrerPrescriptionActivity;
-import com.pouillos.monpilulier.activities.listallx.ListAllProfilActivity;
-import com.pouillos.monpilulier.activities.newx.NewUserActivity;
+///import com.pouillos.monpilulier.activities.listallx.ListAllProfilActivity;
+//import com.pouillos.monpilulier.activities.newx.NewUserActivity;
 import com.pouillos.monpilulier.activities.recherche.ChercherContactActivity;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.Analyse;
@@ -208,11 +208,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             toast.show();
         });
 
-        buttonListAllProfil.setOnClickListener(v -> {
+     /*   buttonListAllProfil.setOnClickListener(v -> {
             Intent myProfilActivity = new Intent(MainActivity.this, ListAllProfilActivity.class);
             myProfilActivity.putExtra("activitySource", MainActivity.class);
             startActivity(myProfilActivity);
-        });
+        });*/
 
         buttonListMyProfil.setOnClickListener(v -> {
             Intent myProfilActivity = new Intent(MainActivity.this, AddProfilActivity.class);
@@ -220,11 +220,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             startActivity(myProfilActivity);
         });
 
-        buttonNewUser.setOnClickListener(v -> {
+    /*    buttonNewUser.setOnClickListener(v -> {
             Intent myProfilActivity = new Intent(MainActivity.this, NewUserActivity.class);
             myProfilActivity.putExtra("activitySource", MainActivity.class);
             startActivity(myProfilActivity);
-        });
+        });*/
 
         buttonProfil.setOnClickListener(v -> {
             Intent myProfilActivity = new Intent(MainActivity.this, MyProfilActivity.class);
@@ -254,6 +254,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             //SugarRecord.executeQuery("DELETE FROM UTILISATEUR");
             //SugarRecord.executeQuery("DELETE FROM PROFIL");
             //SugarRecord.executeQuery("DELETE FROM DEPARTEMENT");
+            //SugarRecord.executeQuery("DELETE FROM CONTACT");
+            //SugarRecord.executeQuery("DROP TABLE CONTACT");
             //SugarRecord.executeQuery("DELETE FROM REGION");
             //SugarRecord.executeQuery("DROP TABLE MEDECIN");
             //SugarRecord.executeQuery("DROP TABLE MEDECIN_OFFICIEL");
@@ -270,8 +272,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             //SugarRecord.executeQuery("DROP TABLE RDV_AUTRE");
             //SugarRecord.executeQuery("DROP TABLE RDV_OFFICIEL");
             //SugarRecord.executeQuery("DROP TABLE SPECIALITE");
+            SugarRecord.executeQuery("DROP TABLE RDV_EXAMEN");
             //RAZ TOTAL
-            SugarContext.terminate();
+           /* SugarContext.terminate();
             publishProgress(20);
             SchemaGenerator schemaGenerator = new SchemaGenerator(getApplicationContext());
             publishProgress(40);
@@ -279,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             publishProgress(60);
             SugarContext.init(getApplicationContext());
             publishProgress(80);
-            schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());
+            schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());*/
             publishProgress(100);
 
 
@@ -1000,8 +1003,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         }
     }
 
-
-
     private class AsyncTaskRunnerMedicament extends AsyncTask<Void, Integer, Void> {
 
         protected Void doInBackground(Void...voids) {
@@ -1107,7 +1108,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         }
     }
 
-
     private class AsyncTaskRunnerMedecin extends AsyncTask<Void, Integer, Void> {
 
         private Context context;
@@ -1171,6 +1171,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     }
                     if (lineSplitted.length>26) {
                         contact.setComplement(lineSplitted[26]);
+                        if (contact.getComplement().equalsIgnoreCase(contact.getRaisonSocial())) {
+                            contact.setComplement(null);
+                        }
                     }
                     String adresse = "";
                     if ((lineSplitted.length>28) && (!lineSplitted[28].isEmpty())){

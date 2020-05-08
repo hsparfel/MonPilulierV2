@@ -115,7 +115,7 @@ public class AuthentificationActivity extends NavDrawerActivity implements Seria
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        String item = parent.getItemAtPosition(position).toString();
+        //String item = parent.getItemAtPosition(position).toString();
         if (activeUser != null) {
             activeUser.setActif(false);
             activeUser.save();

@@ -1,19 +1,19 @@
 package com.pouillos.monpilulier.entities;
 
 import com.orm.SugarRecord;
+import com.pouillos.monpilulier.activities.utils.DateUtils;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class RdvActeMedical extends SugarRecord implements Serializable, Comparable<RdvActeMedical> {
+public class RdvAnalyse extends SugarRecord implements Serializable, Comparable<RdvAnalyse> {
 
     private String note;
     private Utilisateur utilisateur;
     private Analyse analyse;
-    private Examen examen;
     private Date date;
 
-    public RdvActeMedical() {
+    public RdvAnalyse() {
     }
 
     public String getNote() {
@@ -40,14 +40,6 @@ public class RdvActeMedical extends SugarRecord implements Serializable, Compara
         this.analyse = analyse;
     }
 
-    public Examen getExamen() {
-        return examen;
-    }
-
-    public void setExamen(Examen examen) {
-        this.examen = examen;
-    }
-
     public Date getDate() {
         return date;
     }
@@ -57,9 +49,12 @@ public class RdvActeMedical extends SugarRecord implements Serializable, Compara
     }
 
     @Override
-    public int compareTo(RdvActeMedical o) {
-        return this.getId().compareTo(o.getId());
+    public int compareTo(RdvAnalyse o) {
+        return this.getDate().compareTo(o.getDate());
     }
 
-
+    @Override
+    public String toString() {
+        return DateUtils.ecrireDateHeure(date)+ " - " + analyse.getName();
+    }
 }

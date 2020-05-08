@@ -1,10 +1,8 @@
 package com.pouillos.monpilulier.entities;
 
 import com.orm.SugarRecord;
-import com.pouillos.monpilulier.interfaces.AfficherDetail;
 
 import java.io.Serializable;
-import java.util.Date;
 
 public class Duree extends SugarRecord implements Serializable, Comparable<Duree>  {
 

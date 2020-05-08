@@ -17,7 +17,7 @@
             android:value="mon_pilulier.db" />
         <meta-data
             android:name="VERSION"
-            android:value="49" />
+            android:value="52" />
         <meta-data
             android:name="QUERY_LOG"
             android:value="true" />
@@ -34,8 +34,6 @@
         <activity android:name=".activities.listallx.ListAllProfilActivity" />
         <activity android:name=".activities.listmyx.ListMyProfilActivity" />
         <activity android:name=".activities.recherche.ChercherContactActivity" />
-        <activity android:name=".activities.enregistrer.EnregistrerRdvMedecinOfficielActivity" />
-        <activity android:name=".activities.enregistrer.EnregistrerRdvAutreActivity" />
         <activity android:name=".activities.enregistrer.EnregistrerPrescriptionActivity" />
         <activity android:name=".activities.AuthentificationActivity" />
         <activity android:name=".activities.add.AddUserActivity"
@@ -43,6 +41,14 @@
         <activity android:name=".activities.add.AddProfilActivity"
             android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".activities.add.AddRdvActivity"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".activities.add.AddRdvAnalyseActivity"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".activities.add.AddRdvExamenActivity"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".activities.add.AddAnalyseActivity"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".activities.add.AddExamenActivity"
             android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".activities.AccueilActivity">
             <intent-filter>
@@ -52,7 +58,12 @@
         </activity>
         <activity android:name=".activities.afficher.AfficherContactActivity" />
         <activity android:name=".activities.afficher.AfficherRdvActivity" />
-
+        <activity android:name=".activities.afficher.AfficherRdvAnalyseActivity" />
+        <activity android:name=".activities.afficher.AfficherRdvExamenActivity" />
+        <activity android:name=".activities.afficher.AfficherGraphiqueActivity" />
+        <activity android:name=".activities.afficher.AfficherAnalyseActivity" />
+        <activity android:name=".activities.afficher.AfficherExamenActivity" />
+        <activity android:name=".activities.afficher.AfficherProfilActivity" />
     </application>
 
 </manifest>

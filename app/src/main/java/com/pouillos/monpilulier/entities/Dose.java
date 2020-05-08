@@ -1,7 +1,6 @@
 package com.pouillos.monpilulier.entities;
 
 import com.orm.SugarRecord;
-import com.pouillos.monpilulier.interfaces.AfficherDetail;
 
 import java.io.Serializable;
 

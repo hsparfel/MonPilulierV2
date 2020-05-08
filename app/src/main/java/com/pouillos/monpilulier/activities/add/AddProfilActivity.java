@@ -1,8 +1,10 @@
 package com.pouillos.monpilulier.activities.add;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.DragEvent;
 import android.view.MotionEvent;
@@ -13,23 +15,31 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.chip.Chip;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.orm.SugarRecord;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.AccueilActivity;
 import com.pouillos.monpilulier.activities.MainActivity;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
+import com.pouillos.monpilulier.activities.recherche.ChercherContactActivity;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.Departement;
+import com.pouillos.monpilulier.entities.Profession;
 import com.pouillos.monpilulier.entities.Profil;
+import com.pouillos.monpilulier.entities.Region;
+import com.pouillos.monpilulier.entities.SavoirFaire;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.fragments.DatePickerFragment;
 import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
@@ -40,6 +50,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -61,6 +72,9 @@ public class AddProfilActivity extends NavDrawerActivity implements Serializable
     Profil lastProfil;
     @State
     Date dateProfil;
+
+    List<Profil> listProfil;
+    List<Profil> listProfilExistant;
 
     @BindView(R.id.floating_action_button)
     FloatingActionButton fab;
@@ -84,6 +98,8 @@ public class AddProfilActivity extends NavDrawerActivity implements Serializable
     Slider sliderTaille;
     @BindView(R.id.sliderPoids)
     Slider sliderPoids;
+    @BindView(R.id.my_progressBar)
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,50 +111,19 @@ public class AddProfilActivity extends NavDrawerActivity implements Serializable
         this.configureDrawerLayout();
         this.configureNavigationView();
 
-
         ButterKnife.bind(this);
-        List<Utilisateur> listUserActif = Utilisateur.find(Utilisateur.class, "actif = ?", "1");
-        if (listUserActif.size() !=0){
-            activeUser = listUserActif.get(0);
-        }
 
+        progressBar.setVisibility(View.VISIBLE);
 
+        AddProfilActivity.AsyncTaskRunnerBD runnerBD = new AddProfilActivity.AsyncTaskRunnerBD();
+        runnerBD.execute();
 
-        //List<Profil> listProfil = Profil.find(Profil.class, "utilisateur = ?", ""+activeUser.getId(),null,"date",null);
-        //List<Profil> listProfil = Profil.find(Profil.class, "utilisateur = ?", ""+activeUser.getId());
-        List<Profil> listProfil = Profil.findWithQuery(Profil.class, "SELECT * FROM PROFIL WHERE UTILISATEUR = ? ORDER BY DATE DESC", ""+activeUser.getId());
-
-        if (listProfil.size() !=0){
-            lastProfil = listProfil.get(0);
-            String dateString = DateUtils.ecrireDate(lastProfil.getDate());
-            textDate.setText(dateString);
-            sliderTaille.setValue(lastProfil.getTaille());
-            sliderPoids.setValue((lastProfil.getPoids()));
-            textImc.setText(""+lastProfil.getImc());
-            textPoids.setText(""+lastProfil.getPoids());
-            textTaille.setText(""+lastProfil.getTaille());
-        }
-        profilToCreate = new Profil();
-        profilToCreate.setUtilisateur(activeUser);
-        profilToCreate.setDate(new Date());
-        new DateUtils();
-        String dateString = DateUtils.ecrireDate(profilToCreate.getDate());
-        textDate.setText(dateString);
-        profilToCreate.setPoids(sliderPoids.getValue());
-        profilToCreate.setTaille(round(sliderTaille.getValue()));
-        profilToCreate.setImc(profilToCreate.calculerImc());
-        textImc.setText(""+profilToCreate.getImc());
-        textPoids.setText(""+profilToCreate.getPoids()+" kg");
-        textTaille.setText(""+profilToCreate.getTaille()+" cm");
-
-        //TODO corriger les sliders pour actualiser imc en direct
         sliderTaille.addOnChangeListener(new Slider.OnChangeListener() {
             @Override
             public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
-                    profilToCreate.setTaille(round(sliderTaille.getValue()));
-                    profilToCreate.setImc(profilToCreate.calculerImc());
-                    textImc.setText(""+profilToCreate.getImc());
-                //textPoids.setText(""+profilToCreate.getPoids()+" kg");
+                profilToCreate.setTaille(round(sliderTaille.getValue()));
+                profilToCreate.setImc(floatArrondi(profilToCreate.calculerImc(),2));
+                textImc.setText(""+floatArrondi(profilToCreate.getImc(),2));
                 textTaille.setText(""+profilToCreate.getTaille()+" cm");
             }
         });
@@ -146,11 +131,10 @@ public class AddProfilActivity extends NavDrawerActivity implements Serializable
         sliderPoids.addOnChangeListener(new Slider.OnChangeListener() {
             @Override
             public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
-                profilToCreate.setPoids(sliderPoids.getValue());
-                profilToCreate.setImc(profilToCreate.calculerImc());
-                textImc.setText(""+profilToCreate.getImc());
-                textPoids.setText(""+profilToCreate.getPoids()+" kg");
-                //textTaille.setText(""+profilToCreate.getTaille()+" cm");
+                profilToCreate.setPoids(floatArrondi(sliderPoids.getValue(),2));
+                profilToCreate.setImc(floatArrondi(profilToCreate.calculerImc(),2));
+                textImc.setText(""+floatArrondi(profilToCreate.getImc(),2));
+                textPoids.setText(""+floatArrondi(profilToCreate.getPoids(),2)+" kg");
             }
         });
 
@@ -165,9 +149,49 @@ public class AddProfilActivity extends NavDrawerActivity implements Serializable
         });
     }
 
-    @Override public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Icepick.saveInstanceState(this, outState);
+    public class AsyncTaskRunnerBD extends AsyncTask<Void, Integer, Void> {
+
+        protected Void doInBackground(Void...voids) {
+            publishProgress(0);
+            activeUser = findActiveUser();
+            publishProgress(50);
+            listProfil = Profil.findWithQuery(Profil.class, "SELECT * FROM PROFIL WHERE UTILISATEUR = ? ORDER BY DATE DESC", ""+activeUser.getId());
+            publishProgress(100);
+            return null;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+        protected void onPostExecute(Void result) {
+            progressBar.setVisibility(View.GONE);
+
+            profilToCreate = new Profil();
+            profilToCreate.setUtilisateur(activeUser);
+            profilToCreate.setDate(new Date());
+            new DateUtils();
+            String dateString = DateUtils.ecrireDate(profilToCreate.getDate());
+            textDate.setText(dateString);
+            profilToCreate.setPoids(sliderPoids.getValue());
+            profilToCreate.setTaille(round(sliderTaille.getValue()));
+            profilToCreate.setImc(profilToCreate.calculerImc());
+            textImc.setText(""+profilToCreate.getImc());
+            textPoids.setText(""+profilToCreate.getPoids()+" kg");
+            textTaille.setText(""+profilToCreate.getTaille()+" cm");
+            if (listProfil.size() !=0){
+                lastProfil = listProfil.get(0);
+                dateString = DateUtils.ecrireDate(lastProfil.getDate());
+                textDate.setText(dateString);
+                sliderTaille.setValue(lastProfil.getTaille());
+                sliderPoids.setValue((lastProfil.getPoids()));
+                textImc.setText(""+lastProfil.getImc());
+                textPoids.setText(""+lastProfil.getPoids()+" kg");
+                textTaille.setText(""+lastProfil.getTaille()+" cm");
+            }
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        protected void onProgressUpdate(Integer... integer) {
+            progressBar.setProgress(integer[0],true);
+        }
     }
 
     @Override
@@ -178,7 +202,6 @@ public class AddProfilActivity extends NavDrawerActivity implements Serializable
             @Override
             public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
                 datePicker.setMaxDate(new Date().getTime());
-                //TextView tv1= (TextView) findViewById(R.id.textDate);
                 String dateJour = ""+datePicker.getDayOfMonth();
                 String dateMois = ""+(datePicker.getMonth()+1);
                 String dateAnnee = ""+datePicker.getYear();
@@ -203,14 +226,48 @@ public class AddProfilActivity extends NavDrawerActivity implements Serializable
 
     @OnClick(R.id.floating_action_button)
     public void fabClick() {
-        Long profilToCreateId = profilToCreate.save();
-        Intent intent = new Intent(AddProfilActivity.this, AccueilActivity.class);
-        startActivity(intent);
-        finish();
+        if (isExistant(profilToCreate)) {
+            new MaterialAlertDialogBuilder(AddProfilActivity.this)
+                    .setTitle(R.string.dialog_overwrite_title)
+                    .setMessage(R.string.dialog_overwrite_message)
+                    .setNegativeButton(R.string.dialog_overwrite_negative, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Toast.makeText(AddProfilActivity.this, R.string.dialog_overwrite_negative_toast, Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .setPositiveButton(R.string.dialog_overwrite_positive, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Toast.makeText(AddProfilActivity.this, R.string.dialog_overwrite_positive_toast, Toast.LENGTH_LONG).show();
+                            profilToCreate.setId(listProfilExistant.get(0).getId());
+                            profilToCreate.save();
+                            Toast.makeText(AddProfilActivity.this, R.string.modification_saved, Toast.LENGTH_LONG).show();
+
+                            ouvrirActiviteSuivante(AddProfilActivity.this, AccueilActivity.class);
+                        }
+                    })
+                    .show();
+        } else {
+            profilToCreate.setId(null);
+            profilToCreate.save();
+            Toast.makeText(AddProfilActivity.this, R.string.modification_saved, Toast.LENGTH_LONG).show();
+            ouvrirActiviteSuivante(AddProfilActivity.this, AccueilActivity.class);
+        }
+        //profilToCreate.save();
+        //ouvrirActiviteSuivante(AddProfilActivity.this, AccueilActivity.class);
     }
 
-    public void showTimePickerDialog(View view) {
-        //non necessaire dans cette classe mais à cause de l'id textHeure dans les layout je dois la declarer à priori
+    public boolean isExistant(Profil profil) {
+        listProfilExistant = Profil.findWithQuery(Profil.class, "SELECT * FROM PROFIL WHERE UTILISATEUR = ? AND DATE = ?", ""+activeUser.getId(), ""+profilToCreate.getDate().getTime());
+        if (listProfilExistant.size()>0) {
+            return true;
+        } else {
+            return false;
+        }
     }
+
+
+
 }
 

@@ -18,6 +18,7 @@ import androidx.annotation.RequiresApi;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
@@ -72,6 +73,8 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
 
     @BindView(R.id.textRechercheIntervenant)
     AutoCompleteTextView textRechercheIntervenant;
+    @BindView(R.id.layoutContact)
+    TextInputLayout layoutContact;
 
     @BindView(R.id.chipMedecin)
     Chip chipMedecin;
@@ -151,6 +154,11 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
         protected void onPostExecute(Void result) {
             progressBar.setVisibility(View.GONE);
             }
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        protected void onProgressUpdate(Integer... integer) {
+            progressBar.setProgress(integer[0],true);
+        }
         }
 
     private void displayFab(FloatingActionButton fab, boolean bool) {
@@ -165,7 +173,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
     @OnClick(R.id.chipDepartement)
     public void chipDepartementClick() {
         if (chipDepartement.isCheckable()) {
-            textRechercheIntervenant.setVisibility(View.GONE);
+            layoutContact.setVisibility(View.GONE);
             /*if (booleanDepartement) {
                 fabChercher.hide();
             } else {
@@ -199,7 +207,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
     @OnClick(R.id.chipRegion)
     public void chipRegionClick() {
         if (chipRegion.isCheckable()) {
-            textRechercheIntervenant.setVisibility(View.GONE);
+            layoutContact.setVisibility(View.GONE);
             displayFab(fabChercher,booleanRegion);
            /* if (booleanRegion) {
                 fabChercher.hide();
@@ -232,7 +240,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
     @OnClick(R.id.chipSpecialite)
     public void chipSpecialiteClick() {
         if (chipSpecialite.isCheckable()) {
-            textRechercheIntervenant.setVisibility(View.GONE);
+            layoutContact.setVisibility(View.GONE);
 
             if (booleanSpecialite) {
                 listMetier.setVisibility(View.GONE);
@@ -258,7 +266,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
     @OnClick(R.id.chipActivite)
     public void chipActiviteClick() {
         if (chipActivite.isCheckable()) {
-            textRechercheIntervenant.setVisibility(View.GONE);
+            layoutContact.setVisibility(View.GONE);
             if (booleanActivite) {
                 listMetier.setVisibility(View.GONE);
             } else {
@@ -284,7 +292,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
     @OnClick(R.id.chipAutre)
     public void chipAutreClick() {
         if (chipAutre.isCheckable()) {
-            textRechercheIntervenant.setVisibility(View.GONE);
+            layoutContact.setVisibility(View.GONE);
             if (booleanAutre) {
                 chipActivite.setVisibility(View.GONE);
                 chipActivite.setChecked(false);
@@ -314,7 +322,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
     @OnClick(R.id.chipMedecin)
     public void chipMedecinClick() {
         if (chipMedecin.isCheckable()) {
-            textRechercheIntervenant.setVisibility(View.GONE);
+            layoutContact.setVisibility(View.GONE);
             if (booleanMedecin) {
                 chipSpecialite.setVisibility(View.GONE);
                 chipSpecialite.setChecked(false);
@@ -352,7 +360,9 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
         booleanRegion=chipRegion.isChecked();
         fabRaz.show();
         fabChercher.hide();
+        //layoutContact.setVisibility(View.VISIBLE);
 
+        progressBar.setVisibility(View.VISIBLE);
         ChercherContactActivity.AsyncTaskRunnerContact runnerContact = new ChercherContactActivity.AsyncTaskRunnerContact();
         runnerContact.execute();
 
@@ -361,24 +371,26 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
     public class AsyncTaskRunnerContact extends AsyncTask<Void, Integer, Void> {
 
         protected Void doInBackground(Void...voids) {
+            publishProgress(0);
             String requete = "";
 
             listContact = new ArrayList<>();
-//TODO revoir la requete pour exclure les contacts deja associés.
-            requete += "SELECT * FROM CONTACT ";
+
+            requete += "SELECT C.* FROM CONTACT AS C LEFT JOIN ASSOCIATION_UTILISATEUR_CONTACT AS AUC ON AUC.CONTACT = C.ID ";
+            requete += "WHERE (AUC.UTILISATEUR IS NULL OR AUC.UTILISATEUR <> "+activeUser.getId()+") ";
             if (booleanMedecin) {
 
                 //requete += "WHERE CODE_CIVILITE <>\"\" ";
-                requete += "WHERE SAVOIR_FAIRE <> 0 ";
+                requete += "AND C.SAVOIR_FAIRE <> 0 ";
                 chipMedecin.setCheckable(false);
             }
             if (booleanAutre) {
                 //requete += "WHERE CODE_CIVILITE =\"\" ";
-                requete += "WHERE SAVOIR_FAIRE = 0 ";
+                requete += "AND C.SAVOIR_FAIRE = 0 ";
                 chipAutre.setCheckable(false);
             }
             if (booleanSpecialite) {
-                requete += "AND SAVOIR_FAIRE = ";
+                requete += "AND C.SAVOIR_FAIRE = ";
                 String metier = selectionMetier.getText().toString();
                 SavoirFaire savoirFaire = SavoirFaire.find(SavoirFaire.class, "name = ?", metier).get(0);
                 requete += savoirFaire.getId().toString();
@@ -386,7 +398,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
                 listMetier.setClickable(false);
             }
             if (booleanActivite) {
-                requete += "AND PROFESSION = ";
+                requete += "AND C.PROFESSION = ";
                 String metier = selectionMetier.getText().toString();
                 Profession profession = Profession.find(Profession.class, "name = ?", metier).get(0);
                 requete += profession.getId().toString();
@@ -394,25 +406,25 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
                 listMetier.setClickable(false);
             }
             if (booleanDepartement) {
-                requete += " AND DEPARTEMENT = ";
+                requete += " AND C.DEPARTEMENT = ";
                 String departement = selectionGeo.getText().toString();
-                departement = departement.substring(departement.length() - 3, departement.length() - 1);
+                departement = departement.substring(0, 2);
                 Departement dep = Departement.find(Departement.class, "numero = ?", departement).get(0);
                 requete += dep.getId().toString();
                 chipDepartement.setCheckable(false);
                 listGeo.setClickable(false);
             }
             if (booleanRegion) {
-                requete += " AND REGION = ";
+                requete += " AND C.REGION = ";
                 String region = selectionGeo.getText().toString();
                 Region reg = Region.find(Region.class, "nom = ?", region).get(0);
                 requete += reg.getId().toString();
                 chipRegion.setCheckable(false);
                 listGeo.setClickable(false);
             }
-
+            publishProgress(5);
             listContact = Contact.findWithQuery(Contact.class, requete);
-
+            publishProgress(80);
 
             List<String> listMedecinOfficielString = new ArrayList<>();
             listAutocompletion = new String[listContact.size()];
@@ -432,16 +444,21 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
             }
             listMedecinOfficielString.toArray(listAutocompletion);
 
-
+            publishProgress(100);
             return null;
         }
 
         protected void onPostExecute(Void result) {
+            progressBar.setVisibility(View.GONE);
+            publishProgress(0);
             if (listContact.size() == 0) {
-                Toast toast = Toast.makeText(ChercherContactActivity.this, "Aucune correspondance, modifier puis appliquer filtre", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(ChercherContactActivity.this, R.string.text_no_matching, Toast.LENGTH_LONG);
                 toast.show();
-                textRechercheIntervenant.setVisibility(View.GONE);
-                //todo visibility sur layout plutot
+                //textRechercheIntervenant.setVisibility(View.GONE);
+                layoutContact.setVisibility(View.GONE);
+
+            } else {
+                layoutContact.setVisibility(View.VISIBLE);
             }
 
             //ArrayAdapter adapterMedecins = new ArrayAdapter(ChercherMedecinOfficielActivity.this, android.R.layout.simple_list_item_1, listAutocompletion);
@@ -459,7 +476,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
             textRechercheIntervenant.setOnItemClickListener(ChercherContactActivity.this);
             textRechercheIntervenant.setThreshold(1);
 
-            textRechercheIntervenant.setVisibility(View.VISIBLE);
+            layoutContact.setVisibility(View.VISIBLE);
 
 
             //Masquer & raz tout le reste
@@ -483,7 +500,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
 
     @OnClick(R.id.fabRaz)
     public void fabRazClick() {
-        textRechercheIntervenant.setVisibility(View.GONE);
+        layoutContact.setVisibility(View.GONE);
         fabChercher.hide();
         fabRaz.hide();
         textRechercheIntervenant.setFocusable(true);

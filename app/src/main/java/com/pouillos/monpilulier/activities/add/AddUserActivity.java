@@ -182,7 +182,9 @@ public class AddUserActivity extends NavDrawerActivity implements Serializable, 
 
     @OnClick(R.id.fabDelete)
     public void setfabDeleteClick() {
-        new MaterialAlertDialogBuilder(AddUserActivity.this)
+        deleteItem(AddUserActivity.this, userToModify, AccueilActivity.class);
+
+        /*new MaterialAlertDialogBuilder(AddUserActivity.this)
                 .setTitle(R.string.dialog_delete_title)
                 .setMessage(R.string.dialog_delete_message)
         .setNegativeButton(R.string.dialog_delete_negative, new DialogInterface.OnClickListener() {
@@ -199,7 +201,7 @@ public class AddUserActivity extends NavDrawerActivity implements Serializable, 
                 ouvrirActiviteSuivante(AddUserActivity.this, AccueilActivity.class);
             }
         })
-        .show();
+        .show();*/
     }
 
     @OnClick(R.id.fabEdit)

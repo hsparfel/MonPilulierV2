@@ -187,6 +187,29 @@ public class Contact extends SugarRecord implements Serializable, Comparable<Con
     }
 
     @Override
+    public String toString() {
+        String affichage = "";
+        if (codeCivilite != null) {
+            affichage += codeCivilite + " ";
+        }
+        if (nom != null) {
+            affichage += nom + " ";
+        }
+        if (prenom != null) {
+            affichage += prenom;
+        }
+        if (savoirFaire != null) {
+            affichage += " - " + savoirFaire;
+        } else {
+            if (profession != null) {
+                affichage +=  " - " + profession;
+            }
+        }
+
+        return affichage;
+    }
+
+    @Override
     public int compareTo(Contact o) {
         return this.nom.compareTo(o.nom);
     }
@@ -207,4 +230,6 @@ public class Contact extends SugarRecord implements Serializable, Comparable<Con
             e.printStackTrace();
         }
     }
+
+
 }

@@ -13,6 +13,13 @@ public class DateUtils {
         return dateMaj;
     }
 
+    public static String ecrireHeure(Date date) {
+        String pattern = "HH:mm";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String dateMaj = simpleDateFormat.format(date);
+        return dateMaj;
+    }
+
     public static String ecrireDateHeure(Date date) {
         String pattern = "dd/MM/yyyy HH:mm";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);

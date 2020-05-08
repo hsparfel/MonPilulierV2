@@ -1,14 +1,12 @@
 package com.pouillos.monpilulier.entities;
 
 import com.orm.SugarRecord;
-import com.orm.dsl.Table;
-import com.pouillos.monpilulier.interfaces.AfficherDetail;
 
 import java.io.Serializable;
 import java.util.Date;
 
 
-public class Utilisateur extends SugarRecord implements Serializable, Comparable<Utilisateur>, AfficherDetail {
+public class Utilisateur extends SugarRecord implements Serializable, Comparable<Utilisateur> {
 
 private String name;
 private Date dateDeNaissance;
@@ -92,7 +90,7 @@ private boolean actif;
         return utilisateur;
     }*/
 
-    @Override
+    /*@Override
     public String afficherTitre() {
         return name;
     }
@@ -100,5 +98,5 @@ private boolean actif;
     @Override
     public String afficherDetail() {
         return null;
-    }
+    }*/
 }

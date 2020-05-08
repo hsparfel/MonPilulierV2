@@ -18,36 +18,7 @@ import java.util.regex.Pattern;
 
 public interface BasicUtils {
 
-    public default boolean isChecked(ChipGroup chipGroup) {
-        boolean bool;
-        if (chipGroup.getCheckedChipId() != -1) {
-            bool = true;
-        } else {
-            bool = false;
-        }
-        return bool;
-    }
 
-
-    public default boolean isFilled(TextInputEditText textInputEditText){
-        boolean bool;
-        if (textInputEditText.length()>0) {
-            bool = true;
-        } else {
-            bool = false;
-        }
-        return bool;
-    }
-
-    public default boolean isFilled(Object object){
-        boolean bool;
-        if (object!=null) {
-            bool = true;
-        } else {
-            bool = false;
-        }
-        return bool;
-    }
 
     public default int getIndex(Spinner spinner, String myString){
         for (int i=0;i<spinner.getCount();i++){
@@ -83,29 +54,7 @@ public interface BasicUtils {
     };
 
     public default boolean isValid(TextView textView) { return false; };
-    public default boolean isValidTel(TextView textView) {
-        if (!TextUtils.isEmpty(textView.getText()) && textView.getText().length() <10) {
-            textView.requestFocus();
-            textView.setError("Saisie Non Valide  (10 chiffres)");
-            return false;
-        } else {
-            return true;
-        }
-    }
-    public default boolean isEmailAdress(String email){
-        Pattern p = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$");
-        Matcher m = p.matcher(email.toUpperCase());
-        return m.matches();
-    }
-    public default boolean isValidEmail(TextView textView) {
-        if (!TextUtils.isEmpty(textView.getText()) && !isEmailAdress(textView.getText().toString())) {
-            textView.requestFocus();
-            textView.setError("Saisie Non Valide (email)");
-            return false;
-        } else {
-            return true;
-        }
-    }
+
 
     public default boolean isExistant() { return false; };
     public default boolean checkFields() { return false; };

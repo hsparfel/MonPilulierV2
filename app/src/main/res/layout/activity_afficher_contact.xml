@@ -15,10 +15,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:focusableInTouchMode="true">
+        android:focusableInTouchMode="true"
+        android:orientation="vertical">
 
-    <!-- Toolbar -->
+        <!-- Toolbar -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/activity_main_toolbar"
             android:layout_width="match_parent"
@@ -32,10 +32,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:indeterminate="false"
-            android:visibility="gone"
             android:max="100"
             android:progress="0"
-            />
+            android:visibility="gone" />
 
 
         <com.google.android.material.textfield.TextInputLayout
@@ -49,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="false"
-                android:hint="Selectionner"
+                android:hint="@string/select"
                 android:inputType="none" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -67,8 +66,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
-                app:srcCompat="@drawable/outline_today_black_24dp"
-                app:fabSize="mini"/>
+                app:fabSize="mini"
+                app:srcCompat="@drawable/outline_today_black_24dp" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabPrescription"
@@ -77,8 +76,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
-                app:srcCompat="@drawable/drug_icon"
-                app:fabSize="mini"/>
+                app:fabSize="mini"
+                app:srcCompat="@drawable/drug_icon" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabGoogleMap"
@@ -87,8 +86,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
-                app:srcCompat="@drawable/outline_place_black_24dp"
-                app:fabSize="mini"/>
+                app:fabSize="mini"
+                app:srcCompat="@drawable/outline_place_black_24dp" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabWaze"
@@ -97,18 +96,18 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
-                app:srcCompat="@drawable/outline_navigation_black_24dp"
-                app:fabSize="mini"/>
-
-
+                app:fabSize="mini"
+                app:srcCompat="@drawable/outline_navigation_black_24dp" />
 
 
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="horizontal">
+
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabSave"
                 style="@style/Widget.MaterialComponents.FloatingActionButton"
@@ -116,8 +115,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
-                app:srcCompat="@drawable/outline_save_black_24dp"
-                app:fabSize="mini"/>
+                app:fabSize="mini"
+                app:srcCompat="@drawable/outline_save_black_24dp" />
+
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabCancel"
                 style="@style/Widget.MaterialComponents.FloatingActionButton"
@@ -125,8 +125,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
-                app:srcCompat="@drawable/outline_replay_black_24dp"
-                app:fabSize="mini"/>
+                app:fabSize="mini"
+                app:srcCompat="@drawable/outline_replay_black_24dp" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabEdit"
@@ -135,8 +135,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
-                app:srcCompat="@drawable/outline_create_black_24dp"
-                app:fabSize="mini"/>
+                app:fabSize="mini"
+                app:srcCompat="@drawable/outline_create_black_24dp" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabDelete"
@@ -145,11 +145,12 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
-                app:srcCompat="@drawable/outline_delete_black_24dp"
-                app:fabSize="mini"/>
+                app:fabSize="mini"
+                app:srcCompat="@drawable/outline_delete_black_24dp" />
 
 
         </LinearLayout>
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -160,49 +161,51 @@
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/layoutDr"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/text_doctor"
-                    app:errorEnabled="true"
-                    app:startIconDrawable="@drawable/avatar_doctor"
-                    tools:visibility="gone">
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/textDr"
-                        android:layout_width="match_parent"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layoutDr"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                     />
+                        android:hint="@string/text_doctor"
+                        app:errorEnabled="true"
+                        app:startIconDrawable="@drawable/avatar_doctor"
+                        tools:visibility="gone"
+                        >
 
-                </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/textDr"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:maxWidth="90dp"
+                            />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/layoutName"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/text_name"
-                    app:errorEnabled="true"
-                    app:startIconDrawable="@drawable/avatar_doctor"
-                    tools:visibility="gone">
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/textName"
-                        android:layout_width="match_parent"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layoutName"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        />
+                        android:hint="@string/text_name"
+                        app:errorEnabled="true"
 
-                </com.google.android.material.textfield.TextInputLayout>
+                        tools:visibility="gone">
 
-            </LinearLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/textName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/layoutFirstName"
@@ -236,7 +239,7 @@
                         android:id="@+id/textJob"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                         />
+                        />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -257,7 +260,7 @@
                         android:id="@+id/textPlace"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                         />
+                        />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -277,7 +280,7 @@
                         android:id="@+id/textComplement"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                         />
+                        />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -297,51 +300,57 @@
                         android:id="@+id/textNumStreet"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                         />
+                        />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/layoutZip"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:hint="@string/text_zip"
-                    app:errorEnabled="true"
-                    tools:visibility="gone">
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/textZip"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layoutZip"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:hint="@string/text_zip"
+                        app:errorEnabled="true"
+                        tools:visibility="gone"
 
-                </com.google.android.material.textfield.TextInputLayout>
+                        >
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/layoutTown"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:hint="@string/text_town"
-                    app:errorEnabled="true"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/textZip"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:maxLength="5"
+                            />
 
-                    tools:visibility="gone">
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/textTown"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layoutTown"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:hint="@string/text_town"
+                        app:errorEnabled="true"
 
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
+                        tools:visibility="gone">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/textTown"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/layoutPhone"
@@ -359,7 +368,9 @@
                         android:id="@+id/textPhone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                         />
+                        android:inputType="phone"
+                        android:maxLength="10"
+                        />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -379,7 +390,8 @@
                         android:id="@+id/textFax"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                         />
+                        android:inputType="phone"
+                        android:maxLength="10"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -398,18 +410,20 @@
                         android:id="@+id/textEmail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                         />
+                        android:inputType="textEmailAddress"
+                        />
 
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
         </ScrollView>
 
+
     </LinearLayout>
 
 
-
     <!-- 2 | NavigationView -->
-<com.google.android.material.navigation.NavigationView
+
+    <com.google.android.material.navigation.NavigationView
 android:id="@+id/activity_main_nav_view"
 android:layout_width="match_parent"
 android:layout_height="match_parent"

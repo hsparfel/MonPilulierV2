@@ -13,6 +13,10 @@
             android:icon="@drawable/outline_face_black_24dp"
             android:title="@string/text_my_profile" />
         <item
+            android:id="@+id/activity_main_drawer_evolution"
+            android:icon="@drawable/outline_trending_up_black_24dp"
+            android:title="@string/evolution" />
+        <item
             android:id="@+id/activity_main_drawer_account"
             android:icon="@drawable/id_card_icon_124180"
             android:title="@string/text_my_account" />
@@ -30,12 +34,20 @@
                     android:icon="@drawable/medicine_medical_pharmacy_health_prescription_pill_drug_icon_140910"
                     android:title="@string/text_my_treatments" />
                 <item
-                    android:id="@+id/activity_main_drawer_appointments"
-                    android:icon="@drawable/outline_schedule_black_18dp"
-                    android:title="@string/text_my_appointments" />
+                android:id="@+id/activity_main_drawer_contact_appointments"
+                android:icon="@drawable/bookeddatecalendarmarkcrosssave_109769"
+                android:title="@string/text_my_appointments" />
+                <item
+                    android:id="@+id/activity_main_drawer_analysis_appointments"
+                    android:icon="@drawable/syringe_vaccine_icon_127255"
+                    android:title="@string/my_analysis" />
+                <item
+                    android:id="@+id/activity_main_drawer_exam_appointments"
+                    android:icon="@drawable/heart"
+                    android:title="@string/my_exams" />
                 <item
                     android:id="@+id/activity_main_drawer_contacts"
-                    android:icon="@drawable/outline_import_contacts_black_18dp"
+                    android:icon="@drawable/book_contact"
                     android:title="@string/text_my_contacts" />
             </group>
         </menu>

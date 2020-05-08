@@ -1,10 +1,7 @@
 package com.pouillos.monpilulier.activities.afficher;
 
 import android.app.TimePickerDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,12 +26,10 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
-import com.pouillos.monpilulier.activities.add.AddRdvActivity;
+import com.pouillos.monpilulier.activities.add.AddRdvAnalyseActivity;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
-import com.pouillos.monpilulier.entities.AssociationUtilisateurContact;
 import com.pouillos.monpilulier.entities.Rdv;
-import com.pouillos.monpilulier.entities.Profession;
-import com.pouillos.monpilulier.entities.SavoirFaire;
+import com.pouillos.monpilulier.entities.RdvAnalyse;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
@@ -43,8 +38,9 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -54,18 +50,18 @@ import butterknife.OnClick;
 import icepick.Icepick;
 import icepick.State;
 
-public class AfficherRdvActivity extends NavDrawerActivity implements Serializable, BasicUtils, AdapterView.OnItemClickListener {
+public class AfficherRdvAnalyseActivity extends NavDrawerActivity implements Serializable, BasicUtils, AdapterView.OnItemClickListener {
 
     @State
     Utilisateur activeUser;
     @State
-    Rdv rdvSelected;
+    RdvAnalyse rdvSelected;
     @State
     Date date;
 
     TimePickerDialog picker;
 
-    List<Rdv> listRdvBD;
+    List<RdvAnalyse> listRdvBD;
     ArrayAdapter adapter;
 
     @BindView(R.id.selectRdv)
@@ -73,10 +69,10 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
     @BindView(R.id.listRdv)
     TextInputLayout listRdv;
 
-    @BindView(R.id.layoutContact)
-    TextInputLayout layoutContact;
-    @BindView(R.id.textContact)
-    TextInputEditText textContact;
+    @BindView(R.id.layoutAnalyse)
+    TextInputLayout layoutAnalyse;
+    @BindView(R.id.textAnalyse)
+    TextInputEditText textAnalyse;
     @BindView(R.id.layoutDate)
     TextInputLayout layoutDate;
     @BindView(R.id.textDate)
@@ -98,6 +94,8 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
     FloatingActionButton fabSave;
     @BindView(R.id.fabCancel)
     FloatingActionButton fabCancel;
+    @BindView(R.id.fabAdd)
+    FloatingActionButton fabAdd;
 
     @BindView(R.id.activity_main_toolbar)
     Toolbar toolbar;
@@ -110,7 +108,7 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Icepick.restoreInstanceState(this, savedInstanceState);
-        setContentView(R.layout.activity_afficher_rdv);
+        setContentView(R.layout.activity_afficher_rdv_analyse);
         // 6 - Configure all views
         this.configureToolBar();
         this.configureDrawerLayout();
@@ -123,10 +121,10 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
         hideAllFields();
         displayFabs();
 
-        AfficherRdvActivity.AsyncTaskRunner runner = new AfficherRdvActivity.AsyncTaskRunner();
+        AfficherRdvAnalyseActivity.AsyncTaskRunner runner = new AfficherRdvAnalyseActivity.AsyncTaskRunner();
         runner.execute();
 
-        setTitle("Mes Rdv");
+        setTitle("Mes Analyses");
 
         selectedRdv.setOnItemClickListener(this);
     }
@@ -137,7 +135,8 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
             publishProgress(0);
             activeUser = findActiveUser();
             publishProgress(50);
-            listRdvBD = Rdv.find(Rdv.class,"utilisateur = ?",""+activeUser.getId());
+            listRdvBD = RdvAnalyse.find(RdvAnalyse.class,"utilisateur = ?",""+activeUser.getId());
+            Collections.sort(listRdvBD);
             publishProgress(100);
             return null;
         }
@@ -146,28 +145,10 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
         protected void onPostExecute(Void result) {
             progressBar.setVisibility(View.GONE);
             if (listRdvBD.size() == 0) {
-                Toast.makeText(AfficherRdvActivity.this, "Aucune correspondance, modifier puis appliquer filtre", Toast.LENGTH_LONG).show();
+                Toast.makeText(AfficherRdvAnalyseActivity.this, R.string.text_no_matching, Toast.LENGTH_LONG).show();
                 listRdv.setVisibility(View.GONE);
             } else {
-                buildDropdownMenu(listRdvBD, AfficherRdvActivity.this,selectedRdv);
-
-                //traiterIntent();
-
-
-            /*    List<String> listRdvString = new ArrayList<>();
-                String[] listDeroulanteRdv = new String[listRdvBD.size()];
-                for (Rdv rdv : listRdvBD) {
-                    String rdvString = DateUtils.ecrireDateHeure(rdv.getDate()) + " - ";
-                    if (!rdv.getContact().getCodeCivilite().equalsIgnoreCase("")) {
-                        rdvString += rdv.getContact().getCodeCivilite() + " ";
-                    }
-                    rdvString += rdv.getContact().getNom();
-                    listRdvString.add(rdvString);
-                }
-                listRdvString.toArray(listDeroulanteRdv);
-                adapter = new ArrayAdapter(AfficherRdvActivity.this, R.layout.list_item, listDeroulanteRdv);
-                selectedRdv.setAdapter(adapter);*/
-
+                buildDropdownMenu(listRdvBD, AfficherRdvAnalyseActivity.this,selectedRdv);
 
             }
         }
@@ -175,6 +156,11 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
         protected void onProgressUpdate(Integer... integer) {
             progressBar.setProgress(integer[0],true);
         }
+    }
+
+    @OnClick(R.id.fabAdd)
+    public void fabAddClick() {
+        ouvrirActiviteSuivante(AfficherRdvAnalyseActivity.this, AddRdvAnalyseActivity.class);
     }
 
     @OnClick(R.id.fabSave)
@@ -190,7 +176,7 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
             enableFields(false);
             displayAllFields(false);
             displayFabs();
-            Toast.makeText(AfficherRdvActivity.this, R.string.modification_saved, Toast.LENGTH_LONG).show();
+            Toast.makeText(AfficherRdvAnalyseActivity.this, R.string.modification_saved, Toast.LENGTH_LONG).show();
     }
 
     @OnClick(R.id.fabCancel)
@@ -212,22 +198,21 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
 
         fabEdit.hide();
         fabDelete.hide();
+        fabAdd.hide();
         fabSave.show();
         fabCancel.show();
     }
 
     @OnClick(R.id.fabDelete)
     public void fabDeleteClick() {
-        deleteItem(AfficherRdvActivity.this, rdvSelected, AfficherRdvActivity.class);
+        deleteItem(AfficherRdvAnalyseActivity.this, rdvSelected, AfficherRdvAnalyseActivity.class);
     }
 
     private void resizeAllFields(boolean bool) {
         if (bool) {
             textNote.setMinWidth(getResources().getDimensionPixelOffset(R.dimen.field_min_width));
-
         } else {
             textNote.setMinWidth(0);
-
         }
     }
 
@@ -238,35 +223,14 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
         displayFabs();
         fillAllFields();
         displayAllFields(false);
-
-
-        /*String item = parent.getItemAtPosition(position).toString();
-
-        Date date = new Date();
-        String dateRdv = selectedRdv.getText().toString().substring(0, 16);
-        DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm");
-        try{
-            date = df.parse(dateRdv);
-        }catch(ParseException e){
-            System.out.println("ERROR");
-        }
-        rdvSelected = Rdv.find(Rdv.class, "date = ?", "" + date.getTime()).get(0);
-
-*/
-       // Toast.makeText(AfficherRdvActivity.this, "Selected Item is: \t" + DateUtils.ecrireDateHeure(rdvSelected.getDate()) + " - "+ rdvSelected.getContact(), Toast.LENGTH_LONG).show();
-        //lancer l'activite avec xtra
-        //ouvrirActiviteSuivante(AddRdvActivity.class,"rdvId",rdvSelected.getId());
-        //ouvrirActiviteSuivante(AfficherRdvActivity.this, AddRdvActivity.class,"rdvId",rdvSelected.getId());
     }
 
     private void clearAllFields() {
-        textContact.setText(null);
+        textAnalyse.setText(null);
         textDate.setText(null);
         textHeure.setText(null);
         textNote.setText(null);
     }
-
-
 
     @Override
     public void displayFabs() {
@@ -278,25 +242,26 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
         } else {
             fabEdit.show();
             fabDelete.show();
+            fabAdd.show();
         }
     }
 
     private void fillAllFields() {
-        textContact.setText(rdvSelected.getContact().toString());
+        textAnalyse.setText(rdvSelected.getAnalyse().toString());
         textDate.setText(DateUtils.ecrireDate(rdvSelected.getDate()));
         textHeure.setText(DateUtils.ecrireHeure(rdvSelected.getDate()));
         textNote.setText(rdvSelected.getNote());
     }
 
     private void enableFields(boolean bool) {
-        layoutContact.setEnabled(false);
+        layoutAnalyse.setEnabled(false);
         layoutDate.setEnabled(bool);
         layoutHeure.setEnabled(bool);
         layoutNote.setEnabled(bool);
     }
 
     private void displayAllFields(boolean bool) {
-        layoutContact.setVisibility(View.VISIBLE);
+        layoutAnalyse.setVisibility(View.VISIBLE);
         layoutDate.setVisibility(View.VISIBLE);
         layoutHeure.setVisibility(View.VISIBLE);
         if (bool || !TextUtils.isEmpty(rdvSelected.getNote())) {
@@ -308,7 +273,7 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
     }
 
     private void hideAllFields() {
-        layoutContact.setVisibility(View.GONE);
+        layoutAnalyse.setVisibility(View.GONE);
         layoutDate.setVisibility(View.GONE);
         layoutHeure.setVisibility(View.GONE);
         layoutNote.setVisibility(View.GONE);
@@ -334,7 +299,7 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
         int hour = 8;
         int minutes = 0;
         // time picker dialog
-        picker = new TimePickerDialog(AfficherRdvActivity.this,
+        picker = new TimePickerDialog(AfficherRdvAnalyseActivity.this,
                 new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker tp, int sHour, int sMinute) {
@@ -403,6 +368,5 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
             }
         });
     }
-
 }
 

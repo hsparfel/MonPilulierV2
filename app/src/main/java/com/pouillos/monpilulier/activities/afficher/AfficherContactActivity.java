@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,9 +21,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
+import com.pouillos.monpilulier.activities.AccueilActivity;
 import com.pouillos.monpilulier.activities.AuthentificationActivity;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
 import com.pouillos.monpilulier.activities.add.AddRdvActivity;
+import com.pouillos.monpilulier.activities.add.AddUserActivity;
+import com.pouillos.monpilulier.entities.AssociationUtilisateurContact;
 import com.pouillos.monpilulier.entities.Contact;
 import com.pouillos.monpilulier.entities.Profession;
 import com.pouillos.monpilulier.entities.SavoirFaire;
@@ -42,7 +46,6 @@ import icepick.State;
 import static java.lang.Math.round;
 
 public class AfficherContactActivity extends NavDrawerActivity implements Serializable, BasicUtils, AdapterView.OnItemClickListener {
-    //TODO rajouter fab cancel avec icone fleche retour
 
     @State
     Contact contactSelected;
@@ -140,56 +143,22 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
         super.onCreate(savedInstanceState);
         Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(R.layout.activity_afficher_contact);
-        // 6 - Configure all views
+
         this.configureToolBar();
         this.configureDrawerLayout();
         this.configureNavigationView();
 
         ButterKnife.bind(this);
-        displayfabs();
 
         progressBar.setVisibility(View.VISIBLE);
-
-        /*List<Utilisateur> listUserActif = Utilisateur.find(Utilisateur.class, "actif = ?", "1");
-        if (listUserActif.size() !=0){
-            activeUser = listUserActif.get(0);
-        }*/
-
-        //displayfabs();
 
         AfficherContactActivity.AsyncTaskRunner runner = new AfficherContactActivity.AsyncTaskRunner();
         runner.execute();
 
-       // ButterKnife.bind(this);
-        layoutDr.setVisibility(View.GONE);
-        layoutName.setVisibility(View.GONE);
-        layoutFirstName.setVisibility(View.GONE);
-        layoutJob.setVisibility(View.GONE);
-        layoutPlace.setVisibility(View.GONE);
-        layoutComplement.setVisibility(View.GONE);
-        layoutNumStreet.setVisibility(View.GONE);
-        layoutZip.setVisibility(View.GONE);
-        layoutTown.setVisibility(View.GONE);
-        layoutPhone.setVisibility(View.GONE);
-        layoutFax.setVisibility(View.GONE);
-        layoutEmail.setVisibility(View.GONE);
-
-        layoutDr.setEnabled(false);
-        layoutName.setEnabled(false);
-        layoutFirstName.setEnabled(false);
-        layoutJob.setEnabled(false);
-        layoutPlace.setEnabled(false);
-        layoutComplement.setEnabled(false);
-        layoutNumStreet.setEnabled(false);
-        layoutZip.setEnabled(false);
-        layoutTown.setEnabled(false);
-        layoutPhone.setEnabled(false);
-        layoutFax.setEnabled(false);
-        layoutEmail.setEnabled(false);
-
         setTitle(getString(R.string.text_my_contacts));
-       // toolbar.setTitle("Mes Contacts");
-       // getSupportActionBar().setTitle("Mes Contacts");
+
+        displayFabs();
+        hideAllFields();
 
         selectedContact.setOnItemClickListener(this);
     }
@@ -198,120 +167,127 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
     @Override
     public void traiterIntent() {
         Intent intent = getIntent();
-        //  activitySource = (Class<?>) intent.getSerializableExtra("activitySource");
         if (intent.hasExtra("contactId")) {
 
             Long contactId = intent.getLongExtra("contactId", 0);
-            //rdvAModif = Rdv.findById(Rdv.class,rdvAModifId);
             contactSelected = Contact.findById(Contact.class, contactId);
-            //int position = listContactsBD.indexOf(contactSelected);
             int position = 0;
-            //int position2 = 0;
             for (Contact contact : listContactsBD) {
                 if (contact.getId().longValue() != contactId) {
                     position ++;
-                //}
-                //if (contact.getId().longValue() != contactSelected.getId().longValue()) {
-                //    position ++;
                 } else {
                     break;
                 }
-                //if (contact.getId().longValue() != contactId) {
-                //    position2 ++;
-                //}
             }
 
-            //selectedContact.setSelection(position);
-            //selectedContact.setListSelection(position);
-            //selectedContact.setSelection(position);
             selectedContact.setText(selectedContact.getAdapter().getItem(position).toString(), false);
-            //selectedContact.get
-            //selectedContact.setSelection(position);
-            //selectedContact.setListSelection(position);
 
-            String stringName ="";
-            if (!contactSelected.getCodeCivilite().equalsIgnoreCase("")) {
-                stringName += contactSelected.getCodeCivilite() + " ";
-            }
-            if (!contactSelected.getNom().equalsIgnoreCase("")) {
-                stringName += contactSelected.getNom() + " ";
-            }
-            if (!contactSelected.getPrenom().equalsIgnoreCase("")) {
-                stringName += contactSelected.getPrenom();
-            }
-            if (stringName.length()>0) {
-                textName.setText(stringName);
-                layoutName.setVisibility(View.VISIBLE);
-            }
-
-            if (contactSelected.getProfession() != null) {
-                textJob.setText(contactSelected.getProfession().getName());
-                layoutJob.setVisibility(View.VISIBLE);
-            }
-            if (contactSelected.getSavoirFaire() != null) {
-                textJob.setText(contactSelected.getSavoirFaire().getName());
-                layoutJob.setVisibility(View.VISIBLE);
-            }
-
-            if (contactSelected.getRaisonSocial() != null) {
-                textPlace.setText(contactSelected.getRaisonSocial());
-                layoutPlace.setVisibility(View.VISIBLE);
-            }
-
-            if (!contactSelected.getComplement().equalsIgnoreCase("")) {
-                textComplement.setText(contactSelected.getComplement());
-                layoutComplement.setVisibility(View.VISIBLE);
-            }
-
-            if (contactSelected.getAdresse() != null) {
-                textNumStreet.setText(contactSelected.getAdresse());
-                layoutNumStreet.setVisibility(View.VISIBLE);
-            }
-
-            if (contactSelected.getCp() != null) {
-                textZip.setText(contactSelected.getCp());
-                layoutZip.setVisibility(View.VISIBLE);
-            }
-
-            if (contactSelected.getVille() != null) {
-                textTown.setText(contactSelected.getVille());
-                layoutTown.setVisibility(View.VISIBLE);
-            }
-
-            /*String stringCpVille = "";
-            if (!contactSelected.getCp().equalsIgnoreCase("")) {
-                stringCpVille += contactSelected.getCp() + " ";
-            }
-            if (!contactSelected.getVille().equalsIgnoreCase("")) {
-                stringCpVille += contactSelected.getVille();
-            }
-            if (stringCpVille.length()>0) {
-                textZipTown.setText(stringCpVille);
-                layoutZipTown.setVisibility(View.VISIBLE);
-            }*/
-
-
-            if (contactSelected.getTelephone() != null) {
-                textPhone.setText(contactSelected.getTelephone());
-                layoutPhone.setVisibility(View.VISIBLE);
-            }
-
-            if (contactSelected.getFax() != null) {
-                textFax.setText(contactSelected.getFax());
-                layoutFax.setVisibility(View.VISIBLE);
-            }
-
-            if (contactSelected.getEmail() != null) {
-                textEmail.setText(contactSelected.getEmail());
-                layoutEmail.setVisibility(View.VISIBLE);
-            }
-        //todo creer la mehode aff/masquer boutons selon medecin ou adresse
-        //todo la dupliquer sur le click item
-            displayfabs();
+            fillAllFields();
+            displayAllFields(false);
+            displayFabs();
         }
+        enableFields(false);
     }
 
-    private void displayfabs() {
+    @Override
+    public boolean checkFields() {
+        boolean bool = true;
+        if (!TextUtils.isEmpty(textZip.getText()) && !isFilled(textZip.getText())) {
+            layoutZip.setError(getString(R.string.not_valid));
+            bool = false;
+        } else {
+            layoutZip.setError(null);
+        }
+        if (!TextUtils.isEmpty(textPhone.getText()) && !isFilled(textPhone.getText())) {
+            layoutPhone.setError(getString(R.string.not_valid));
+            bool = false;
+        } else {
+            layoutPhone.setError(null);
+        }
+        if (!TextUtils.isEmpty(textFax.getText()) && !isFilled(textFax.getText())) {
+            layoutFax.setError(getString(R.string.not_valid));
+            bool = false;
+        } else {
+            layoutFax.setError(null);
+        }
+        if (!TextUtils.isEmpty(textZip.getText()) && !isValidZip(textZip)) {
+            layoutZip.setError(getString(R.string.not_valid_five_digits));
+            bool = false;
+        } else {
+            layoutZip.setError(null);
+        }
+        if (!TextUtils.isEmpty(textPhone.getText()) && !isValidTel(textPhone)) {
+            layoutPhone.setError(getString(R.string.not_valid_ten_digits));
+            bool = false;
+        } else {
+            layoutPhone.setError(null);
+        }
+        if (!TextUtils.isEmpty(textFax.getText()) && !isValidTel(textFax)) {
+            layoutFax.setError(getString(R.string.not_valid_ten_digits));
+            bool = false;
+        } else {
+            layoutPhone.setError(null);
+        }
+        if (!TextUtils.isEmpty(textEmail.getText()) && !isValidEmail(textEmail)) {
+            layoutEmail.setError(getString(R.string.not_valid));
+            bool = false;
+        } else {
+            layoutEmail.setError(null);
+        }
+        return bool;
+    }
+
+    private void resizeAllFields(boolean bool) {
+        if (bool) {
+            textDr.setMinWidth(getResources().getDimensionPixelOffset(R.dimen.field_min_width));
+            textName.setMinWidth(getResources().getDimensionPixelOffset(R.dimen.field_min_width));
+            textFirstName.setMinWidth(getResources().getDimensionPixelOffset(R.dimen.field_min_width));
+            textJob.setMinWidth(getResources().getDimensionPixelOffset(R.dimen.field_min_width));
+            textJob.setMinWidth(getResources().getDimensionPixelOffset(R.dimen.field_min_width));
+            textPlace.setMinWidth(getResources().getDimensionPixelOffset(R.dimen.field_min_width));
+            textComplement.setMinWidth(getResources().getDimensionPixelOffset(R.dimen.field_min_width));
+            textNumStreet.setMinWidth(getResources().getDimensionPixelOffset(R.dimen.field_min_width));
+            textZip.setMinWidth(getResources().getDimensionPixelOffset(R.dimen.field_min_width));
+            textTown.setMinWidth(getResources().getDimensionPixelOffset(R.dimen.field_min_width));
+            textPhone.setMinWidth(getResources().getDimensionPixelOffset(R.dimen.field_min_width));
+            textFax.setMinWidth(getResources().getDimensionPixelOffset(R.dimen.field_min_width));
+            textEmail.setMinWidth(getResources().getDimensionPixelOffset(R.dimen.field_min_width));
+        } else {
+            textDr.setMinWidth(0);
+            textName.setMinWidth(0);
+            textFirstName.setMinWidth(0);
+            textJob.setMinWidth(0);
+            textJob.setMinWidth(0);
+            textPlace.setMinWidth(0);
+            textComplement.setMinWidth(0);
+            textNumStreet.setMinWidth(0);
+            textZip.setMinWidth(0);
+            textTown.setMinWidth(0);
+            textPhone.setMinWidth(0);
+            textFax.setMinWidth(0);
+            textEmail.setMinWidth(0);
+        }
+
+    }
+
+    private void clearAllFields() {
+        textDr.setText(null);
+        textName.setText(null);
+        textFirstName.setText(null);
+        textJob.setText(null);
+        textJob.setText(null);
+        textPlace.setText(null);
+        textComplement.setText(null);
+        textNumStreet.setText(null);
+        textZip.setText(null);
+        textTown.setText(null);
+        textPhone.setText(null);
+        textFax.setText(null);
+        textEmail.setText(null);
+    }
+
+    @Override
+    public void displayFabs() {
         fabSave.hide();
         fabCancel.hide();
         if (contactSelected == null) {
@@ -330,7 +306,9 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
             } else {
                 fabPrescription.hide();
             }
-            if (contactSelected.getAdresse() != null && contactSelected.getCp() != null && contactSelected.getVille() != null) {
+            if (contactSelected.getAdresse() != null && contactSelected.getCp() != null &&
+                    contactSelected.getVille() != null && !contactSelected.getAdresse().equalsIgnoreCase("")
+                    && !contactSelected.getCp().equalsIgnoreCase("") && !contactSelected.getVille().equalsIgnoreCase("")) {
                 fabWaze.show();
                 fabGoogleMap.show();
             } else {
@@ -338,6 +316,144 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
                 fabGoogleMap.hide();
             }
         }
+    }
+
+    private void fillAllFields() {
+
+        if (contactSelected.getCodeCivilite() != null && !contactSelected.getCodeCivilite().equalsIgnoreCase("")) {
+            textDr.setText(contactSelected.getCodeCivilite());
+        }
+        if (contactSelected.getNom() != null && !contactSelected.getNom().equalsIgnoreCase("")) {
+            textName.setText(contactSelected.getNom());
+        }
+        if (contactSelected.getPrenom() != null && !contactSelected.getPrenom().equalsIgnoreCase("")) {
+            textFirstName.setText(contactSelected.getPrenom());
+        }
+        if (contactSelected.getProfession() != null && !contactSelected.getProfession().getName().equalsIgnoreCase("")) {
+            textJob.setText(contactSelected.getProfession().getName());
+        }
+        if (contactSelected.getSavoirFaire() != null && !contactSelected.getSavoirFaire().getName().equalsIgnoreCase("")) {
+            textJob.setText(contactSelected.getSavoirFaire().getName());
+        }
+        if (contactSelected.getRaisonSocial() != null && !contactSelected.getRaisonSocial().equalsIgnoreCase("")) {
+            textPlace.setText(contactSelected.getRaisonSocial());
+        }
+        if (contactSelected.getComplement() != null && !contactSelected.getComplement().equalsIgnoreCase("")) {
+            textComplement.setText(contactSelected.getComplement());
+        }
+        if (contactSelected.getAdresse() != null && !contactSelected.getAdresse().equalsIgnoreCase("")) {
+            textNumStreet.setText(contactSelected.getAdresse());
+        }
+        if (contactSelected.getCp() != null && !contactSelected.getCp().equalsIgnoreCase("")) {
+            textZip.setText(contactSelected.getCp());
+        }
+        if (contactSelected.getVille() != null && !contactSelected.getVille().equalsIgnoreCase("")) {
+            textTown.setText(contactSelected.getVille());
+        }
+        if (contactSelected.getTelephone() != null && !contactSelected.getTelephone().equalsIgnoreCase("")) {
+            textPhone.setText(contactSelected.getTelephone());
+        }
+        if (contactSelected.getFax() != null && !contactSelected.getFax().equalsIgnoreCase("")) {
+            textFax.setText(contactSelected.getFax());
+        }
+        if (contactSelected.getEmail() != null && !contactSelected.getEmail().equalsIgnoreCase("")) {
+            textEmail.setText(contactSelected.getEmail());
+        }
+    }
+
+    private void enableFields(boolean bool) {
+        layoutDr.setEnabled(false);
+        layoutName.setEnabled(false);
+        layoutFirstName.setEnabled(false);
+        layoutJob.setEnabled(false);
+        layoutPlace.setEnabled(bool);
+        layoutComplement.setEnabled(bool);
+        layoutNumStreet.setEnabled(bool);
+        layoutZip.setEnabled(bool);
+        layoutTown.setEnabled(bool);
+        layoutPhone.setEnabled(bool);
+        layoutFax.setEnabled(bool);
+        layoutEmail.setEnabled(bool);
+    }
+
+    private void displayAllFields(boolean bool) {
+        layoutName.setVisibility(View.VISIBLE);
+        layoutFirstName.setVisibility(View.VISIBLE);
+        layoutJob.setVisibility(View.VISIBLE);
+        if (bool) {
+            layoutDr.setVisibility(View.VISIBLE);
+            layoutPlace.setVisibility(View.VISIBLE);
+            layoutComplement.setVisibility(View.VISIBLE);
+            layoutNumStreet.setVisibility(View.VISIBLE);
+            layoutZip.setVisibility(View.VISIBLE);
+            layoutTown.setVisibility(View.VISIBLE);
+            layoutPhone.setVisibility(View.VISIBLE);
+            layoutFax.setVisibility(View.VISIBLE);
+            layoutEmail.setVisibility(View.VISIBLE);
+        } else {
+
+
+            if (textDr.getText() == null || textDr.getText().toString().equalsIgnoreCase("")) {
+                layoutDr.setVisibility(View.GONE);
+            } else {
+                layoutDr.setVisibility(View.VISIBLE);
+            }
+            if (textPlace.getText() == null || textPlace.getText().toString().equalsIgnoreCase("")) {
+                layoutPlace.setVisibility(View.GONE);
+            } else {
+                layoutPlace.setVisibility(View.VISIBLE);
+            }
+            if (textComplement.getText() == null || textComplement.getText().toString().equalsIgnoreCase("")) {
+                layoutComplement.setVisibility(View.GONE);
+            } else {
+                layoutComplement.setVisibility(View.VISIBLE);
+            }
+            if (textNumStreet.getText() == null || textNumStreet.getText().toString().equalsIgnoreCase("")) {
+                layoutNumStreet.setVisibility(View.GONE);
+            } else {
+                layoutNumStreet.setVisibility(View.VISIBLE);
+            }
+            if (textZip.getText() == null || textZip.getText().toString().equalsIgnoreCase("")) {
+                layoutZip.setVisibility(View.GONE);
+            } else {
+                layoutZip.setVisibility(View.VISIBLE);
+            }
+            if (textTown.getText() == null || textTown.getText().toString().equalsIgnoreCase("")) {
+                layoutTown.setVisibility(View.GONE);
+            } else {
+                layoutTown.setVisibility(View.VISIBLE);
+            }
+            if (textPhone.getText() == null || textPhone.getText().toString().equalsIgnoreCase("")) {
+                layoutPhone.setVisibility(View.GONE);
+            } else {
+                layoutPhone.setVisibility(View.VISIBLE);
+            }
+            if (textFax.getText() == null || textFax.getText().toString().equalsIgnoreCase("")) {
+                layoutFax.setVisibility(View.GONE);
+            } else {
+                layoutFax.setVisibility(View.VISIBLE);
+            }
+            if (textEmail.getText() == null || textEmail.getText().toString().equalsIgnoreCase("")) {
+                layoutEmail.setVisibility(View.GONE);
+            } else {
+                layoutEmail.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    private void hideAllFields() {
+        layoutDr.setVisibility(View.GONE);
+        layoutName.setVisibility(View.GONE);
+        layoutFirstName.setVisibility(View.GONE);
+        layoutJob.setVisibility(View.GONE);
+        layoutPlace.setVisibility(View.GONE);
+        layoutComplement.setVisibility(View.GONE);
+        layoutNumStreet.setVisibility(View.GONE);
+        layoutZip.setVisibility(View.GONE);
+        layoutTown.setVisibility(View.GONE);
+        layoutPhone.setVisibility(View.GONE);
+        layoutFax.setVisibility(View.GONE);
+        layoutEmail.setVisibility(View.GONE);
     }
 
     public class AsyncTaskRunner extends AsyncTask<Void, Integer, Void> {
@@ -364,33 +480,6 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
             } else {
                 buildDropdownMenu(listContactsBD, AfficherContactActivity.this,selectedContact);
 
-                /*List<String> listContactString = new ArrayList<>();
-
-                String[] listDeroulanteContact = new String[listContactsBD.size()];
-                for (Contact contact : listContactsBD) {
-                    String affichageContact = "";
-                    affichageContact += contact.getNom() + ", " + contact.getPrenom() + " (";
-                    if (contact.getSavoirFaire() != null) {
-                        affichageContact += contact.getSavoirFaire().getName() + ")";
-                    } else {
-                        affichageContact += contact.getProfession().getName() + ")";
-                    }
-                    //affichageContact += contact.getVille();
-                    if (contact.getVille() != null) {
-                        affichageContact += " * "+contact.getVille();
-                    }
-                    listContactString.add(affichageContact);
-                }
-                listContactString.toArray(listDeroulanteContact);
-                //selectionMetier.setText("Infirmier", false);
-                //selectionMesIntervenants.setText(listDeroulanteMedecinOfficiel[0], false);
-                adapter = new ArrayAdapter(AfficherContactActivity.this, R.layout.list_item, listDeroulanteContact);
-                selectedContact.setAdapter(adapter);*/
-                //textRechercheIntervenant.setOnItemClickListener(this);
-                //textRechercheIntervenant.setOnItemClickListener((AdapterView.OnItemClickListener) this);
-                // Set the minimum number of characters, to show suggestions
-                //textRechercheIntervenant.setThreshold(3);
-
                 traiterIntent();
             }
         }
@@ -400,7 +489,7 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
             progressBar.setProgress(integer[0],true);
         }
     }
-
+//TODO revoir tous les fabs
     @OnClick(R.id.fabRdv)
     public void fabRdvClick() {
         ouvrirActiviteSuivante(AfficherContactActivity.this, AddRdvActivity.class,"contactId",contactSelected.getId());
@@ -413,16 +502,11 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
 
     @OnClick(R.id.fabGoogleMap)
     public void fabGoogleMapClick() {
-
-        try
-        {
-            // Launch GoogleMap to look for Hawaii:
-
-            //String url = "https://www.google.com/maps/search/?api=1&query=";
             String url = "geo:";
             String addr = "";
             if (contactSelected.getLatitude() != 0 && contactSelected.getLongitude() != 0) {
                 url += contactSelected.getLatitude()+","+contactSelected.getLongitude();
+                url += "?q="+contactSelected.getLatitude()+","+contactSelected.getLongitude();
             } else if (contactSelected.getAdresse() != null && contactSelected.getCp() != null && contactSelected.getVille() != null) {
                 url += "0,0?q=";
                 addr += Uri.parse(contactSelected.getAdresse()+", "+contactSelected.getCp()+", "+contactSelected.getVille()+", FRANCE");
@@ -433,31 +517,19 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
             if (intent.resolveActivity(getPackageManager()) != null) {
                 startActivity(intent);
             }
-        }
-        catch ( ActivityNotFoundException ex  )
-        {
-            // If Waze is not installed, open it in Google Play:
-            Intent intent = new Intent( Intent.ACTION_VIEW, Uri.parse( "market://details?id=com.waze" ) );
-            startActivity(intent);
-        }
     }
 
     @OnClick(R.id.fabWaze)
     public void fabWazeClick() {
-
         try
         {
-            // Launch Waze to look for Hawaii:
-
             String url = "https://waze.com/ul?q=";
             url += contactSelected.getAdresse()+"%20"+contactSelected.getCp()+"%20"+contactSelected.getVille();
-
             Intent intent = new Intent( Intent.ACTION_VIEW, Uri.parse( url ) );
             startActivity( intent );
         }
         catch ( ActivityNotFoundException ex  )
         {
-            // If Waze is not installed, open it in Google Play:
             Intent intent = new Intent( Intent.ACTION_VIEW, Uri.parse( "market://details?id=com.waze" ) );
             startActivity(intent);
         }
@@ -465,24 +537,68 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
 
     @OnClick(R.id.fabSave)
     public void fabSaveClick() {
+        //TODO ajouter verif field CP, tel, fax, email si ype, lg correspondent bien
         Toast.makeText(AfficherContactActivity.this, "à implementer 5a", Toast.LENGTH_LONG).show();
+        if (checkFields()) {
+
+        if (textPlace.getText() != null && !textPlace.getText().toString().equalsIgnoreCase(contactSelected.getRaisonSocial())) {
+            contactSelected.setRaisonSocial(textPlace.getText().toString().toUpperCase());
+        }
+
+        if (textComplement.getText() != null && !textComplement.getText().toString().equalsIgnoreCase(contactSelected.getComplement())) {
+            contactSelected.setComplement(textComplement.getText().toString().toUpperCase());
+        }
+
+        if (textNumStreet.getText() != null && !textNumStreet.getText().toString().equalsIgnoreCase(contactSelected.getAdresse())) {
+            contactSelected.setAdresse(textNumStreet.getText().toString().toUpperCase());
+        }
+
+        if (textZip.getText() != null && !textZip.getText().toString().equalsIgnoreCase(contactSelected.getCp())) {
+            contactSelected.setCp(textZip.getText().toString().toUpperCase());
+        }
+
+        if (textTown.getText() != null && !textTown.getText().toString().equalsIgnoreCase(contactSelected.getVille())) {
+            contactSelected.setVille(textTown.getText().toString().toUpperCase());
+        }
+
+        if (textPhone.getText() != null && !textPhone.getText().toString().equalsIgnoreCase(contactSelected.getTelephone())) {
+            contactSelected.setTelephone(textPhone.getText().toString().toUpperCase());
+        }
+
+        if (textFax.getText() != null && !textFax.getText().toString().equalsIgnoreCase(contactSelected.getFax())) {
+            contactSelected.setFax(textFax.getText().toString().toUpperCase());
+        }
+
+        if (textEmail.getText() != null && !textEmail.getText().toString().equalsIgnoreCase(contactSelected.getEmail())) {
+            contactSelected.setEmail(textEmail.getText().toString());
+        }
+
+
+        contactSelected.save();
+
+        enableFields(false);
+        displayAllFields(false);
+        displayFabs();
+        Toast.makeText(AfficherContactActivity.this, R.string.modification_saved, Toast.LENGTH_LONG).show();
+
+        }
     }
 
     @OnClick(R.id.fabCancel)
     public void fabCancelClick() {
-        Toast.makeText(AfficherContactActivity.this, "à implementer 8", Toast.LENGTH_LONG).show();
+        clearAllFields();
+        resizeAllFields(false);
+        enableFields(false);
+        displayFabs();
+        fillAllFields();
+        displayAllFields(false);
     }
 
     @OnClick(R.id.fabEdit)
     public void fabEditClick() {
-        layoutPlace.setEnabled(true);
-        layoutComplement.setEnabled(true);
-        layoutNumStreet.setEnabled(true);
-        layoutZip.setEnabled(true);
-        layoutTown.setEnabled(true);
-        layoutPhone.setEnabled(true);
-        layoutFax.setEnabled(true);
-        layoutEmail.setEnabled(true);
+        enableFields(true);
+        displayAllFields(true);
+        resizeAllFields(true);
 
         fabSave.show();
         fabCancel.show();
@@ -496,138 +612,22 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
 
     @OnClick(R.id.fabDelete)
     public void fabDeleteClick() {
-        Toast.makeText(AfficherContactActivity.this, "à implementer 7", Toast.LENGTH_LONG).show();
+        List<AssociationUtilisateurContact> associationList = AssociationUtilisateurContact.find(AssociationUtilisateurContact.class,"utilisateur = ? and contact = ?",activeUser.getId().toString(),contactSelected.getId().toString());
+        AssociationUtilisateurContact association = null;
+        if (associationList.size()>0) {
+            association = associationList.get(0);
+        }
+        deleteItem(AfficherContactActivity.this, association, AfficherContactActivity.class);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        String item = parent.getItemAtPosition(position).toString();
-
-        int positionVirgule = selectedContact.getText().toString().indexOf(",");
-        int positionParentheseOuverte = selectedContact.getText().toString().indexOf("(");
-        int positionParentheseFermee = selectedContact.getText().toString().indexOf(")");
-        int positionEtoile = selectedContact.getText().toString().indexOf("*");
-
-        String nom = selectedContact.getText().toString().substring(0, positionVirgule);
-        String prenom = selectedContact.getText().toString().substring(positionVirgule + 2, positionParentheseOuverte - 1);
-        String metier = selectedContact.getText().toString().substring(positionParentheseOuverte + 1, positionParentheseFermee);
-        //String ville = selectedContact.getText().toString().substring(positionEtoile + 2);
-        String ville="";
-        if (positionEtoile != -1) {
-            ville = selectedContact.getText().toString().substring(positionEtoile + 2);
-        }
-
-        List<Profession> listProfession = Profession.find(Profession.class, "name = ?", metier);
-        List<SavoirFaire> listSavoirFaire = SavoirFaire.find(SavoirFaire.class, "name = ?", metier);
-        if (listProfession.size() != 0) {
-            Profession profession = listProfession.get(0);
-            //contactSelected = Contact.find(Contact.class, "nom = ? and prenom = ? and profession = ? and ville = ?", nom, prenom, profession.getId().toString(), ville).get(0);
-            if (ville.equalsIgnoreCase("")) {
-                contactSelected = Contact.find(Contact.class, "nom = ? and prenom = ? and profession = ?", nom, prenom, profession.getId().toString()).get(0);
-            } else {
-                contactSelected = Contact.find(Contact.class, "nom = ? and prenom = ? and profession = ? and ville = ?", nom, prenom, profession.getId().toString(), ville).get(0);
-            }
-        }
-        if (listSavoirFaire.size() != 0) {
-            SavoirFaire savoirFaire = listSavoirFaire.get(0);
-            //contactSelected = Contact.find(Contact.class, "nom = ? and prenom = ? and savoir_faire = ? and ville = ?", nom, prenom, savoirFaire.getId().toString(), ville).get(0);
-            if (ville.equalsIgnoreCase("")) {
-                contactSelected = Contact.find(Contact.class, "nom = ? and prenom = ? and savoir_faire = ?", nom, prenom, savoirFaire.getId().toString()).get(0);
-            } else {
-                contactSelected = Contact.find(Contact.class, "nom = ? and prenom = ? and savoir_faire = ? and ville = ?", nom, prenom, savoirFaire.getId().toString(), ville).get(0);
-            }
-        }
-        Toast.makeText(AfficherContactActivity.this, "Selected Item is: \t" + contactSelected.getPrenom() + contactSelected.getNom(), Toast.LENGTH_LONG).show();
-
-        /*String stringName ="";
-        if (!contactSelected.getCodeCivilite().equalsIgnoreCase("")) {
-            stringName += contactSelected.getCodeCivilite() + " ";
-        }
-        if (!contactSelected.getNom().equalsIgnoreCase("")) {
-            stringName += contactSelected.getNom() + " ";
-        }
-        if (!contactSelected.getPrenom().equalsIgnoreCase("")) {
-            stringName += contactSelected.getPrenom();
-        }
-        if (stringName.length()>0) {
-            textName.setText(stringName);
-            layoutName.setVisibility(View.VISIBLE);
-        }*/
-        if (contactSelected.getCodeCivilite() != null) {
-            textDr.setText(contactSelected.getCodeCivilite());
-            layoutDr.setVisibility(View.VISIBLE);
-        }
-        if (contactSelected.getNom() != null) {
-            textName.setText(contactSelected.getNom());
-            layoutName.setVisibility(View.VISIBLE);
-        }
-        if (contactSelected.getPrenom() != null) {
-            textFirstName.setText(contactSelected.getPrenom());
-            layoutFirstName.setVisibility(View.VISIBLE);
-        }
-
-        if (contactSelected.getProfession() != null) {
-            textJob.setText(contactSelected.getProfession().getName());
-            layoutJob.setVisibility(View.VISIBLE);
-        }
-        if (contactSelected.getSavoirFaire() != null) {
-            textJob.setText(contactSelected.getSavoirFaire().getName());
-            layoutJob.setVisibility(View.VISIBLE);
-        }
-
-        if (contactSelected.getRaisonSocial() != null) {
-            textPlace.setText(contactSelected.getRaisonSocial());
-            layoutPlace.setVisibility(View.VISIBLE);
-        }
-
-        if (!contactSelected.getComplement().equalsIgnoreCase("")) {
-            textComplement.setText(contactSelected.getComplement());
-            layoutComplement.setVisibility(View.VISIBLE);
-        }
-
-        if (contactSelected.getAdresse().equalsIgnoreCase("")) {
-            textNumStreet.setText(contactSelected.getAdresse());
-            layoutNumStreet.setVisibility(View.VISIBLE);
-        }
-
-        if (contactSelected.getCp().equalsIgnoreCase("")) {
-            textZip.setText(contactSelected.getCp());
-            layoutZip.setVisibility(View.VISIBLE);
-        }
-
-        if (contactSelected.getVille().equalsIgnoreCase("")) {
-            textTown.setText(contactSelected.getVille());
-            layoutTown.setVisibility(View.VISIBLE);
-        }
-
-        /*String stringCpVille = "";
-        if (!contactSelected.getCp().equalsIgnoreCase("")) {
-            stringCpVille += contactSelected.getCp() + " ";
-        }
-        if (!contactSelected.getVille().equalsIgnoreCase("")) {
-            stringCpVille += contactSelected.getVille();
-        }
-        if (stringCpVille.length()>0) {
-            textZipTown.setText(stringCpVille);
-            layoutZipTown.setVisibility(View.VISIBLE);
-        }*/
-
-
-        if (contactSelected.getTelephone() != null) {
-            textPhone.setText(contactSelected.getTelephone());
-            layoutPhone.setVisibility(View.VISIBLE);
-        }
-
-        if (contactSelected.getFax() != null) {
-            textFax.setText(contactSelected.getFax());
-            layoutFax.setVisibility(View.VISIBLE);
-        }
-
-        if (contactSelected.getEmail() != null) {
-            textEmail.setText(contactSelected.getEmail());
-            layoutEmail.setVisibility(View.VISIBLE);
-        }
-        displayfabs();
+        contactSelected = listContactsBD.get(position);
+        clearAllFields();
+        enableFields(false);
+        displayFabs();
+        fillAllFields();
+        displayAllFields(false);
     }
 }
 

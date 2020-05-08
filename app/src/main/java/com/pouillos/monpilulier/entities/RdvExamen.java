@@ -6,14 +6,14 @@ import com.pouillos.monpilulier.activities.utils.DateUtils;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Rdv extends SugarRecord implements Serializable, Comparable<Rdv> {
+public class RdvExamen extends SugarRecord implements Serializable, Comparable<RdvExamen> {
 
     private String note;
     private Utilisateur utilisateur;
-    private Contact contact;
+    private Examen examen;
     private Date date;
 
-    public Rdv() {
+    public RdvExamen() {
     }
 
     public String getNote() {
@@ -32,12 +32,12 @@ public class Rdv extends SugarRecord implements Serializable, Comparable<Rdv> {
         this.utilisateur = utilisateur;
     }
 
-    public Contact getContact() {
-        return contact;
+    public Examen getExamen() {
+        return examen;
     }
 
-    public void setContact(Contact contact) {
-        this.contact = contact;
+    public void setExamen(Examen examen) {
+        this.examen = examen;
     }
 
     public Date getDate() {
@@ -49,12 +49,12 @@ public class Rdv extends SugarRecord implements Serializable, Comparable<Rdv> {
     }
 
     @Override
-    public int compareTo(Rdv o) {
-        return this.getId().compareTo(o.getId());
+    public int compareTo(RdvExamen o) {
+        return this.getDate().compareTo(o.getDate());
     }
 
     @Override
     public String toString() {
-        return DateUtils.ecrireDateHeure(date) + " - " + contact.getNom();
+        return DateUtils.ecrireDateHeure(date)+ " - " + examen.getName();
     }
 }

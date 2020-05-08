@@ -2,15 +2,21 @@ package com.pouillos.monpilulier.activities.add;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -18,9 +24,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.AccueilActivity;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
-import com.pouillos.monpilulier.activities.utils.DateUtils;
-import com.pouillos.monpilulier.entities.Contact;
-import com.pouillos.monpilulier.entities.Rdv;
+import com.pouillos.monpilulier.entities.Examen;
+import com.pouillos.monpilulier.entities.RdvExamen;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
@@ -30,6 +35,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -39,23 +45,22 @@ import butterknife.OnClick;
 import icepick.Icepick;
 import icepick.State;
 
-public class AddRdvActivity extends NavDrawerActivity implements Serializable, BasicUtils {
+public class AddRdvExamenActivity extends NavDrawerActivity implements Serializable, BasicUtils, AdapterView.OnItemClickListener {
 
     @State
     Utilisateur activeUser;
     @State
-    Contact contact;
-    @State
-    Date date = new Date();
-    @State
-    Rdv rdvToCreate;
+    Date date;
+
+    Examen examenSelected;
 
     TimePickerDialog picker;
 
-    @BindView(R.id.layoutContact)
-    TextInputLayout layoutContact;
-    @BindView(R.id.textContact)
-    TextInputEditText textContact;
+    @BindView(R.id.selectionExamen)
+    AutoCompleteTextView selectedExamen;
+    @BindView(R.id.listExamen)
+    TextInputLayout listExamen;
+
     @BindView(R.id.layoutDate)
     TextInputLayout layoutDate;
     @BindView(R.id.textDate)
@@ -69,14 +74,19 @@ public class AddRdvActivity extends NavDrawerActivity implements Serializable, B
     @BindView(R.id.textNote)
     TextInputEditText textNote;
 
+    private List<Examen> listExamenBD;
+
     @BindView(R.id.fabSave)
     FloatingActionButton fabSave;
+
+    @BindView(R.id.my_progressBar)
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Icepick.restoreInstanceState(this, savedInstanceState);
-        setContentView(R.layout.activity_add_rdv);
+        setContentView(R.layout.activity_add_rdv_examen);
         // 6 - Configure all views
         this.configureToolBar();
         this.configureDrawerLayout();
@@ -84,12 +94,47 @@ public class AddRdvActivity extends NavDrawerActivity implements Serializable, B
 
         ButterKnife.bind(this);
 
-        activeUser = findActiveUser();
 
-        traiterIntent();
+        progressBar.setVisibility(View.VISIBLE);
+
+        AddRdvExamenActivity.AsyncTaskRunnerBD runnerBD = new AddRdvExamenActivity.AsyncTaskRunnerBD();
+        runnerBD.execute();
+
+        selectedExamen.setOnItemClickListener(this);
         displayFabs();
-        layoutContact.setEnabled(false);
-        setTitle(getString(R.string.my_meeting));
+        
+        setTitle(getString(R.string.add_meeting_analysis));
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        examenSelected = listExamenBD.get(position);
+    }
+
+    public class AsyncTaskRunnerBD extends AsyncTask<Void, Integer, Void> {
+
+        protected Void doInBackground(Void...voids) {
+            publishProgress(0);
+            activeUser = findActiveUser();
+            publishProgress(10);
+
+            listExamenBD = Examen.listAll(Examen.class);
+            Collections.sort(listExamenBD);
+
+            publishProgress(100);
+            return null;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+        protected void onPostExecute(Void result) {
+            progressBar.setVisibility(View.GONE);
+                buildDropdownMenu(listExamenBD, AddRdvExamenActivity.this,selectedExamen);
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        protected void onProgressUpdate(Integer... integer) {
+            progressBar.setProgress(integer[0],true);
+        }
     }
 
     @Override
@@ -101,7 +146,7 @@ public class AddRdvActivity extends NavDrawerActivity implements Serializable, B
     public boolean isExistant() {
         boolean bool;
         bool = false;
-        List<Rdv> listRdv = Rdv.find(Rdv.class,"utilisateur = ? and contact = ? and date = ?",""+activeUser.getId(),""+contact.getId(),""+date.getTime());
+        List<RdvExamen> listRdv = RdvExamen.find(RdvExamen.class,"utilisateur = ? and examen = ? and date = ?",""+activeUser.getId(),""+examenSelected.getId(),""+date.getTime());
         if (listRdv.size() != 0) {
             bool = true;
         }
@@ -126,42 +171,32 @@ public class AddRdvActivity extends NavDrawerActivity implements Serializable, B
         return bool;
     }
 
-    @Override
-    public void traiterIntent() {
-        Intent intent = getIntent();
-        if (intent.hasExtra("contactId")) {
-            Long contactId = intent.getLongExtra("contactId", 0);
-            contact = Contact.findById(Contact.class, contactId);
-            textContact.setText(contact.toString());
-            rdvToCreate = new Rdv();
-            rdvToCreate.setContact(contact);
-        }
-    }
+
 
     @OnClick(R.id.fabSave)
     public void fabSaveClick() {
         if (checkFields()) {
             if (!isExistant()) {
                 saveToDb();
-                ouvrirActiviteSuivante(AddRdvActivity.this, AccueilActivity.class);
+                ouvrirActiviteSuivante(AddRdvExamenActivity.this, AccueilActivity.class);
             } else {
-                Toast.makeText(AddRdvActivity.this, "Rdv déjà existant", Toast.LENGTH_LONG).show();
+                Toast.makeText(AddRdvExamenActivity.this, "Rdv déjà existant", Toast.LENGTH_LONG).show();
             }
         } else {
-            Toast.makeText(AddRdvActivity.this, "Saisie non valide", Toast.LENGTH_LONG).show();
+            Toast.makeText(AddRdvExamenActivity.this, "Saisie non valide", Toast.LENGTH_LONG).show();
         }
 
     }
 
     @Override
     public void saveToDb() {
-        Rdv rdv = new Rdv();
+        RdvExamen rdv = new RdvExamen();
         rdv.setNote(textNote.getText().toString());
-        rdv.setContact(contact);
+        rdv.setExamen(examenSelected);
         rdv.setUtilisateur(activeUser);
         rdv.setDate(date);
         rdv.save();
-        Toast.makeText(AddRdvActivity.this, "Rdv Enregistré", Toast.LENGTH_LONG).show();
+        Toast.makeText(AddRdvExamenActivity.this, "Rdv Enregistré", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -184,7 +219,7 @@ public class AddRdvActivity extends NavDrawerActivity implements Serializable, B
         int hour = 8;
         int minutes = 0;
         // time picker dialog
-        picker = new TimePickerDialog(AddRdvActivity.this,
+        picker = new TimePickerDialog(AddRdvExamenActivity.this,
                 new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker tp, int sHour, int sMinute) {
