@@ -12,24 +12,19 @@
         android:orientation="vertical">
 
 
-
-
-
-
-
-
-
-
-
-
-
-
             <Button
-                android:id="@+id/buttonCreerNotification"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Test Notif" />
+        android:id="@+id/buttonCreerNotification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Test Notif" />
+
+        <Button
+            android:id="@+id/buttonAddAlarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Test Alarme" />
 
 
 
@@ -46,13 +41,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="+MedocOff" />
+            android:text="+ Medicament" />
         <Button
             android:id="@+id/buttonMajMedecinOfficiel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="+MedicOff" />
+            android:text="+ Contact" />
         <Button
             android:id="@+id/buttonInfoDb"
             android:layout_width="wrap_content"

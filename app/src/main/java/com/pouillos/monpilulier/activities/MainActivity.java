@@ -1,5 +1,6 @@
 package com.pouillos.monpilulier.activities;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -24,14 +25,11 @@ import com.facebook.stetho.Stetho;
 import com.orm.SchemaGenerator;
 import com.orm.SugarContext;
 import com.orm.SugarDb;
-import com.orm.SugarRecord;
 import com.pouillos.monpilulier.R;
-import com.pouillos.monpilulier.activities.add.AddProfilActivity;
-import com.pouillos.monpilulier.activities.add.AddRdvActivity;
-import com.pouillos.monpilulier.activities.enregistrer.EnregistrerPrescriptionActivity;
 ///import com.pouillos.monpilulier.activities.listallx.ListAllProfilActivity;
 //import com.pouillos.monpilulier.activities.newx.NewUserActivity;
-import com.pouillos.monpilulier.activities.recherche.ChercherContactActivity;
+import com.pouillos.monpilulier.activities.tools.MyBroadcastReceiver;
+import com.pouillos.monpilulier.activities.tools.MyNotificationBroadcastReceiver;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.Analyse;
 import com.pouillos.monpilulier.entities.AssociationFormeDose;
@@ -42,6 +40,7 @@ import com.pouillos.monpilulier.entities.Duree;
 import com.pouillos.monpilulier.entities.Examen;
 import com.pouillos.monpilulier.entities.FormePharmaceutique;
 import com.pouillos.monpilulier.entities.ContactLight;
+import com.pouillos.monpilulier.entities.ImportContact;
 import com.pouillos.monpilulier.entities.Medicament;
 import com.pouillos.monpilulier.entities.Profession;
 import com.pouillos.monpilulier.entities.Region;
@@ -86,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         Button buttonNewMedecinOfficiel = (Button) findViewById(R.id.buttonMajMedecinOfficiel);
         Button buttonInfoDb = (Button) findViewById(R.id.buttonInfoDb);
         Button buttonAccueil = (Button) findViewById(R.id.buttonAccueil);
+        Button buttonAlarm = (Button) findViewById(R.id.buttonAddAlarm);
 
         progressBar = (ProgressBar) findViewById(R.id.my_progressBar);
 
@@ -97,55 +97,29 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         //notification
         //creation du channel
-        createNotificationChannel();
+       /* createNotificationChannel();
 
         this.notBuilder = new NotificationCompat.Builder(this, "notifTest");
         // The message will automatically be canceled when the user clicks on Panel
-        this.notBuilder.setAutoCancel(true);
+        this.notBuilder.setAutoCancel(true);*/
 
         buttonCreerNotification.setOnClickListener(v -> {
-
-            // --------------------------
-            // Prepare a notification
-            // --------------------------
-
-            this.notBuilder.setSmallIcon(R.mipmap.ic_launcher);
-            this.notBuilder.setTicker("This is a ticker");
-            this.notBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-            // Set the time that the event occurred.
-            // Notifications in the panel are sorted by this time.
-
-            Date dateJour = new Date();
-
-            this.notBuilder.setWhen(new DateUtils().ajouterHeure(dateJour, 1).getTime() + 10*1000);
-
-            this.notBuilder.setWhen(System.currentTimeMillis()+ 300* 1000);
-            this.notBuilder.setShowWhen(false);
-            this.notBuilder.setContentTitle("This is title");
-            this.notBuilder.setContentText("This is content text ....");
-
-            // Create Intent
-            Intent intent = new Intent(this, MainActivity.class);
-
-            // PendingIntent.getActivity(..) will start an Activity, and returns PendingIntent object.
-            // It is equivalent to calling Context.startActivity(Intent).
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, MY_REQUEST_CODE,
-                    intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            this.notBuilder.setContentIntent(pendingIntent);
-
-            // Get a notification service (A service available on the system).
-            NotificationManager notificationService  =
-                    (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
-
-            // Builds notification and issue it
-
-            Notification notification =  notBuilder.build();
-            notificationService.notify(MY_NOTIFICATION_ID, notification);
+            startNotification();
         });
 
-
+        buttonAlarm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               // startAlert(DateUtils.ajouterSeconde(new Date(),15));
+               // startAlert(DateUtils.ajouterSeconde(new Date(),30));
+                Long requestCode = new Date().getTime();
+                startAlert(DateUtils.ajouterSeconde(new Date(),5),requestCode.intValue());
+                requestCode = new Date().getTime();
+                startAlert(DateUtils.ajouterSeconde(new Date(),10),requestCode.intValue());
+                requestCode = new Date().getTime();
+                startAlert(DateUtils.ajouterSeconde(new Date(),15),requestCode.intValue());
+            }
+        });
 
         buttonNewMedicamentOfficiel.setOnClickListener(v -> {
             progressBar.setVisibility(View.VISIBLE);
@@ -160,11 +134,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             progressBar.setVisibility(View.VISIBLE);
             //remplirMedicamentOfficielBD();
             progressBar.setProgress(0);
-            AsyncTaskRunnerMedecin runnerMedecin = new AsyncTaskRunnerMedecin(this);
-            runnerMedecin.execute();
+            AsyncTaskRunnerContact runner = new AsyncTaskRunnerContact(this);
+            runner.execute();
         });
 
-        buttonNewMedecinOfficiel.setOnClickListener(v -> {
+        buttonAccueil.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, AccueilActivity.class);
             startActivity(intent);
             finish();
@@ -185,6 +159,74 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             runnerRAZ.execute();
         });
 
+    }
+
+    public void startNotification() {
+        // --------------------------
+        // Prepare a notification
+        // --------------------------
+
+        this.notBuilder.setSmallIcon(R.mipmap.ic_launcher);
+        this.notBuilder.setTicker("This is a ticker");
+        this.notBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        // Set the time that the event occurred.
+        // Notifications in the panel are sorted by this time.
+
+        //Date dateJour = new Date();
+        Date dateNotif = new Date();
+        Long  longNotif = dateNotif.getTime();
+
+        //  this.notBuilder.setWhen(new DateUtils().ajouterHeure(dateJour, 1).getTime() + 10*1000);
+
+        // this.notBuilder.setWhen(System.currentTimeMillis()+ 300* 1000);
+        this.notBuilder.setWhen(longNotif);
+
+        //this.notBuilder.setShowWhen(false);
+        this.notBuilder.setShowWhen(true);
+        this.notBuilder.setContentTitle("This is title");
+        String messageNotif = "";
+        messageNotif += "prog: "+dateNotif.toString();
+
+        this.notBuilder.setContentText(messageNotif);
+        //this.notBuilder.setContentText("This is content text ....");
+
+        // Create Intent
+        Intent intent = new Intent(this, MainActivity.class);
+
+        // PendingIntent.getActivity(..) will start an Activity, and returns PendingIntent object.
+        // It is equivalent to calling Context.startActivity(Intent).
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, MY_REQUEST_CODE,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        this.notBuilder.setContentIntent(pendingIntent);
+
+        // Get a notification service (A service available on the system).
+        NotificationManager notificationService  =
+                (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Builds notification and issue it
+
+        Notification notification =  notBuilder.build();
+        notificationService.notify(MY_NOTIFICATION_ID, notification);
+    }
+
+   // public void startAlert(Date date) {
+    public void startAlert(Date date,int requestCode) {
+        //EditText text = findViewById(R.id.time);
+        //int i = Integer.parseInt(text.getText().toString());
+        //int i = 10;
+        //Intent intent = new Intent(this, MyBroadcastReceiver.class);
+        Intent intent = new Intent(this, MyNotificationBroadcastReceiver.class);
+
+        //intent.putExtra("activity",MainActivity.class);
+        //PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 234324243, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), requestCode, intent, 0);
+        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+
+        alarmManager.set(AlarmManager.RTC_WAKEUP, date.getTime(), pendingIntent);
+        Toast.makeText(this, "Alarm set : " + date.toString(), Toast.LENGTH_LONG).show();
+        //startNotification();
     }
 
     private class AsyncTaskRunnerRAZ extends AsyncTask<Void, Integer, Void> {
@@ -220,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             //
            // SugarRecord.executeQuery("DROP TABLE RDV_ACTE_MEDICAL");
             //RAZ TOTAL
-            /*SugarContext.terminate();
+            SugarContext.terminate();
             publishProgress(20);
             SchemaGenerator schemaGenerator = new SchemaGenerator(getApplicationContext());
             publishProgress(40);
@@ -229,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             SugarContext.init(getApplicationContext());
             publishProgress(80);
             schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());
-            publishProgress(100);*/
+            publishProgress(100);
 
             finish();
             return null;
@@ -1053,10 +1095,10 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         }
     }
 
-    private class AsyncTaskRunnerMedecin extends AsyncTask<Void, Integer, Void> {
+    private class AsyncTaskRunnerContact extends AsyncTask<Void, Integer, Void> {
 
         private Context context;
-        public AsyncTaskRunnerMedecin(Context context) {
+        public AsyncTaskRunnerContact(Context context) {
             this.context=context;
         }
 
@@ -1065,150 +1107,159 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             InputStream is = null;
             BufferedReader reader = null;
 
-            try {
-                is = getAssets().open("PS_LibreAcces_Personne_activite_0.csv");
-                reader = new BufferedReader(new InputStreamReader(is,"UTF-8"));
-                String line = null;
+            List<Profession> listProfession = Profession.listAll(Profession.class);
+            Map<String, Profession> mapProfession = new HashMap<>();
+            for (Profession profession : listProfession) {
+                mapProfession.put(profession.getName(), profession);
+            }
 
-                List<Profession> listProfession = Profession.listAll(Profession.class);
-                Map<String, Profession> mapProfession = new HashMap<>();
-                for (Profession profession : listProfession) {
-                    mapProfession.put(profession.getName(), profession);
-                }
+            List<SavoirFaire> listSavoirFaire = SavoirFaire.listAll(SavoirFaire.class);
+            Map<String, SavoirFaire> mapSavoirFaire = new HashMap<>();
+            for (SavoirFaire savoirFaire : listSavoirFaire) {
+                mapSavoirFaire.put(savoirFaire.getName(), savoirFaire);
+            }
 
-                List<SavoirFaire> listSavoirFaire = SavoirFaire.listAll(SavoirFaire.class);
-                Map<String, SavoirFaire> mapSavoirFaire = new HashMap<>();
-                for (SavoirFaire savoirFaire : listSavoirFaire) {
-                    mapSavoirFaire.put(savoirFaire.getName(), savoirFaire);
-                }
-                int readerSize = 5000;
-                int readerCount = 0;
-                int compteur = 0;
-                publishProgress(compteur);
-                while ((line = reader.readLine()) != null) {
-                    readerCount ++;
-                    compteur = readerCount*100/readerSize;
+            List<ImportContact> listImportContact = ImportContact.find(ImportContact.class,"import_completed = ?","0");
+
+            for (ImportContact current : listImportContact) {
+                try {
+                    is = getAssets().open(current.getPath());
+                    reader = new BufferedReader(new InputStreamReader(is,"UTF-8"));
+                    String line = null;
+
+
+                    int readerSize = 5000;
+                    int readerCount = 0;
+                    int compteur = 0;
                     publishProgress(compteur);
-                    final String SEPARATEUR = "\\|";
-                    String lineSplitted[] = line.split(SEPARATEUR);
+                    while ((line = reader.readLine()) != null) {
+                        readerCount ++;
+                        compteur = readerCount*100/readerSize;
+                        publishProgress(compteur);
+                        final String SEPARATEUR = "\\|";
+                        String lineSplitted[] = line.split(SEPARATEUR);
 
-                    if (lineSplitted[1].equals("Identifiant PP")) {
-                        continue;
-                    }
-
-                    Contact contact = new Contact();
-                    contact.setIdPP(lineSplitted[2]);
-                    contact.setCodeCivilite(lineSplitted[3]);
-                    contact.setNom(lineSplitted[7].toUpperCase());
-                    if (lineSplitted[8].length()>1) {
-                        String prenom = lineSplitted[8].substring(0,1).toUpperCase()+lineSplitted[8].substring(1,lineSplitted[8].length()-1).toLowerCase();
-                    }
-                    contact.setPrenom(lineSplitted[8]);
-                    contact.setProfession(mapProfession.get(lineSplitted[10]));
-
-                    if (lineSplitted[16].equals("Qualifié en Médecine Générale") || lineSplitted[16].equals("Spécialiste en Médecine Générale")) {
-                        contact.setSavoirFaire(mapSavoirFaire.get("Médecine Générale"));
-                    } else {
-                        contact.setSavoirFaire(mapSavoirFaire.get(lineSplitted[16]));
-                    }
-                    if (lineSplitted.length>24) {
-                        contact.setRaisonSocial(lineSplitted[24]);
-                    }
-                    if (lineSplitted.length>26) {
-                        contact.setComplement(lineSplitted[26]);
-                        if (contact.getComplement().equalsIgnoreCase(contact.getRaisonSocial())) {
-                            contact.setComplement(null);
+                        if (lineSplitted[1].equals("Identifiant PP")) {
+                            continue;
                         }
-                    }
-                    String adresse = "";
-                    if ((lineSplitted.length>28) && (!lineSplitted[28].isEmpty())){
-                        adresse = lineSplitted[28]+" ";
-                    }
 
-                    if ((lineSplitted.length>31) && (!lineSplitted[31].isEmpty())){
-                        adresse += lineSplitted[31]+" ";
-                    }
-                    if ((lineSplitted.length>32) && (!lineSplitted[32].isEmpty())){
-                        adresse += lineSplitted[32];
-                    }
-                    contact.setAdresse(adresse.toUpperCase());
-
-                    if (lineSplitted.length>34 && !lineSplitted[34].isEmpty())  {
-
-                        contact.setCp(lineSplitted[34].substring(0,5));
-                        contact.setVille(lineSplitted[34].substring(6));
-
-                    } else {
-                        contact.setCp("");
-                    }
-                    if (lineSplitted.length>40 && !lineSplitted[40].isEmpty())  {
-                        lineSplitted[40] = lineSplitted[40].replace(" ", "");
-                        lineSplitted[40] = lineSplitted[40].replace(".", "");
-                        if (lineSplitted[40].length() == 9) {
-                            contact.setTelephone("0" + lineSplitted[40]);
-                        } else if (lineSplitted[40].length() == 10) {
-                            contact.setTelephone(lineSplitted[40]);
+                        Contact contact = new Contact();
+                        contact.setIdPP(lineSplitted[2]);
+                        contact.setCodeCivilite(lineSplitted[3]);
+                        contact.setNom(lineSplitted[7].toUpperCase());
+                        if (lineSplitted[8].length()>1) {
+                            String prenom = lineSplitted[8].substring(0,1).toUpperCase()+lineSplitted[8].substring(1,lineSplitted[8].length()-1).toLowerCase();
                         }
-                    }
-                    if (lineSplitted.length>42 && !lineSplitted[42].isEmpty())  {
-                        lineSplitted[42] = lineSplitted[42].replace(" ", "");
-                        lineSplitted[42] = lineSplitted[42].replace(".", "");
-                        if (lineSplitted[42].length() == 9) {
-                            contact.setFax("0" + lineSplitted[42]);
-                        } else if (lineSplitted[42].length() == 10) {
-                            contact.setFax(lineSplitted[42]);
+                        contact.setPrenom(lineSplitted[8]);
+                        contact.setProfession(mapProfession.get(lineSplitted[10]));
+
+                        if (lineSplitted[16].equals("Qualifié en Médecine Générale") || lineSplitted[16].equals("Spécialiste en Médecine Générale")) {
+                            contact.setSavoirFaire(mapSavoirFaire.get("Médecine Générale"));
+                        } else {
+                            contact.setSavoirFaire(mapSavoirFaire.get(lineSplitted[16]));
                         }
-                    }
-                    if (lineSplitted.length>43 && !lineSplitted[43].isEmpty())  {
-                        contact.setEmail(lineSplitted[43]);
-                    }
+                        if (lineSplitted.length>24) {
+                            contact.setRaisonSocial(lineSplitted[24]);
+                        }
+                        if (lineSplitted.length>26) {
+                            contact.setComplement(lineSplitted[26]);
+                            if (contact.getComplement().equalsIgnoreCase(contact.getRaisonSocial())) {
+                                contact.setComplement(null);
+                            }
+                        }
+                        String adresse = "";
+                        if ((lineSplitted.length>28) && (!lineSplitted[28].isEmpty())){
+                            adresse = lineSplitted[28]+" ";
+                        }
 
-                    List<ContactLight> listContactLight = ContactLight.find(ContactLight.class, "id_pp = ?",lineSplitted[2]);
-                    if (listContactLight.size()>0) {
+                        if ((lineSplitted.length>31) && (!lineSplitted[31].isEmpty())){
+                            adresse += lineSplitted[31]+" ";
+                        }
+                        if ((lineSplitted.length>32) && (!lineSplitted[32].isEmpty())){
+                            adresse += lineSplitted[32];
+                        }
+                        contact.setAdresse(adresse.toUpperCase());
 
-                        boolean bool = false;
-                        for (ContactLight contactLight : listContactLight){
-                            if (comparer(contactLight, contact)){
-                                Log.i("existant","medecin deja cree: "+lineSplitted[2]);
-                                bool = true;
+                        if (lineSplitted.length>34 && !lineSplitted[34].isEmpty())  {
+
+                            contact.setCp(lineSplitted[34].substring(0,5));
+                            contact.setVille(lineSplitted[34].substring(6));
+
+                        } else {
+                            contact.setCp("");
+                        }
+                        if (lineSplitted.length>40 && !lineSplitted[40].isEmpty())  {
+                            lineSplitted[40] = lineSplitted[40].replace(" ", "");
+                            lineSplitted[40] = lineSplitted[40].replace(".", "");
+                            if (lineSplitted[40].length() == 9) {
+                                contact.setTelephone("0" + lineSplitted[40]);
+                            } else if (lineSplitted[40].length() == 10) {
+                                contact.setTelephone(lineSplitted[40]);
+                            }
+                        }
+                        if (lineSplitted.length>42 && !lineSplitted[42].isEmpty())  {
+                            lineSplitted[42] = lineSplitted[42].replace(" ", "");
+                            lineSplitted[42] = lineSplitted[42].replace(".", "");
+                            if (lineSplitted[42].length() == 9) {
+                                contact.setFax("0" + lineSplitted[42]);
+                            } else if (lineSplitted[42].length() == 10) {
+                                contact.setFax(lineSplitted[42]);
+                            }
+                        }
+                        if (lineSplitted.length>43 && !lineSplitted[43].isEmpty())  {
+                            contact.setEmail(lineSplitted[43]);
+                        }
+
+                        List<ContactLight> listContactLight = ContactLight.find(ContactLight.class, "id_pp = ?",lineSplitted[2]);
+                        if (listContactLight.size()>0) {
+
+                            boolean bool = false;
+                            for (ContactLight contactLight : listContactLight){
+                                if (comparer(contactLight, contact)){
+                                    Log.i("existant","medecin deja cree: "+lineSplitted[2]);
+                                    bool = true;
+                                    continue;
+                                }
+                            }
+                            if (bool) {
                                 continue;
                             }
                         }
-                        if (bool) {
-                            continue;
+                        if (contact.getAdresse() != null && contact.getCp() != null && contact.getVille() != null) {
+                            contact.enregisterCoordonnees(context);
+                        }
+                        Log.i("enregistre","medecin new: "+lineSplitted[2]);
+                        contact.save();
+                    }
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (is != null) {
+                        try {
+                            is.close();
+                        } catch (IOException ignored) {
                         }
                     }
-                    if (contact.getAdresse() != null && contact.getCp() != null && contact.getVille() != null) {
-                        contact.enregisterCoordonnees(context);
-                    }
-                    Log.i("enregistre","medecin new: "+lineSplitted[2]);
-                    contact.save();
-                }
-            } catch (final Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (is != null) {
-                    try {
-                        is.close();
-                    } catch (IOException ignored) {
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException ignored) {
+                        }
                     }
                 }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException ignored) {
-                    }
-                }
+                current.setImportCompleted(true);
+                current.save();
+                publishProgress(100);
+                //a voir si ça passe
+                //Toast.makeText(MainActivity.this, "Import de " + current.getPath() + " fini", Toast.LENGTH_LONG).show();
             }
 
-            publishProgress(100);
             return null;
         }
 
         protected void onPostExecute(Void result) {
             progressBar.setVisibility(View.GONE);
-            Toast toast = Toast.makeText(MainActivity.this, "Import fini", Toast.LENGTH_LONG);
-            toast.show();
+            Toast.makeText(MainActivity.this, "IMPORT TOTAL FINI", Toast.LENGTH_LONG).show();
         }
 
         @RequiresApi(api = Build.VERSION_CODES.N)

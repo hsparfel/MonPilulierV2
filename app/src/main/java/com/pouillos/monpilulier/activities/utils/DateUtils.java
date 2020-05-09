@@ -27,10 +27,18 @@ public class DateUtils {
         return dateMaj;
     }
 
-    public static Date ajouterJour(Date date, int nbJours) {
+    public static Date ajouterSeconde(Date date, int nbSeconde) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        calendar.add(Calendar.DAY_OF_WEEK,nbJours);
+        calendar.add(Calendar.SECOND,nbSeconde);
+        Date dateCalculee = calendar.getTime();
+        return dateCalculee;
+    }
+
+    public static Date ajouterMinute(Date date, int nbMinute) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MINUTE,nbMinute);
         Date dateCalculee = calendar.getTime();
         return dateCalculee;
     }
@@ -39,6 +47,14 @@ public class DateUtils {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         calendar.add(Calendar.HOUR_OF_DAY,nbHeures);
+        Date dateCalculee = calendar.getTime();
+        return dateCalculee;
+    }
+
+    public static Date ajouterJour(Date date, int nbJours) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_WEEK,nbJours);
         Date dateCalculee = calendar.getTime();
         return dateCalculee;
     }

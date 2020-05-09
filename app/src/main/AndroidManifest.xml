@@ -5,9 +5,9 @@
     <application
         android:name="com.orm.SugarApp"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/home_pill"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/home_pill"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
@@ -17,7 +17,7 @@
             android:value="mon_pilulier.db" />
         <meta-data
             android:name="VERSION"
-            android:value="52" />
+            android:value="53" />
         <meta-data
             android:name="QUERY_LOG"
             android:value="true" />
@@ -27,11 +27,7 @@
 
         <activity android:name=".activities.MainActivity" />
 
-        <activity android:name=".activities.newx.NewUserActivity" />
-        <activity android:name=".activities.newx.NewAnalyseActivity" />
-        <activity android:name=".activities.newx.NewExamenActivity" />
-        <activity android:name=".activities.listallx.ListAllProfilActivity" />
-        <activity android:name=".activities.listmyx.ListMyProfilActivity" />
+
         <activity android:name=".activities.recherche.ChercherContactActivity" />
         <activity android:name=".activities.enregistrer.EnregistrerPrescriptionActivity" />
         <activity android:name=".activities.AuthentificationActivity" />
@@ -63,6 +59,15 @@
         <activity android:name=".activities.afficher.AfficherAnalyseActivity" />
         <activity android:name=".activities.afficher.AfficherExamenActivity" />
         <activity android:name=".activities.afficher.AfficherProfilActivity" />
+
+        <!-- <receiver android:name=".activities.tools.MyBroadcastReceiver" ></receiver> -->
+        <!-- <receiver android:name = ".activities.tools.MyNotificationBroadcastReceiver" >
+            <intent-filter>
+                <action android:name = "android.hardware.usb.action.USB_STATE" />
+            </intent-filter>
+        </receiver> -->
+        <receiver android:name = ".activities.tools.MyNotificationBroadcastReceiver" >
+        </receiver>
     </application>
 
 </manifest>
