@@ -1,14 +1,13 @@
 package com.pouillos.monpilulier.entities;
 
 import com.orm.SugarRecord;
-import com.orm.dsl.Table;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
-import com.pouillos.monpilulier.interfaces.AfficherDetail;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
-public class Profil extends SugarRecord implements Serializable, Comparable<Profil>, AfficherDetail {
+public class Profil extends SugarRecord implements Serializable, Comparable<Profil> {
 
     private Utilisateur utilisateur;
     private float poids;
@@ -37,7 +36,7 @@ public class Profil extends SugarRecord implements Serializable, Comparable<Prof
     }
 
     public float getPoids() {
-        return poids;
+        return floatArrondi(poids,2);
     }
 
     public void setPoids(float poids) {
@@ -53,7 +52,7 @@ public class Profil extends SugarRecord implements Serializable, Comparable<Prof
     }
 
     public float getImc() {
-        return imc;
+        return floatArrondi(imc,2);
     }
 
     public void setImc(float imc) {
@@ -91,14 +90,13 @@ public class Profil extends SugarRecord implements Serializable, Comparable<Prof
     }
 
     @Override
-    public String afficherTitre() {
-        String reponse = utilisateur.getName()+" - "+DateUtils.ecrireDate(date);
-        return reponse;
+    public String toString() {
+        return DateUtils.ecrireDate(date)+ " - " + poids + " kgs / " + taille + " cm";
     }
 
-    @Override
-    public String afficherDetail() {
-        String reponse = taille + " cm - "+poids+" kg - ";
-        return reponse;
+    protected static float floatArrondi(float number, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(number);
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.floatValue();
     }
 }

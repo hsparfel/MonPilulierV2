@@ -1,10 +1,8 @@
 package com.pouillos.monpilulier.activities.utils;
 
-import com.pouillos.monpilulier.entities.Duree;
-
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 public class DateUtils {
 
@@ -15,24 +13,83 @@ public class DateUtils {
         return dateMaj;
     }
 
-    public static Date calculerDateFin(Date dateDebut, int nbDuree, Duree duree){
-        GregorianCalendar gregorianCalendar = new GregorianCalendar();
-        gregorianCalendar.setTime(dateDebut);
-        switch (duree.getName()) {
-            case "an":
-                gregorianCalendar.add(GregorianCalendar.YEAR,nbDuree);
-                break;
-            case "mois":
-                gregorianCalendar.add(GregorianCalendar.MONTH,nbDuree);
-                break;
-            case "semaine":
-                gregorianCalendar.add(GregorianCalendar.WEEK_OF_MONTH,nbDuree);
-                break;
-            case "jour":
-                gregorianCalendar.add(GregorianCalendar.DAY_OF_WEEK,nbDuree);
-                break;
-        }
-        Date dateFin = gregorianCalendar.getTime();
-        return dateFin;
+    public static String ecrireHeure(Date date) {
+        String pattern = "HH:mm";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String dateMaj = simpleDateFormat.format(date);
+        return dateMaj;
+    }
+
+    public static String ecrireDateHeure(Date date) {
+        String pattern = "dd/MM/yyyy HH:mm";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String dateMaj = simpleDateFormat.format(date);
+        return dateMaj;
+    }
+
+    public static Date ajouterSeconde(Date date, int nbSeconde) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.SECOND,nbSeconde);
+        Date dateCalculee = calendar.getTime();
+        return dateCalculee;
+    }
+
+    public static Date ajouterMinute(Date date, int nbMinute) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MINUTE,nbMinute);
+        Date dateCalculee = calendar.getTime();
+        return dateCalculee;
+    }
+
+    public static Date ajouterHeure(Date date, int nbHeures) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.HOUR_OF_DAY,nbHeures);
+        Date dateCalculee = calendar.getTime();
+        return dateCalculee;
+    }
+
+    public static Date ajouterJour(Date date, int nbJours) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_WEEK,nbJours);
+        Date dateCalculee = calendar.getTime();
+        return dateCalculee;
+    }
+
+    public static Date ajouterJourArrondi(Date date, int nbJours, int heure) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_WEEK,nbJours);
+        calendar.set(Calendar.HOUR_OF_DAY, heure);
+        calendar.set(Calendar.MINUTE,0);
+        Date dateCalculee = calendar.getTime();
+        return dateCalculee;
+    }
+
+    public static Date ajouterSemaine(Date date, int nbSemaines) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.WEEK_OF_MONTH,nbSemaines);
+        Date dateCalculee = calendar.getTime();
+        return dateCalculee;
+    }
+
+    public static Date ajouterMois(Date date, int nbMois) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MONTH,nbMois);
+        Date dateCalculee = calendar.getTime();
+        return dateCalculee;
+    }
+
+    public static Date ajouterAnnee(Date date, int nbAnnees) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.YEAR,nbAnnees);
+        Date dateCalculee = calendar.getTime();
+        return dateCalculee;
     }
 }

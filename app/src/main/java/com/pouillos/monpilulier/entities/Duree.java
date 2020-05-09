@@ -1,12 +1,10 @@
 package com.pouillos.monpilulier.entities;
 
 import com.orm.SugarRecord;
-import com.pouillos.monpilulier.interfaces.AfficherDetail;
 
 import java.io.Serializable;
-import java.util.Date;
 
-public class Duree extends SugarRecord implements Serializable, Comparable<Duree> , AfficherDetail {
+public class Duree extends SugarRecord implements Serializable, Comparable<Duree>  {
 
 private String name;
 
@@ -32,13 +30,5 @@ private String name;
         return this.getId().compareTo(o.getId());
     }
 
-    @Override
-    public String afficherTitre() {
-        return name;
-    }
 
-    @Override
-    public String afficherDetail() {
-        return null;
-    }
 }

@@ -2,32 +2,24 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.pouillos.monpilulier">
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
     <application
         android:name="com.orm.SugarApp"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/home_pill"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/home_pill"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".activities.AccueilActivity"
-            android:label="@string/title_activity_accueil"
-            android:theme="@style/AppTheme.NoActionBar">
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
 
         <meta-data
             android:name="DATABASE"
             android:value="mon_pilulier.db" />
         <meta-data
             android:name="VERSION"
-            android:value="32" />
+            android:value="56" />
         <meta-data
             android:name="QUERY_LOG"
             android:value="true" />
@@ -35,42 +27,67 @@
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="com.pouillos.monpilulier" />
 
-        <activity android:name=".activities.MainActivity">
+        <activity android:name=".activities.MainActivity" />
 
+
+        <activity android:name=".activities.recherche.ChercherContactActivity" />
+        <activity android:name=".activities.enregistrer.EnregistrerPrescriptionActivity" />
+        <activity android:name=".activities.AuthentificationActivity" />
+        <activity android:name=".activities.add.AddUserActivity"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".activities.add.AddProfilActivity"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".activities.add.AddRdvActivity"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".activities.add.AddRdvAnalyseActivity"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".activities.add.AddRdvExamenActivity"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".activities.add.AddAnalyseActivity"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".activities.add.AddExamenActivity"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".activities.AccueilActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-        <activity android:name=".activities.newx.NewUserActivity" />
-        <activity android:name=".activities.listallx.ListAllUserActivity" />
-        <activity android:name=".activities.newx.NewMedicamentActivity" />
-        <activity android:name=".activities.listallx.ListAllMedicamentActivity" />
-        <activity android:name=".activities.newx.NewAnalyseActivity" />
-        <activity android:name=".activities.listallx.ListAllAnalyseActivity" />
-        <activity android:name=".activities.newx.NewDoseActivity" />
-        <activity android:name=".activities.listallx.ListAllDoseActivity" />
-        <activity android:name=".activities.newx.NewExamenActivity" />
-        <activity android:name=".activities.listallx.ListAllExamenActivity" />
-        <activity android:name=".activities.newx.NewSpecialiteActivity" />
-        <activity android:name=".activities.listallx.ListAllSpecialiteActivity" />
-        <activity android:name=".activities.newx.NewCabinetActivity" />
-        <activity android:name=".activities.listallx.ListAllCabinetActivity" />
-        <activity android:name=".activities.newx.NewDureeActivity" />
-        <activity android:name=".activities.listallx.ListAllDureeActivity" />
-        <activity android:name=".activities.newx.NewMedecinActivity" />
-        <activity android:name=".activities.listallx.ListAllMedecinActivity" />
-        <activity android:name=".activities.listmyx.ListMyMedecinActivity" />
-        <activity android:name=".activities.newx.NewRdvActivity" />
-        <activity android:name=".activities.listallx.ListAllRdvActivity" />
-        <activity android:name=".activities.listmyx.ListMyRdvActivity" />
-        <activity android:name=".activities.newx.NewOrdonnanceActivity" />
-        <activity android:name=".activities.listallx.ListAllOrdonnanceActivity" />
-        <activity android:name=".activities.newx.NewOrdoAnalyseActivity" />
-        <activity android:name=".activities.listallx.ListAllOrdoAnalyseActivity" />
-        <activity android:name=".activities.newx.NewOrdoPrescriptionActivity" />
-        <activity android:name=".activities.listallx.ListAllOrdoPrescriptionActivity" />
-        <activity android:name=".activities.newx.NewOrdoExamenActivity" />
-        <activity android:name=".activities.listallx.ListAllOrdoExamenActivity" />
-        <activity android:name=".activities.MyProfilActivity" />
-        <activity android:name=".activities.listallx.ListAllProfilActivity" />
-        <activity android:name=".activities.listmyx.ListMyProfilActivity" />
+        <activity android:name=".activities.afficher.AfficherContactActivity" />
+        <activity android:name=".activities.afficher.AfficherRdvActivity" />
+        <activity android:name=".activities.afficher.AfficherRdvAnalyseActivity" />
+        <activity android:name=".activities.afficher.AfficherRdvExamenActivity" />
+        <activity android:name=".activities.afficher.AfficherGraphiqueActivity" />
+        <activity android:name=".activities.afficher.AfficherAnalyseActivity" />
+        <activity android:name=".activities.afficher.AfficherExamenActivity" />
+        <activity android:name=".activities.afficher.AfficherProfilActivity" />
+
+        <!-- <receiver android:name=".activities.tools.MyBroadcastReceiver" ></receiver> -->
+        <!-- <receiver android:name = ".activities.tools.MyNotificationBroadcastReceiver" >
+            <intent-filter>
+                <action android:name = "android.hardware.usb.action.USB_STATE" />
+            </intent-filter>
+        </receiver> -->
+        <receiver android:name = ".activities.tools.MyNotificationBroadcastReceiver" ></receiver>
+        <receiver android:name = ".activities.tools.RdvNotificationBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name = ".activities.tools.RdvAnalyseNotificationBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name = ".activities.tools.RdvExamenNotificationBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

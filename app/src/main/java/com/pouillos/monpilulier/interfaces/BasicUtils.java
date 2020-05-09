@@ -1,5 +1,6 @@
 package com.pouillos.monpilulier.interfaces;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.text.TextUtils;
@@ -7,11 +8,17 @@ import android.view.View;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.textfield.TextInputEditText;
+import com.pouillos.monpilulier.activities.NavDrawerActivity;
+
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public interface BasicUtils {
+
+
 
     public default int getIndex(Spinner spinner, String myString){
         for (int i=0;i<spinner.getCount();i++){
@@ -47,33 +54,14 @@ public interface BasicUtils {
     };
 
     public default boolean isValid(TextView textView) { return false; };
-    public default boolean isValidTel(TextView textView) {
-        if (!TextUtils.isEmpty(textView.getText()) && textView.getText().length() <10) {
-            textView.requestFocus();
-            textView.setError("Saisie Non Valide  (10 chiffres)");
-            return false;
-        } else {
-            return true;
-        }
-    }
-    public default boolean isEmailAdress(String email){
-        Pattern p = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$");
-        Matcher m = p.matcher(email.toUpperCase());
-        return m.matches();
-    }
-    public default boolean isValidEmail(TextView textView) {
-        if (!TextUtils.isEmpty(textView.getText()) && !isEmailAdress(textView.getText().toString())) {
-            textView.requestFocus();
-            textView.setError("Saisie Non Valide (email)");
-            return false;
-        } else {
-            return true;
-        }
-    }
 
+
+    public default boolean isExistant() { return false; };
+    public default boolean checkFields() { return false; };
     public default void traiterIntent() {};
     public default void showDatePickerDialog(View v) {};
-
+    public default void showTimePickerDialog(View v) {};
+    public default void displayFabs() {};
     public default void alertOnSpinners() {};
     public default void alertOffSpinners() {};
     public default void alertOnSpinner(Spinner spinner) {
@@ -88,6 +76,12 @@ public interface BasicUtils {
 
     public default void saveToDb(TextView... args) {};
     public default void saveToDb(TextView textNom, Date date, String sexe) {};
-
+    public default void saveToDb() {};
     public default void createSpinners() {};
+
+
+    public default void ouvrirActiviteSuivante(Context context,Class classe){};
+    public default void ouvrirActiviteSuivante(Context context,Class classe, String nomExtra, Long objetIdExtra ) {};
+
+    public default void enableItems(Boolean bool) {};
 }

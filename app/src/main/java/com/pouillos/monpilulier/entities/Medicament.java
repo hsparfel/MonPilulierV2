@@ -1,54 +1,55 @@
 package com.pouillos.monpilulier.entities;
 
 import com.orm.SugarRecord;
-import com.orm.dsl.Table;
-import com.pouillos.monpilulier.interfaces.AfficherDetail;
 
 import java.io.Serializable;
-import java.util.Date;
 
 
-public class Medicament extends SugarRecord implements Serializable, Comparable<Medicament>, AfficherDetail {
+public class Medicament extends SugarRecord implements Serializable, Comparable<Medicament> {
 
-private String name;
-private String detail;
+private Long codeCIS;
+private String denomination;
+private FormePharmaceutique formePharmaceutique;
+private String titulaire;
 
     public Medicament() {
     }
 
-    public Medicament(String name, String detail) {
-        this.name = name;
-        this.detail = detail;
+    public Long getCodeCIS() {
+        return codeCIS;
     }
 
-    public String getName() {
-        return name;
+    public void setCodeCIS(Long codeCIS) {
+        this.codeCIS = codeCIS;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getDenomination() {
+        return denomination;
     }
 
-    public String getDetail() {
-        return detail;
+    public void setDenomination(String denomination) {
+        this.denomination = denomination;
     }
 
-    public void setDetail(String detail) {
-        this.detail = detail;
+    public FormePharmaceutique getFormePharmaceutique() {
+        return formePharmaceutique;
+    }
+
+    public void setFormePharmaceutique(FormePharmaceutique formePharmaceutique) {
+        this.formePharmaceutique = formePharmaceutique;
+    }
+
+    public String getTitulaire() {
+        return titulaire;
+    }
+
+    public void setTitulaire(String titulaire) {
+        this.titulaire = titulaire;
     }
 
     @Override
     public int compareTo(Medicament o) {
-        return this.name.compareTo(o.name);
+        return this.denomination.compareTo(o.denomination);
     }
 
-    @Override
-    public String afficherTitre() {
-        return name;
-    }
-
-    @Override
-    public String afficherDetail() {
-        return detail;
-    }
 }

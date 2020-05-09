@@ -1,23 +1,18 @@
 package com.pouillos.monpilulier.entities;
 
 import com.orm.SugarRecord;
-import com.orm.dsl.Table;
-import com.pouillos.monpilulier.interfaces.AfficherDetail;
 
 import java.io.Serializable;
-import java.util.Date;
 
-public class Dose extends SugarRecord implements Serializable, Comparable<Dose>, AfficherDetail {
+public class Dose extends SugarRecord implements Serializable, Comparable<Dose>  {
 
 private String name;
-private String detail;
 
     public Dose() {
     }
 
-    public Dose(String name, String detail) {
+    public Dose(String name) {
         this.name = name;
-        this.detail = detail;
     }
 
     public String getName() {
@@ -28,28 +23,12 @@ private String detail;
         this.name = name;
     }
 
-    public String getDetail() {
-        return detail;
-    }
-
-    public void setDetail(String detail) {
-        this.detail = detail;
-    }
-
 
 
     @Override
     public int compareTo(Dose o) {
-        return this.name.compareTo(o.name);
+        return this.getId().compareTo(o.getId());
     }
 
-    @Override
-    public String afficherTitre() {
-        return name;
-    }
 
-    @Override
-    public String afficherDetail() {
-        return detail;
-    }
 }
