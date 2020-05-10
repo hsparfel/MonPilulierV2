@@ -14,6 +14,7 @@ public class AlarmRdv extends SugarRecord implements Serializable, Comparable<Al
     private String echeance;
     private int requestCode;
 
+
     public AlarmRdv() {
     }
 
