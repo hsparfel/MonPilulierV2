@@ -8,7 +8,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+
 import android.os.Bundle;
+
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
@@ -34,12 +36,15 @@ public class MyNotificationBroadcastReceiver  extends BroadcastReceiver {
         String myTest = intent.getStringExtra("testA");
         String myTest2 = intent.getStringExtra("testB");
       //  Bundle bundle = intent.getExtras();
+
         //String action = intent.getAction() ;
       //  Log.e("USB" , action) ;
         //assert action != null;
         //builder.setContentText( "Connected" ) ;
+
         //builder.setContentText( ""+new Date().toString() ) ;
         builder.setContentText( myTest + " - " + myTest2) ;
+
         //builder.setSmallIcon(R.drawable.ic_launcher_foreground) ;
         builder.setSmallIcon(R.drawable.home_pill_notif) ;
         builder.setAutoCancel( true ) ;

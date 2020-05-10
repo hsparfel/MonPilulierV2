@@ -205,6 +205,7 @@ public class Contact extends SugarRecord implements Serializable, Comparable<Con
                 affichage +=  " - " + profession;
             }
         }
+
         return affichage;
     }
 
@@ -226,6 +227,7 @@ public class Contact extends SugarRecord implements Serializable, Comparable<Con
                 affichage +=  " - " + profession;
             }
         }*/
+
         return affichage;
     }
 

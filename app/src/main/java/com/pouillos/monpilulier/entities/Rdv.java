@@ -50,7 +50,9 @@ public class Rdv extends SugarRecord implements Serializable, Comparable<Rdv> {
 
     @Override
     public int compareTo(Rdv o) {
+
         return this.getDate().compareTo(o.getDate());
+
     }
 
     @Override

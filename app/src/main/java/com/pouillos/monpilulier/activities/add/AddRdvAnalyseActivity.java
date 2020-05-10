@@ -27,8 +27,10 @@ import com.pouillos.monpilulier.activities.AccueilActivity;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvActivity;
 import com.pouillos.monpilulier.activities.recherche.ChercherContactActivity;
+
 import com.pouillos.monpilulier.activities.tools.RdvAnalyseNotificationBroadcastReceiver;
 import com.pouillos.monpilulier.activities.tools.RdvNotificationBroadcastReceiver;
+
 import com.pouillos.monpilulier.entities.Analyse;
 import com.pouillos.monpilulier.entities.Departement;
 import com.pouillos.monpilulier.entities.Profession;

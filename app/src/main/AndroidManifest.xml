@@ -19,7 +19,9 @@
             android:value="mon_pilulier.db" />
         <meta-data
             android:name="VERSION"
+
             android:value="56" />
+
         <meta-data
             android:name="QUERY_LOG"
             android:value="true" />
@@ -68,6 +70,7 @@
                 <action android:name = "android.hardware.usb.action.USB_STATE" />
             </intent-filter>
         </receiver> -->
+
         <receiver android:name = ".activities.tools.MyNotificationBroadcastReceiver" ></receiver>
         <receiver android:name = ".activities.tools.RdvNotificationBroadcastReceiver">
             <intent-filter>
@@ -87,6 +90,7 @@
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
+
 
     </application>
 

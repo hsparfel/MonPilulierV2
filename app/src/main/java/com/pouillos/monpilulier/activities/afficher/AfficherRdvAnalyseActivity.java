@@ -27,8 +27,10 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
 import com.pouillos.monpilulier.activities.add.AddRdvAnalyseActivity;
+
 import com.pouillos.monpilulier.activities.tools.RdvAnalyseNotificationBroadcastReceiver;
 import com.pouillos.monpilulier.activities.tools.RdvNotificationBroadcastReceiver;
+
 import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.Rdv;
 import com.pouillos.monpilulier.entities.RdvAnalyse;
@@ -208,6 +210,7 @@ public class AfficherRdvAnalyseActivity extends NavDrawerActivity implements Ser
     @OnClick(R.id.fabDelete)
     public void fabDeleteClick() {
         deleteItem(AfficherRdvAnalyseActivity.this, rdvSelected, AfficherRdvAnalyseActivity.class);
+
         //supprimer la/les notification(s)
 
         supprimerNotification(RdvAnalyseNotificationBroadcastReceiver.class, rdvSelected.getDate(), rdvSelected.getAnalyse(), AfficherRdvAnalyseActivity.this);

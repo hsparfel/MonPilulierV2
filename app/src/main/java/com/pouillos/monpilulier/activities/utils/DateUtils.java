@@ -59,6 +59,7 @@ public class DateUtils {
         return dateCalculee;
     }
 
+
     public static Date ajouterJourArrondi(Date date, int nbJours, int heure) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);

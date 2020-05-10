@@ -1,17 +1,21 @@
 package com.pouillos.monpilulier.activities;
 
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +44,7 @@ import com.pouillos.monpilulier.activities.afficher.AfficherRdvActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvAnalyseActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvExamenActivity;
 import com.pouillos.monpilulier.activities.recherche.ChercherContactActivity;
+
 import com.pouillos.monpilulier.activities.tools.RdvAnalyseNotificationBroadcastReceiver;
 import com.pouillos.monpilulier.activities.tools.RdvExamenNotificationBroadcastReceiver;
 import com.pouillos.monpilulier.activities.tools.RdvNotificationBroadcastReceiver;
@@ -53,12 +58,14 @@ import com.pouillos.monpilulier.enumeration.Echeance;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
 
 import java.math.BigDecimal;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 import icepick.Icepick;
 import icepick.State;
@@ -280,11 +287,13 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
                         Toast.makeText(context, R.string.dialog_delete_positive_toast, Toast.LENGTH_LONG).show();
                         item.delete();
 
+
                         ouvrirActiviteSuivante(context, classe);
 
                     }
                 })
                 .show();
+
 
     }
 
@@ -359,6 +368,7 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
         bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
         return bd.floatValue();
     }
+
 
     protected<T> void activerNotification(Class classe, Date dateRdv, T object, Context context) {
         if (classe == RdvNotificationBroadcastReceiver.class) {
@@ -461,4 +471,5 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
         }
         Toast.makeText(this, "Alarm deleted", Toast.LENGTH_LONG).show();
     }
+
 }
