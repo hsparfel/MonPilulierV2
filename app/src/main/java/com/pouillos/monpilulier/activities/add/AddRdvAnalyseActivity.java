@@ -27,6 +27,10 @@ import com.pouillos.monpilulier.activities.AccueilActivity;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvActivity;
 import com.pouillos.monpilulier.activities.recherche.ChercherContactActivity;
+
+import com.pouillos.monpilulier.activities.tools.RdvAnalyseNotificationBroadcastReceiver;
+import com.pouillos.monpilulier.activities.tools.RdvNotificationBroadcastReceiver;
+
 import com.pouillos.monpilulier.entities.Analyse;
 import com.pouillos.monpilulier.entities.Departement;
 import com.pouillos.monpilulier.entities.Profession;
@@ -206,6 +210,9 @@ public class AddRdvAnalyseActivity extends NavDrawerActivity implements Serializ
         rdv.setDate(date);
         rdv.save();
         Toast.makeText(AddRdvAnalyseActivity.this, "Rdv Enregistré", Toast.LENGTH_LONG).show();
+        //enregistrer la/les notification(s)
+        activerNotification(RdvAnalyseNotificationBroadcastReceiver.class,rdv.getDate(), rdv.getAnalyse(),AddRdvAnalyseActivity.this);
+
     }
 
     @Override

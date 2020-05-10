@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.pouillos.monpilulier">
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
     <application
         android:name="com.orm.SugarApp"
         android:allowBackup="true"
@@ -17,7 +19,9 @@
             android:value="mon_pilulier.db" />
         <meta-data
             android:name="VERSION"
-            android:value="53" />
+
+            android:value="56" />
+
         <meta-data
             android:name="QUERY_LOG"
             android:value="true" />
@@ -66,8 +70,28 @@
                 <action android:name = "android.hardware.usb.action.USB_STATE" />
             </intent-filter>
         </receiver> -->
-        <receiver android:name = ".activities.tools.MyNotificationBroadcastReceiver" >
+
+        <receiver android:name = ".activities.tools.MyNotificationBroadcastReceiver" ></receiver>
+        <receiver android:name = ".activities.tools.RdvNotificationBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
         </receiver>
+        <receiver android:name = ".activities.tools.RdvAnalyseNotificationBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name = ".activities.tools.RdvExamenNotificationBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
+
     </application>
 
 </manifest>

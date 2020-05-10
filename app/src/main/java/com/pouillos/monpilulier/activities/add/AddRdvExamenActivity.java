@@ -24,6 +24,10 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.AccueilActivity;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
+
+import com.pouillos.monpilulier.activities.tools.RdvAnalyseNotificationBroadcastReceiver;
+import com.pouillos.monpilulier.activities.tools.RdvExamenNotificationBroadcastReceiver;
+
 import com.pouillos.monpilulier.entities.Examen;
 import com.pouillos.monpilulier.entities.RdvExamen;
 import com.pouillos.monpilulier.entities.Utilisateur;
@@ -198,6 +202,10 @@ public class AddRdvExamenActivity extends NavDrawerActivity implements Serializa
         rdv.setDate(date);
         rdv.save();
         Toast.makeText(AddRdvExamenActivity.this, "Rdv Enregistré", Toast.LENGTH_LONG).show();
+
+        //enregistrer la/les notification(s)
+        activerNotification(RdvExamenNotificationBroadcastReceiver.class,rdv.getDate(), rdv.getExamen(),AddRdvExamenActivity.this);
+
     }
 
     @Override

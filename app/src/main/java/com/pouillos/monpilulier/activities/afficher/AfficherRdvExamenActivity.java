@@ -27,6 +27,10 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
 import com.pouillos.monpilulier.activities.add.AddRdvExamenActivity;
+
+import com.pouillos.monpilulier.activities.tools.RdvAnalyseNotificationBroadcastReceiver;
+import com.pouillos.monpilulier.activities.tools.RdvExamenNotificationBroadcastReceiver;
+
 import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.RdvExamen;
 import com.pouillos.monpilulier.entities.Utilisateur;
@@ -204,6 +208,12 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
     @OnClick(R.id.fabDelete)
     public void fabDeleteClick() {
         deleteItem(AfficherRdvExamenActivity.this, rdvSelected, AfficherRdvExamenActivity.class);
+
+        //supprimer la/les notification(s)
+
+        supprimerNotification(RdvExamenNotificationBroadcastReceiver.class, rdvSelected.getDate(), rdvSelected.getExamen(), AfficherRdvExamenActivity.this);
+        //supprimerNotification(RdvNotificationBroadcastReceiver.class,rdvSelected.getDate(), rdvSelected.getContact(),AddRdvActivity.this);
+
     }
 
     private void resizeAllFields(boolean bool) {

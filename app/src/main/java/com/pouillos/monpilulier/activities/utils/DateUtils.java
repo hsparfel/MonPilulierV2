@@ -59,6 +59,17 @@ public class DateUtils {
         return dateCalculee;
     }
 
+
+    public static Date ajouterJourArrondi(Date date, int nbJours, int heure) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_WEEK,nbJours);
+        calendar.set(Calendar.HOUR_OF_DAY, heure);
+        calendar.set(Calendar.MINUTE,0);
+        Date dateCalculee = calendar.getTime();
+        return dateCalculee;
+    }
+
     public static Date ajouterSemaine(Date date, int nbSemaines) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);

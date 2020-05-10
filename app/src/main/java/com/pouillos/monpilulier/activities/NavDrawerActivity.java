@@ -1,16 +1,21 @@
 package com.pouillos.monpilulier.activities;
 
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.DatePicker;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,14 +44,21 @@ import com.pouillos.monpilulier.activities.afficher.AfficherRdvActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvAnalyseActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvExamenActivity;
 import com.pouillos.monpilulier.activities.recherche.ChercherContactActivity;
+
+import com.pouillos.monpilulier.activities.tools.RdvAnalyseNotificationBroadcastReceiver;
+import com.pouillos.monpilulier.activities.tools.RdvExamenNotificationBroadcastReceiver;
+import com.pouillos.monpilulier.activities.tools.RdvNotificationBroadcastReceiver;
+import com.pouillos.monpilulier.activities.utils.DateUtils;
+import com.pouillos.monpilulier.entities.AlarmRdv;
+import com.pouillos.monpilulier.entities.Analyse;
+import com.pouillos.monpilulier.entities.Contact;
+import com.pouillos.monpilulier.entities.Examen;
 import com.pouillos.monpilulier.entities.Utilisateur;
-import com.pouillos.monpilulier.fragments.DatePickerFragment;
+import com.pouillos.monpilulier.enumeration.Echeance;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
 
 import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -54,7 +66,7 @@ import java.util.concurrent.Executor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import butterknife.BindView;
+
 import icepick.Icepick;
 import icepick.State;
 
@@ -258,6 +270,7 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
     }
 
     protected <T extends SugarRecord> void deleteItem(Context context, T item, Class classe) {
+
         new MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.dialog_delete_title)
                 .setMessage(R.string.dialog_delete_message)
@@ -265,6 +278,7 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Toast.makeText(context, R.string.dialog_delete_negative_toast, Toast.LENGTH_LONG).show();
+
                     }
                 })
                 .setPositiveButton(R.string.dialog_delete_positive, new DialogInterface.OnClickListener() {
@@ -272,10 +286,15 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Toast.makeText(context, R.string.dialog_delete_positive_toast, Toast.LENGTH_LONG).show();
                         item.delete();
+
+
                         ouvrirActiviteSuivante(context, classe);
+
                     }
                 })
                 .show();
+
+
     }
 
     protected boolean isChecked(ChipGroup chipGroup) {
@@ -349,4 +368,108 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
         bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
         return bd.floatValue();
     }
+
+
+    protected<T> void activerNotification(Class classe, Date dateRdv, T object, Context context) {
+        if (classe == RdvNotificationBroadcastReceiver.class) {
+           startAlert(classe, DateUtils.ajouterHeure(dateRdv,-1), ((Contact) object).toStringShort(), Echeance.OneHourAfter.toString(),context);
+           startAlert(classe, DateUtils.ajouterJourArrondi(dateRdv,-1,7), ((Contact) object).toStringShort(), Echeance.OneDayAfter.toString(),context);
+        } else if (classe == RdvAnalyseNotificationBroadcastReceiver.class) {
+            startAlert(classe, DateUtils.ajouterHeure(dateRdv,-1), ((Analyse) object).toString(), Echeance.OneHourAfter.toString(),context);
+            startAlert(classe, DateUtils.ajouterJourArrondi(dateRdv,-1,7), ((Analyse) object).toString(), Echeance.OneDayAfter.toString(),context);
+        } else if (classe == RdvExamenNotificationBroadcastReceiver.class) {
+            startAlert(classe, DateUtils.ajouterHeure(dateRdv,-1), ((Examen) object).toString(), Echeance.OneHourAfter.toString(),context);
+            startAlert(classe, DateUtils.ajouterJourArrondi(dateRdv,-1,7), ((Examen) object).toString(), Echeance.OneDayAfter.toString(),context);
+        }
+
+    }
+
+    protected<T> void supprimerNotification(Class classe, Date dateRdv, T object, Context context) {
+        if (classe == RdvNotificationBroadcastReceiver.class) {
+            List<AlarmRdv> listAlarmRdv = AlarmRdv.find(AlarmRdv.class,"date_string = ? and detail = ? and echeance = ?",DateUtils.ajouterHeure(dateRdv,-1).toString(),((Contact) object).toStringShort(),Echeance.OneHourAfter.toString());
+            AlarmRdv alarmRdv = new AlarmRdv();
+            if (listAlarmRdv.size()>0) {
+                alarmRdv = listAlarmRdv.get(0);
+            }
+            cancelAlert(classe, DateUtils.ajouterHeure(dateRdv,-1), ((Contact) object).toStringShort(), Echeance.OneHourAfter.toString(),context, alarmRdv.getRequestCode());
+
+            listAlarmRdv = AlarmRdv.find(AlarmRdv.class,"date_string = ? and detail = ? and echeance = ?",DateUtils.ajouterJourArrondi(dateRdv,-1,7).toString(),((Contact) object).toStringShort(),Echeance.OneDayAfter.toString());
+            alarmRdv = new AlarmRdv();
+            if (listAlarmRdv.size()>0) {
+                alarmRdv = listAlarmRdv.get(0);
+            }
+            cancelAlert(classe, DateUtils.ajouterJourArrondi(dateRdv,-1,7), ((Contact) object).toStringShort(), Echeance.OneDayAfter.toString(),context, alarmRdv.getRequestCode());
+        } else if (classe == RdvAnalyseNotificationBroadcastReceiver.class) {
+            List<AlarmRdv> listAlarmRdv = AlarmRdv.find(AlarmRdv.class,"date_string = ? and detail = ? and echeance = ?",DateUtils.ajouterHeure(dateRdv,-1).toString(),((Analyse) object).toString(),Echeance.OneHourAfter.toString());
+            AlarmRdv alarmRdv = new AlarmRdv();
+            if (listAlarmRdv.size()>0) {
+                alarmRdv = listAlarmRdv.get(0);
+            }
+            cancelAlert(classe, DateUtils.ajouterHeure(dateRdv,-1), ((Analyse) object).toString(), Echeance.OneHourAfter.toString(),context, alarmRdv.getRequestCode());
+
+            listAlarmRdv = AlarmRdv.find(AlarmRdv.class,"date_string = ? and detail = ? and echeance = ?",DateUtils.ajouterJourArrondi(dateRdv,-1,7).toString(),((Analyse) object).toString(),Echeance.OneDayAfter.toString());
+            alarmRdv = new AlarmRdv();
+            if (listAlarmRdv.size()>0) {
+                alarmRdv = listAlarmRdv.get(0);
+            }
+            cancelAlert(classe, DateUtils.ajouterJourArrondi(dateRdv,-1,7), ((Analyse) object).toString(), Echeance.OneDayAfter.toString(),context, alarmRdv.getRequestCode());
+        } else if (classe == RdvExamenNotificationBroadcastReceiver.class) {
+            List<AlarmRdv> listAlarmRdv = AlarmRdv.find(AlarmRdv.class,"date_string = ? and detail = ? and echeance = ?",DateUtils.ajouterHeure(dateRdv,-1).toString(),((Examen) object).toString(),Echeance.OneHourAfter.toString());
+            AlarmRdv alarmRdv = new AlarmRdv();
+            if (listAlarmRdv.size()>0) {
+                alarmRdv = listAlarmRdv.get(0);
+            }
+            cancelAlert(classe, DateUtils.ajouterHeure(dateRdv,-1), ((Examen) object).toString(), Echeance.OneHourAfter.toString(),context, alarmRdv.getRequestCode());
+
+            listAlarmRdv = AlarmRdv.find(AlarmRdv.class,"date_string = ? and detail = ? and echeance = ?",DateUtils.ajouterJourArrondi(dateRdv,-1,7).toString(),((Examen) object).toString(),Echeance.OneDayAfter.toString());
+            alarmRdv = new AlarmRdv();
+            if (listAlarmRdv.size()>0) {
+                alarmRdv = listAlarmRdv.get(0);
+            }
+            cancelAlert(classe, DateUtils.ajouterJourArrondi(dateRdv,-1,7), ((Examen) object).toString(), Echeance.OneDayAfter.toString(),context, alarmRdv.getRequestCode());
+        }
+        //todo prevoir les autres cas pour les autres rdv
+    }
+
+    private void startAlert(Class classe, Date dateRdv, String detail, String echeance, Context context) {
+        Intent intent = new Intent(this, classe);
+        intent.putExtra("detail",detail);
+        intent.putExtra("echeance",echeance);
+        Date dateJour = new Date();
+        Long dateJourLong = dateJour.getTime();
+        int requestCode =dateJourLong.intValue();
+        Log.i("requestCode",""+requestCode);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, 0);
+        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, dateRdv.getTime(), pendingIntent);
+        AlarmRdv alarmRdv = new AlarmRdv();
+        alarmRdv.setClasse(classe.getName());
+        alarmRdv.setDate(dateRdv);
+        alarmRdv.setDateString(dateRdv.toString());
+        alarmRdv.setDetail(detail);
+        alarmRdv.setEcheance(echeance);
+        alarmRdv.setRequestCode(requestCode);
+        alarmRdv.save();
+
+        Toast.makeText(this, "Alarm set : " + dateRdv.toString(), Toast.LENGTH_LONG).show();
+    }
+
+    private void cancelAlert(Class classe, Date dateRdv, String detail, String echeance, Context context,int requestCode) {
+        Intent intent = new Intent(this, classe);
+        intent.putExtra("detail",detail);
+        intent.putExtra("echeance",echeance);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, 0);
+        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+
+        List<AlarmRdv> listAlarmRdv = AlarmRdv.find(AlarmRdv.class,"request_code = ?", ""+requestCode);
+        if (listAlarmRdv.size()>0) {
+            AlarmRdv alarmRdv = listAlarmRdv.get(0);
+            alarmRdv.delete();
+        }
+        Toast.makeText(this, "Alarm deleted", Toast.LENGTH_LONG).show();
+    }
+
 }

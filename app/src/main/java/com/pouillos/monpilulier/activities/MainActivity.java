@@ -22,15 +22,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
 import com.facebook.stetho.Stetho;
-import com.orm.SchemaGenerator;
-import com.orm.SugarContext;
-import com.orm.SugarDb;
+
+import com.orm.SugarRecord;
 import com.pouillos.monpilulier.R;
 ///import com.pouillos.monpilulier.activities.listallx.ListAllProfilActivity;
 //import com.pouillos.monpilulier.activities.newx.NewUserActivity;
-import com.pouillos.monpilulier.activities.tools.MyBroadcastReceiver;
 import com.pouillos.monpilulier.activities.tools.MyNotificationBroadcastReceiver;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
+import com.pouillos.monpilulier.entities.AlarmRdv;
+
 import com.pouillos.monpilulier.entities.Analyse;
 import com.pouillos.monpilulier.entities.AssociationFormeDose;
 import com.pouillos.monpilulier.entities.Contact;
@@ -219,12 +219,26 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         //Intent intent = new Intent(this, MyBroadcastReceiver.class);
         Intent intent = new Intent(this, MyNotificationBroadcastReceiver.class);
 
+        intent.putExtra("testA","nom du contact");
+        intent.putExtra("testB","dans une heure");
+
         //intent.putExtra("activity",MainActivity.class);
         //PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 234324243, intent, 0);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), requestCode, intent, 0);
         AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
 
         alarmManager.set(AlarmManager.RTC_WAKEUP, date.getTime(), pendingIntent);
+
+
+        AlarmRdv alarmRdv = new AlarmRdv();
+        alarmRdv.setClasse(MainActivity.class.getName());
+        alarmRdv.setDate(date);
+        alarmRdv.setDateString(date.toString());
+        alarmRdv.setDetail("detail");
+        alarmRdv.setEcheance("echeance");
+        alarmRdv.setRequestCode(requestCode);
+        alarmRdv.save();
+
         Toast.makeText(this, "Alarm set : " + date.toString(), Toast.LENGTH_LONG).show();
         //startNotification();
     }
@@ -259,10 +273,15 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             //SugarRecord.executeQuery("DROP TABLE RDV_AUTRE");
             //SugarRecord.executeQuery("DROP TABLE RDV_OFFICIEL");
            // SugarRecord.executeQuery("DROP TABLE SPECIALITE");
+
+           // SugarRecord.executeQuery("DELETE FROM ALARM");
+            SugarRecord.executeQuery("DROP TABLE ALARM");
+
             //
            // SugarRecord.executeQuery("DROP TABLE RDV_ACTE_MEDICAL");
             //RAZ TOTAL
-            SugarContext.terminate();
+            /*SugarContext.terminate();
+
             publishProgress(20);
             SchemaGenerator schemaGenerator = new SchemaGenerator(getApplicationContext());
             publishProgress(40);
@@ -270,7 +289,10 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             publishProgress(60);
             SugarContext.init(getApplicationContext());
             publishProgress(80);
-            schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());
+
+            schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());*/
+
+
             publishProgress(100);
 
             finish();
@@ -1268,7 +1290,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         }
     }
 
+
     public void remplirDefaultBD() {
+
 
         Long count = Duree.count(Duree.class);
         if (count ==0) {

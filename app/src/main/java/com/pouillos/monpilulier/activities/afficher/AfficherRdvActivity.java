@@ -30,6 +30,9 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
 import com.pouillos.monpilulier.activities.add.AddRdvActivity;
+
+import com.pouillos.monpilulier.activities.tools.RdvNotificationBroadcastReceiver;
+
 import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.AssociationUtilisateurContact;
 import com.pouillos.monpilulier.entities.Rdv;
@@ -45,6 +48,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import java.util.Collections;
+
 import java.util.Date;
 import java.util.List;
 
@@ -138,6 +144,9 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
             activeUser = findActiveUser();
             publishProgress(50);
             listRdvBD = Rdv.find(Rdv.class,"utilisateur = ?",""+activeUser.getId());
+
+            Collections.sort(listRdvBD);
+
             publishProgress(100);
             return null;
         }
@@ -218,8 +227,17 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
 
     @OnClick(R.id.fabDelete)
     public void fabDeleteClick() {
+
+
         deleteItem(AfficherRdvActivity.this, rdvSelected, AfficherRdvActivity.class);
+        //supprimer la/les notification(s)
+
+            supprimerNotification(RdvNotificationBroadcastReceiver.class, rdvSelected.getDate(), rdvSelected.getContact(), AfficherRdvActivity.this);
+            //supprimerNotification(RdvNotificationBroadcastReceiver.class,rdvSelected.getDate(), rdvSelected.getContact(),AddRdvActivity.this);
+
     }
+
+
 
     private void resizeAllFields(boolean bool) {
         if (bool) {
