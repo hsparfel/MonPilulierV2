@@ -19,10 +19,8 @@ import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.AccueilActivity;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
 
-import com.pouillos.monpilulier.activities.tools.RdvNotificationBroadcastReceiver;
-
 import com.pouillos.monpilulier.entities.Contact;
-import com.pouillos.monpilulier.entities.Rdv;
+import com.pouillos.monpilulier.entities.RdvContact;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
@@ -41,7 +39,7 @@ import butterknife.OnClick;
 import icepick.Icepick;
 import icepick.State;
 
-public class AddRdvActivity extends NavDrawerActivity implements Serializable, BasicUtils {
+public class AddRdvContactActivity extends NavDrawerActivity implements Serializable, BasicUtils {
 //TODO sur les 3 classes de RDV pb si selection de l'heure avant la date metre enable(false ) puis enable true pour palier à ça
  //TODO implementer les rappels / notif pour les 3 aussi
 
@@ -53,7 +51,7 @@ public class AddRdvActivity extends NavDrawerActivity implements Serializable, B
     @State
     Date date = new Date();
     @State
-    Rdv rdvToCreate;
+    RdvContact rdvContactToCreate;
 
     TimePickerDialog picker;
 
@@ -81,7 +79,7 @@ public class AddRdvActivity extends NavDrawerActivity implements Serializable, B
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Icepick.restoreInstanceState(this, savedInstanceState);
-        setContentView(R.layout.activity_add_rdv);
+        setContentView(R.layout.activity_add_rdv_contact);
         // 6 - Configure all views
         this.configureToolBar();
         this.configureDrawerLayout();
@@ -106,8 +104,8 @@ public class AddRdvActivity extends NavDrawerActivity implements Serializable, B
     public boolean isExistant() {
         boolean bool;
         bool = false;
-        List<Rdv> listRdv = Rdv.find(Rdv.class,"utilisateur = ? and contact = ? and date = ?",""+activeUser.getId(),""+contact.getId(),""+date.getTime());
-        if (listRdv.size() != 0) {
+        List<RdvContact> listRdvContact = RdvContact.find(RdvContact.class,"utilisateur = ? and contact = ? and date = ?",""+activeUser.getId(),""+contact.getId(),""+date.getTime());
+        if (listRdvContact.size() != 0) {
             bool = true;
         }
         return bool;
@@ -138,8 +136,8 @@ public class AddRdvActivity extends NavDrawerActivity implements Serializable, B
             Long contactId = intent.getLongExtra("contactId", 0);
             contact = Contact.findById(Contact.class, contactId);
             textContact.setText(contact.toString());
-            rdvToCreate = new Rdv();
-            rdvToCreate.setContact(contact);
+            rdvContactToCreate = new RdvContact();
+            rdvContactToCreate.setContact(contact);
         }
     }
 
@@ -148,29 +146,30 @@ public class AddRdvActivity extends NavDrawerActivity implements Serializable, B
         if (checkFields()) {
             if (!isExistant()) {
                 saveToDb();
-                ouvrirActiviteSuivante(AddRdvActivity.this, AccueilActivity.class);
+                ouvrirActiviteSuivante(AddRdvContactActivity.this, AccueilActivity.class);
             } else {
-                Toast.makeText(AddRdvActivity.this, "Rdv déjà existant", Toast.LENGTH_LONG).show();
+                Toast.makeText(AddRdvContactActivity.this, "Rdv déjà existant", Toast.LENGTH_LONG).show();
             }
         } else {
-            Toast.makeText(AddRdvActivity.this, "Saisie non valide", Toast.LENGTH_LONG).show();
+            Toast.makeText(AddRdvContactActivity.this, "Saisie non valide", Toast.LENGTH_LONG).show();
         }
 
     }
 
     @Override
     public void saveToDb() {
-        Rdv rdv = new Rdv();
-        rdv.setNote(textNote.getText().toString());
-        rdv.setContact(contact);
-        rdv.setUtilisateur(activeUser);
-        rdv.setDate(date);
-        rdv.save();
+        RdvContact rdvContact = new RdvContact();
+        rdvContact.setNote(textNote.getText().toString());
+        rdvContact.setContact(contact);
+        rdvContact.setUtilisateur(activeUser);
+        rdvContact.setDate(date);
+        rdvContact.setId(rdvContact.save());
 
 
-        Toast.makeText(AddRdvActivity.this, "Rdv Enregistré", Toast.LENGTH_LONG).show();
+        Toast.makeText(AddRdvContactActivity.this, "Rdv Enregistré", Toast.LENGTH_LONG).show();
         //enregistrer la/les notification(s)
-        activerNotification(RdvNotificationBroadcastReceiver.class,rdv.getDate(), rdv.getContact(),AddRdvActivity.this);
+       // activerNotification(RdvContactNotificationBroadcastReceiver.class, rdvContact.getDate(), rdvContact.getContact(), AddRdvContactActivity.this);
+        activerNotification(rdvContact, AddRdvContactActivity.this);
 
     }
 
@@ -194,7 +193,7 @@ public class AddRdvActivity extends NavDrawerActivity implements Serializable, B
         int hour = 8;
         int minutes = 0;
         // time picker dialog
-        picker = new TimePickerDialog(AddRdvActivity.this,
+        picker = new TimePickerDialog(AddRdvContactActivity.this,
                 new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker tp, int sHour, int sMinute) {

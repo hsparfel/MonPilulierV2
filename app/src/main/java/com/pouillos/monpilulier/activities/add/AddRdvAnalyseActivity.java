@@ -2,7 +2,6 @@ package com.pouillos.monpilulier.activities.add;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,19 +24,11 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.AccueilActivity;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
-import com.pouillos.monpilulier.activities.afficher.AfficherRdvActivity;
-import com.pouillos.monpilulier.activities.recherche.ChercherContactActivity;
 
 import com.pouillos.monpilulier.activities.tools.RdvAnalyseNotificationBroadcastReceiver;
-import com.pouillos.monpilulier.activities.tools.RdvNotificationBroadcastReceiver;
 
 import com.pouillos.monpilulier.entities.Analyse;
-import com.pouillos.monpilulier.entities.Departement;
-import com.pouillos.monpilulier.entities.Profession;
-import com.pouillos.monpilulier.entities.Rdv;
 import com.pouillos.monpilulier.entities.RdvAnalyse;
-import com.pouillos.monpilulier.entities.Region;
-import com.pouillos.monpilulier.entities.SavoirFaire;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
@@ -203,15 +194,15 @@ public class AddRdvAnalyseActivity extends NavDrawerActivity implements Serializ
 
     @Override
     public void saveToDb() {
-        RdvAnalyse rdv = new RdvAnalyse();
-        rdv.setNote(textNote.getText().toString());
-        rdv.setAnalyse(analyseSelected);
-        rdv.setUtilisateur(activeUser);
-        rdv.setDate(date);
-        rdv.save();
+        RdvAnalyse rdvAnalyse = new RdvAnalyse();
+        rdvAnalyse.setNote(textNote.getText().toString());
+        rdvAnalyse.setAnalyse(analyseSelected);
+        rdvAnalyse.setUtilisateur(activeUser);
+        rdvAnalyse.setDate(date);
+        rdvAnalyse.save();
         Toast.makeText(AddRdvAnalyseActivity.this, "Rdv Enregistré", Toast.LENGTH_LONG).show();
         //enregistrer la/les notification(s)
-        activerNotification(RdvAnalyseNotificationBroadcastReceiver.class,rdv.getDate(), rdv.getAnalyse(),AddRdvAnalyseActivity.this);
+        activerNotification(rdvAnalyse,AddRdvAnalyseActivity.this);
 
     }
 

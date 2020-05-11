@@ -1,5 +1,10 @@
 <resources>
-
+    <string name="dialog_save_title">Enregistrer</string>
+    <string name="dialog_save_message">Souhaitez-vous conserver cette photo ?</string>
+    <string name="dialog_save_negative">Refuser</string>
+    <string name="dialog_save_positive">Accepter</string>
+    <string name="dialog_save_negative_toast">La photo n\'a pas été enregistrée</string>
+    <string name="dialog_save_positive_toast">La photo a été enregistrée</string>
     <string name="dialog_delete_title">Suppression</string>
     <string name="dialog_delete_message">Attention ! La suppression est définitive</string>
     <string name="dialog_delete_negative">Refuser</string>
@@ -97,6 +102,7 @@
     <string name="list_all_exam">lister Examens</string>
     <string name="list_all_analysis">lister Analyses</string>
     <string name="list_my_profil">lister Profils</string>
+    <string name="take_a_picture">prendre une photo</string>
 
 
 </resources>

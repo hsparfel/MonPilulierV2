@@ -3,6 +3,10 @@
     package="com.pouillos.monpilulier">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <uses-feature android:name="android.hardware.camera" />
 
     <application
         android:name="com.orm.SugarApp"
@@ -20,7 +24,7 @@
         <meta-data
             android:name="VERSION"
 
-            android:value="56" />
+            android:value="58" />
 
         <meta-data
             android:name="QUERY_LOG"
@@ -39,7 +43,7 @@
             android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".activities.add.AddProfilActivity"
             android:windowSoftInputMode="stateHidden"/>
-        <activity android:name=".activities.add.AddRdvActivity"
+        <activity android:name=".activities.add.AddRdvContactActivity"
             android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".activities.add.AddRdvAnalyseActivity"
             android:windowSoftInputMode="stateHidden"/>
@@ -56,7 +60,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.afficher.AfficherContactActivity" />
-        <activity android:name=".activities.afficher.AfficherRdvActivity" />
+        <activity android:name=".activities.afficher.AfficherRdvContactActivity" />
         <activity android:name=".activities.afficher.AfficherRdvAnalyseActivity" />
         <activity android:name=".activities.afficher.AfficherRdvExamenActivity" />
         <activity android:name=".activities.afficher.AfficherGraphiqueActivity" />
@@ -64,6 +68,9 @@
         <activity android:name=".activities.afficher.AfficherExamenActivity" />
         <activity android:name=".activities.afficher.AfficherProfilActivity" />
 
+        <activity android:name=".activities.photo.PickPictureActivity" />
+        <activity android:name=".activities.photo.MakePhotoActivity" />
+        <activity android:name=".activities.photo.CameraActivity" />
         <!-- <receiver android:name=".activities.tools.MyBroadcastReceiver" ></receiver> -->
         <!-- <receiver android:name = ".activities.tools.MyNotificationBroadcastReceiver" >
             <intent-filter>
@@ -72,7 +79,7 @@
         </receiver> -->
 
         <receiver android:name = ".activities.tools.MyNotificationBroadcastReceiver" ></receiver>
-        <receiver android:name = ".activities.tools.RdvNotificationBroadcastReceiver">
+        <receiver android:name = ".activities.tools.RdvContactNotificationBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />

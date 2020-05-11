@@ -1,10 +1,7 @@
 package com.pouillos.monpilulier.activities.afficher;
 
 import android.app.TimePickerDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,15 +26,11 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
-import com.pouillos.monpilulier.activities.add.AddRdvActivity;
 
-import com.pouillos.monpilulier.activities.tools.RdvNotificationBroadcastReceiver;
+import com.pouillos.monpilulier.activities.tools.RdvContactNotificationBroadcastReceiver;
 
 import com.pouillos.monpilulier.activities.utils.DateUtils;
-import com.pouillos.monpilulier.entities.AssociationUtilisateurContact;
-import com.pouillos.monpilulier.entities.Rdv;
-import com.pouillos.monpilulier.entities.Profession;
-import com.pouillos.monpilulier.entities.SavoirFaire;
+import com.pouillos.monpilulier.entities.RdvContact;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
@@ -46,7 +39,6 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 import java.util.Collections;
@@ -60,18 +52,18 @@ import butterknife.OnClick;
 import icepick.Icepick;
 import icepick.State;
 
-public class AfficherRdvActivity extends NavDrawerActivity implements Serializable, BasicUtils, AdapterView.OnItemClickListener {
-
+public class AfficherRdvContactActivity extends NavDrawerActivity implements Serializable, BasicUtils, AdapterView.OnItemClickListener {
+//todo reflechir sur les modifs des alertes en cas de modif. (sur les 3 types de rdv)
     @State
     Utilisateur activeUser;
     @State
-    Rdv rdvSelected;
+    RdvContact rdvContactSelected;
     @State
     Date date;
 
     TimePickerDialog picker;
 
-    List<Rdv> listRdvBD;
+    List<RdvContact> listRdvContactBD;
     ArrayAdapter adapter;
 
     @BindView(R.id.selectRdv)
@@ -116,7 +108,7 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Icepick.restoreInstanceState(this, savedInstanceState);
-        setContentView(R.layout.activity_afficher_rdv);
+        setContentView(R.layout.activity_afficher_rdv_contact);
         // 6 - Configure all views
         this.configureToolBar();
         this.configureDrawerLayout();
@@ -129,7 +121,7 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
         hideAllFields();
         displayFabs();
 
-        AfficherRdvActivity.AsyncTaskRunner runner = new AfficherRdvActivity.AsyncTaskRunner();
+        AfficherRdvContactActivity.AsyncTaskRunner runner = new AfficherRdvContactActivity.AsyncTaskRunner();
         runner.execute();
 
         setTitle("Mes Rdv");
@@ -143,9 +135,9 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
             publishProgress(0);
             activeUser = findActiveUser();
             publishProgress(50);
-            listRdvBD = Rdv.find(Rdv.class,"utilisateur = ?",""+activeUser.getId());
+            listRdvContactBD = RdvContact.find(RdvContact.class,"utilisateur = ?",""+activeUser.getId());
 
-            Collections.sort(listRdvBD);
+            Collections.sort(listRdvContactBD);
 
             publishProgress(100);
             return null;
@@ -154,11 +146,11 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
         @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
         protected void onPostExecute(Void result) {
             progressBar.setVisibility(View.GONE);
-            if (listRdvBD.size() == 0) {
-                Toast.makeText(AfficherRdvActivity.this, "Aucune correspondance, modifier puis appliquer filtre", Toast.LENGTH_LONG).show();
+            if (listRdvContactBD.size() == 0) {
+                Toast.makeText(AfficherRdvContactActivity.this, "Aucune correspondance, modifier puis appliquer filtre", Toast.LENGTH_LONG).show();
                 listRdv.setVisibility(View.GONE);
             } else {
-                buildDropdownMenu(listRdvBD, AfficherRdvActivity.this,selectedRdv);
+                buildDropdownMenu(listRdvContactBD, AfficherRdvContactActivity.this,selectedRdv);
 
                 //traiterIntent();
 
@@ -189,17 +181,17 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
     @OnClick(R.id.fabSave)
     public void fabSaveClick() {
 
-            rdvSelected.setDate(date);
-            if (textNote.getText() != null && !textNote.getText().toString().equalsIgnoreCase(rdvSelected.getNote())) {
-                rdvSelected.setNote(textNote.getText().toString());
+            rdvContactSelected.setDate(date);
+            if (textNote.getText() != null && !textNote.getText().toString().equalsIgnoreCase(rdvContactSelected.getNote())) {
+                rdvContactSelected.setNote(textNote.getText().toString());
             }
 
-            rdvSelected.save();
+            rdvContactSelected.save();
 
             enableFields(false);
             displayAllFields(false);
             displayFabs();
-            Toast.makeText(AfficherRdvActivity.this, R.string.modification_saved, Toast.LENGTH_LONG).show();
+            Toast.makeText(AfficherRdvContactActivity.this, R.string.modification_saved, Toast.LENGTH_LONG).show();
     }
 
     @OnClick(R.id.fabCancel)
@@ -229,10 +221,10 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
     public void fabDeleteClick() {
 
 
-        deleteItem(AfficherRdvActivity.this, rdvSelected, AfficherRdvActivity.class);
+        deleteItem(AfficherRdvContactActivity.this, rdvContactSelected, AfficherRdvContactActivity.class);
         //supprimer la/les notification(s)
 
-            supprimerNotification(RdvNotificationBroadcastReceiver.class, rdvSelected.getDate(), rdvSelected.getContact(), AfficherRdvActivity.this);
+           // supprimerNotification(rdvContactSelected, AfficherRdvContactActivity.this);
             //supprimerNotification(RdvNotificationBroadcastReceiver.class,rdvSelected.getDate(), rdvSelected.getContact(),AddRdvActivity.this);
 
     }
@@ -251,7 +243,7 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        rdvSelected = listRdvBD.get(position);
+        rdvContactSelected = listRdvContactBD.get(position);
         enableFields(false);
         displayFabs();
         fillAllFields();
@@ -290,7 +282,7 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
     public void displayFabs() {
         fabSave.hide();
         fabCancel.hide();
-        if (rdvSelected == null) {
+        if (rdvContactSelected == null) {
             fabEdit.hide();
             fabDelete.hide();
         } else {
@@ -300,10 +292,10 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
     }
 
     private void fillAllFields() {
-        textContact.setText(rdvSelected.getContact().toString());
-        textDate.setText(DateUtils.ecrireDate(rdvSelected.getDate()));
-        textHeure.setText(DateUtils.ecrireHeure(rdvSelected.getDate()));
-        textNote.setText(rdvSelected.getNote());
+        textContact.setText(rdvContactSelected.getContact().toString());
+        textDate.setText(DateUtils.ecrireDate(rdvContactSelected.getDate()));
+        textHeure.setText(DateUtils.ecrireHeure(rdvContactSelected.getDate()));
+        textNote.setText(rdvContactSelected.getNote());
     }
 
     private void enableFields(boolean bool) {
@@ -317,7 +309,7 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
         layoutContact.setVisibility(View.VISIBLE);
         layoutDate.setVisibility(View.VISIBLE);
         layoutHeure.setVisibility(View.VISIBLE);
-        if (bool || !TextUtils.isEmpty(rdvSelected.getNote())) {
+        if (bool || !TextUtils.isEmpty(rdvContactSelected.getNote())) {
             layoutNote.setVisibility(View.VISIBLE);
         } else {
             layoutNote.setVisibility(View.GONE);
@@ -352,7 +344,7 @@ public class AfficherRdvActivity extends NavDrawerActivity implements Serializab
         int hour = 8;
         int minutes = 0;
         // time picker dialog
-        picker = new TimePickerDialog(AfficherRdvActivity.this,
+        picker = new TimePickerDialog(AfficherRdvContactActivity.this,
                 new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker tp, int sHour, int sMinute) {

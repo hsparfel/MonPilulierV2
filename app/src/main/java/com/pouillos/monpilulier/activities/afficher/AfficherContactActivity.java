@@ -21,16 +21,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
-import com.pouillos.monpilulier.activities.AccueilActivity;
-import com.pouillos.monpilulier.activities.AuthentificationActivity;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
-import com.pouillos.monpilulier.activities.add.AddRdvActivity;
-import com.pouillos.monpilulier.activities.add.AddUserActivity;
+import com.pouillos.monpilulier.activities.add.AddRdvContactActivity;
 import com.pouillos.monpilulier.entities.AssociationUtilisateurContact;
 import com.pouillos.monpilulier.entities.Contact;
-import com.pouillos.monpilulier.entities.Profession;
-import com.pouillos.monpilulier.entities.SavoirFaire;
-import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
 
 import java.io.Serializable;
@@ -492,7 +486,7 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
 //TODO revoir tous les fabs
     @OnClick(R.id.fabRdv)
     public void fabRdvClick() {
-        ouvrirActiviteSuivante(AfficherContactActivity.this, AddRdvActivity.class,"contactId",contactSelected.getId());
+        ouvrirActiviteSuivante(AfficherContactActivity.this, AddRdvContactActivity.class,"contactId",contactSelected.getId());
     }
 
     @OnClick(R.id.fabPrescription)

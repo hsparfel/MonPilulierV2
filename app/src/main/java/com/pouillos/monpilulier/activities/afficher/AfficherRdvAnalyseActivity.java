@@ -29,10 +29,8 @@ import com.pouillos.monpilulier.activities.NavDrawerActivity;
 import com.pouillos.monpilulier.activities.add.AddRdvAnalyseActivity;
 
 import com.pouillos.monpilulier.activities.tools.RdvAnalyseNotificationBroadcastReceiver;
-import com.pouillos.monpilulier.activities.tools.RdvNotificationBroadcastReceiver;
 
 import com.pouillos.monpilulier.activities.utils.DateUtils;
-import com.pouillos.monpilulier.entities.Rdv;
 import com.pouillos.monpilulier.entities.RdvAnalyse;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
@@ -43,7 +41,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -209,11 +206,15 @@ public class AfficherRdvAnalyseActivity extends NavDrawerActivity implements Ser
 
     @OnClick(R.id.fabDelete)
     public void fabDeleteClick() {
+
+
+
         deleteItem(AfficherRdvAnalyseActivity.this, rdvSelected, AfficherRdvAnalyseActivity.class);
 
         //supprimer la/les notification(s)
+        //supprimerNotification(rdvSelected, AfficherRdvAnalyseActivity.this);
 
-        supprimerNotification(RdvAnalyseNotificationBroadcastReceiver.class, rdvSelected.getDate(), rdvSelected.getAnalyse(), AfficherRdvAnalyseActivity.this);
+       // supprimerNotification(RdvAnalyseNotificationBroadcastReceiver.class, rdvSelected.getDate(), rdvSelected.getAnalyse(), AfficherRdvAnalyseActivity.this);
         //supprimerNotification(RdvNotificationBroadcastReceiver.class,rdvSelected.getDate(), rdvSelected.getContact(),AddRdvActivity.this);
 
     }

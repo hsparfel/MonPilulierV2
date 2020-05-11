@@ -195,16 +195,16 @@ public class AddRdvExamenActivity extends NavDrawerActivity implements Serializa
 
     @Override
     public void saveToDb() {
-        RdvExamen rdv = new RdvExamen();
-        rdv.setNote(textNote.getText().toString());
-        rdv.setExamen(examenSelected);
-        rdv.setUtilisateur(activeUser);
-        rdv.setDate(date);
-        rdv.save();
+        RdvExamen rdvExamen = new RdvExamen();
+        rdvExamen.setNote(textNote.getText().toString());
+        rdvExamen.setExamen(examenSelected);
+        rdvExamen.setUtilisateur(activeUser);
+        rdvExamen.setDate(date);
+        rdvExamen.save();
         Toast.makeText(AddRdvExamenActivity.this, "Rdv Enregistré", Toast.LENGTH_LONG).show();
 
         //enregistrer la/les notification(s)
-        activerNotification(RdvExamenNotificationBroadcastReceiver.class,rdv.getDate(), rdv.getExamen(),AddRdvExamenActivity.this);
+        activerNotification(rdvExamen,AddRdvExamenActivity.this);
 
     }
 

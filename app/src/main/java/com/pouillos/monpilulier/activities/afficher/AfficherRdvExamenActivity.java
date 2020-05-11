@@ -211,7 +211,7 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
 
         //supprimer la/les notification(s)
 
-        supprimerNotification(RdvExamenNotificationBroadcastReceiver.class, rdvSelected.getDate(), rdvSelected.getExamen(), AfficherRdvExamenActivity.this);
+        //supprimerNotification(rdvSelected, AfficherRdvExamenActivity.this);
         //supprimerNotification(RdvNotificationBroadcastReceiver.class,rdvSelected.getDate(), rdvSelected.getContact(),AddRdvActivity.this);
 
     }

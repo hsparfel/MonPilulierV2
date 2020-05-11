@@ -8,10 +8,9 @@ import java.util.Date;
 
 public class Rdv extends SugarRecord implements Serializable, Comparable<Rdv> {
 
-    private String note;
-    private Utilisateur utilisateur;
-    private Contact contact;
-    private Date date;
+    protected String note;
+    protected Utilisateur utilisateur;
+    protected Date date;
 
     public Rdv() {
     }
@@ -32,14 +31,6 @@ public class Rdv extends SugarRecord implements Serializable, Comparable<Rdv> {
         this.utilisateur = utilisateur;
     }
 
-    public Contact getContact() {
-        return contact;
-    }
-
-    public void setContact(Contact contact) {
-        this.contact = contact;
-    }
-
     public Date getDate() {
         return date;
     }
@@ -55,8 +46,4 @@ public class Rdv extends SugarRecord implements Serializable, Comparable<Rdv> {
 
     }
 
-    @Override
-    public String toString() {
-        return DateUtils.ecrireDateHeure(date) + " - " + contact.getNom();
-    }
 }

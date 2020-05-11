@@ -275,7 +275,16 @@ public class MainActivity extends AppCompatActivity implements Serializable {
            // SugarRecord.executeQuery("DROP TABLE SPECIALITE");
 
            // SugarRecord.executeQuery("DELETE FROM ALARM");
-            SugarRecord.executeQuery("DROP TABLE ALARM");
+            //SugarRecord.executeQuery("DROP TABLE ALARM");
+            SugarRecord.executeQuery("DELETE FROM ALARM_RDV");
+            SugarRecord.executeQuery("DELETE FROM ASSOCIATION_ALARM_RDV");
+            SugarRecord.executeQuery("DELETE FROM RDV_ANALYSE");
+            SugarRecord.executeQuery("DELETE FROM RDV_EXAMEN");
+            SugarRecord.executeQuery("DELETE FROM RDV_CONTACT");
+
+
+
+
 
             //
            // SugarRecord.executeQuery("DROP TABLE RDV_ACTE_MEDICAL");
