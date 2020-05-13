@@ -95,7 +95,7 @@ public class AuthentificationActivity extends NavDrawerActivity implements Seria
 
         protected void onPostExecute(Void result) {
             if (listUserBD.size() == 0) {
-                listUser.setVisibility(View.GONE);
+                listUser.setVisibility(View.INVISIBLE);
             } else {
                 buildDropdownMenu(listUserBD,AuthentificationActivity.this,selectedUser);
                 listUser.setVisibility(View.VISIBLE);

@@ -611,7 +611,7 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
         if (associationList.size()>0) {
             association = associationList.get(0);
         }
-        deleteItem(AfficherContactActivity.this, association, AfficherContactActivity.class);
+        deleteItem(AfficherContactActivity.this, association, AfficherContactActivity.class,true);
     }
 
     @Override

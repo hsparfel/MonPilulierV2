@@ -27,6 +27,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
 
+import com.pouillos.monpilulier.activities.add.AddRdvContactActivity;
 import com.pouillos.monpilulier.activities.tools.RdvContactNotificationBroadcastReceiver;
 
 import com.pouillos.monpilulier.activities.utils.DateUtils;
@@ -180,13 +181,16 @@ public class AfficherRdvContactActivity extends NavDrawerActivity implements Ser
 
     @OnClick(R.id.fabSave)
     public void fabSaveClick() {
+        deleteItem(AfficherRdvContactActivity.this, rdvContactSelected, AfficherRdvContactActivity.class,false);
 
-            rdvContactSelected.setDate(date);
+        rdvContactSelected.setDate(date);
             if (textNote.getText() != null && !textNote.getText().toString().equalsIgnoreCase(rdvContactSelected.getNote())) {
                 rdvContactSelected.setNote(textNote.getText().toString());
             }
 
             rdvContactSelected.save();
+        //enregistrer la/les notification(s)
+        activerNotification(rdvContactSelected, AfficherRdvContactActivity.this);
 
             enableFields(false);
             displayAllFields(false);
@@ -221,7 +225,7 @@ public class AfficherRdvContactActivity extends NavDrawerActivity implements Ser
     public void fabDeleteClick() {
 
 
-        deleteItem(AfficherRdvContactActivity.this, rdvContactSelected, AfficherRdvContactActivity.class);
+        deleteItem(AfficherRdvContactActivity.this, rdvContactSelected, AfficherRdvContactActivity.class,true);
         //supprimer la/les notification(s)
 
            // supprimerNotification(rdvContactSelected, AfficherRdvContactActivity.this);

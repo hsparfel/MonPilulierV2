@@ -178,7 +178,7 @@ public class AfficherAnalyseActivity extends NavDrawerActivity implements Serial
 
     @OnClick(R.id.fabDelete)
     public void fabDeleteClick() {
-        deleteItem(AfficherAnalyseActivity.this, analyseSelected, AfficherAnalyseActivity.class);
+        deleteItem(AfficherAnalyseActivity.this, analyseSelected, AfficherAnalyseActivity.class,true);
     }
 
     private void resizeAllFields(boolean bool) {

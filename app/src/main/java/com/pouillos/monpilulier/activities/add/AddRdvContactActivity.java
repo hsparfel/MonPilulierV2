@@ -93,6 +93,8 @@ public class AddRdvContactActivity extends NavDrawerActivity implements Serializ
         displayFabs();
         layoutContact.setEnabled(false);
         setTitle(getString(R.string.my_meeting));
+
+        layoutHeure.setEnabled(false);
     }
 
     @Override
@@ -256,6 +258,10 @@ public class AddRdvContactActivity extends NavDrawerActivity implements Serializ
                 DateFormat df = new SimpleDateFormat("dd/MM/yy");
                 try{
                     date = df.parse(dateString);
+                    if (textHeure != null && !textHeure.getText().toString().equalsIgnoreCase("")) {
+                        date = ActualiserDate(date, textHeure.getText().toString());
+                    }
+                    layoutHeure.setEnabled(true);
                 }catch(ParseException e){
                     System.out.println("ERROR");
                 }

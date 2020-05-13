@@ -24,7 +24,7 @@
         <meta-data
             android:name="VERSION"
 
-            android:value="58" />
+            android:value="60" />
 
         <meta-data
             android:name="QUERY_LOG"
@@ -67,10 +67,9 @@
         <activity android:name=".activities.afficher.AfficherAnalyseActivity" />
         <activity android:name=".activities.afficher.AfficherExamenActivity" />
         <activity android:name=".activities.afficher.AfficherProfilActivity" />
-
-        <activity android:name=".activities.photo.PickPictureActivity" />
-        <activity android:name=".activities.photo.MakePhotoActivity" />
+        <activity android:name=".activities.afficher.AfficherPhotoActivity" />
         <activity android:name=".activities.photo.CameraActivity" />
+        <activity android:name=".activities.photo.MakePhotoActivity" />
         <!-- <receiver android:name=".activities.tools.MyBroadcastReceiver" ></receiver> -->
         <!-- <receiver android:name = ".activities.tools.MyNotificationBroadcastReceiver" >
             <intent-filter>

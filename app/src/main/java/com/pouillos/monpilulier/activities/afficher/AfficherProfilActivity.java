@@ -142,7 +142,7 @@ public class AfficherProfilActivity extends NavDrawerActivity implements Seriali
 
     @OnClick(R.id.fabDelete)
     public void fabDeleteClick() {
-        deleteItem(AfficherProfilActivity.this, profilSelected, AfficherProfilActivity.class);
+        deleteItem(AfficherProfilActivity.this, profilSelected, AfficherProfilActivity.class,true);
     }
 
     @Override

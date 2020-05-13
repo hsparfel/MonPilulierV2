@@ -32,6 +32,10 @@ public class CameraActivity extends NavDrawerActivity implements SurfaceHolder.C
 
     @BindView(R.id.fabTakePhoto)
     FloatingActionButton fabTakePhoto;
+    @BindView(R.id.fabSavePhoto)
+    FloatingActionButton fabSavePhoto;
+    @BindView(R.id.fabCancelPhoto)
+    FloatingActionButton fabCancelPhoto;
     @BindView(R.id.surface_view)
     SurfaceView surface;
 
@@ -55,18 +59,28 @@ public class CameraActivity extends NavDrawerActivity implements SurfaceHolder.C
 
         // On déclare que la classe actuelle gérera les callbacks
         holder.addCallback(this);
+
+        fabCancelPhoto.hide();
+        fabSavePhoto.hide();
     }
 
     @OnClick(R.id.fabTakePhoto)
     public void fabTakePhotoClick() {
-        if (validerPhoto(this)) {
+        //figer affichage
+        //afficher boton ok ou refaire
+        camera.takePicture(null, null,
+                new PhotoHandler(getApplicationContext()));
+        fabCancelPhoto.show();
+        fabSavePhoto.show();
+        fabTakePhoto.hide();
+        /*if (validerPhoto(this)) {
             camera.takePicture(null, null,
                     new PhotoHandler(getApplicationContext()));
-
+           // camera.startPreview();
             //ouvrirActiviteSuivante(this,AccueilActivity.class,"photoId",);
         } else {
-            recreate();
-        }
+            //recreate();
+        }*/
 
         //recreate();
     }
@@ -125,7 +139,8 @@ public class CameraActivity extends NavDrawerActivity implements SurfaceHolder.C
                     }
                 })
                 .show();
-        return bool[0];
+        //return bool[0];
+        return true;
 
     }
 }

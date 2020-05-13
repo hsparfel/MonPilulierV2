@@ -39,11 +39,13 @@ import com.pouillos.monpilulier.activities.afficher.AfficherAnalyseActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherContactActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherExamenActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherGraphiqueActivity;
+import com.pouillos.monpilulier.activities.afficher.AfficherPhotoActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherProfilActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvContactActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvAnalyseActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvExamenActivity;
 import com.pouillos.monpilulier.activities.photo.CameraActivity;
+import com.pouillos.monpilulier.activities.photo.MakePhotoActivity;
 import com.pouillos.monpilulier.activities.recherche.ChercherContactActivity;
 
 import com.pouillos.monpilulier.activities.tools.RdvAnalyseNotificationBroadcastReceiver;
@@ -200,7 +202,11 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
                 startActivity(myProfilActivity);
                 return true;
             case R.id.takePicture:
-                myProfilActivity = new Intent(NavDrawerActivity.this, CameraActivity.class);
+                myProfilActivity = new Intent(NavDrawerActivity.this, MakePhotoActivity.class);
+                startActivity(myProfilActivity);
+                return true;
+            case R.id.pickPicture:
+                myProfilActivity = new Intent(NavDrawerActivity.this, AfficherPhotoActivity.class);
                 startActivity(myProfilActivity);
                 return true;
             default:
@@ -232,17 +238,23 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    @Override
     public void ouvrirActiviteSuivante(Context context, Class classe) {
         Intent intent = new Intent(context, classe);
         startActivity(intent);
         finish();
     }
 
-    @Override
     public void ouvrirActiviteSuivante(Context context, Class classe, String nomExtra, Long objetIdExtra) {
         Intent intent = new Intent(context, classe);
         intent.putExtra(nomExtra, objetIdExtra);
+        startActivity(intent);
+        finish();
+    }
+
+    public void ouvrirActiviteSuivante(Context context, Class classe, String nomExtra, String objetExtra, String nomExtra2, Long objetIdExtra2) {
+        Intent intent = new Intent(context, classe);
+        intent.putExtra(nomExtra, objetExtra);
+        intent.putExtra(nomExtra2, objetIdExtra2);
         startActivity(intent);
         finish();
     }
@@ -251,6 +263,15 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
+    }
+
+    protected Date ActualiserDate(Date date, String time){
+        Date dateActualisee = date;
+        int nbHour = Integer.parseInt(time.substring(0,2));
+        int nbMinute = Integer.parseInt(time.substring(3));
+        dateActualisee = DateUtils.ajouterHeure(dateActualisee,nbHour);
+        dateActualisee = DateUtils.ajouterMinute(dateActualisee,nbMinute);
+        return dateActualisee;
     }
 
     protected Utilisateur findActiveUser() {
@@ -281,30 +302,36 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
 
 
 
-    protected <T extends SugarRecord> void deleteItem(Context context, T item, Class classe) {
+    protected <T extends SugarRecord> void deleteItem(Context context, T item, Class classe, boolean toConfirm) {
+        if (toConfirm) {
+            new MaterialAlertDialogBuilder(context)
+                    .setTitle(R.string.dialog_delete_title)
+                    .setMessage(R.string.dialog_delete_message)
+                    .setNegativeButton(R.string.dialog_delete_negative, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Toast.makeText(context, R.string.dialog_delete_negative_toast, Toast.LENGTH_LONG).show();
 
-        new MaterialAlertDialogBuilder(context)
-                .setTitle(R.string.dialog_delete_title)
-                .setMessage(R.string.dialog_delete_message)
-                .setNegativeButton(R.string.dialog_delete_negative, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(context, R.string.dialog_delete_negative_toast, Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .setPositiveButton(R.string.dialog_delete_positive, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Toast.makeText(context, R.string.dialog_delete_positive_toast, Toast.LENGTH_LONG).show();
+                            item.delete();
+                            supprimerNotification(item, context);
 
-                    }
-                })
-                .setPositiveButton(R.string.dialog_delete_positive, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(context, R.string.dialog_delete_positive_toast, Toast.LENGTH_LONG).show();
-                        item.delete();
-                        supprimerNotification(item, context);
+                            ouvrirActiviteSuivante(context, classe);
 
-                        ouvrirActiviteSuivante(context, classe);
+                        }
+                    })
+                    .show();
+        } else {
+            item.delete();
+            supprimerNotification(item, context);
+            ouvrirActiviteSuivante(context, classe);
+        }
 
-                    }
-                })
-                .show();
 
 
     }

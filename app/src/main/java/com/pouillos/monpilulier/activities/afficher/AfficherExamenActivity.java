@@ -178,7 +178,7 @@ public class AfficherExamenActivity extends NavDrawerActivity implements Seriali
 
     @OnClick(R.id.fabDelete)
     public void fabDeleteClick() {
-        deleteItem(AfficherExamenActivity.this, examenSelected, AfficherExamenActivity.class);
+        deleteItem(AfficherExamenActivity.this, examenSelected, AfficherExamenActivity.class,true);
     }
 
     private void resizeAllFields(boolean bool) {

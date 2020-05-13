@@ -18,7 +18,6 @@ import androidx.annotation.RequiresApi;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
@@ -108,7 +107,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Icepick.restoreInstanceState(this, savedInstanceState);
-        setContentView(R.layout.activity_chercher_medecin_officiel);
+        setContentView(R.layout.activity_chercher_contact);
 // 6 - Configure all views
         this.configureToolBar();
         this.configureDrawerLayout();
@@ -159,7 +158,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
         protected void onProgressUpdate(Integer... integer) {
             progressBar.setProgress(integer[0],true);
         }
-        }
+    }
 
     private void displayFab(FloatingActionButton fab, boolean bool) {
         if (bool) {
@@ -452,8 +451,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
             progressBar.setVisibility(View.GONE);
             publishProgress(0);
             if (listContact.size() == 0) {
-                Toast toast = Toast.makeText(ChercherContactActivity.this, R.string.text_no_matching, Toast.LENGTH_LONG);
-                toast.show();
+                Toast.makeText(ChercherContactActivity.this, R.string.text_no_matching, Toast.LENGTH_LONG).show();
                 //textRechercheIntervenant.setVisibility(View.GONE);
                 layoutContact.setVisibility(View.GONE);
 

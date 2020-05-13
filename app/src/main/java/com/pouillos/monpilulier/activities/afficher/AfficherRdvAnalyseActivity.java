@@ -28,11 +28,12 @@ import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
 import com.pouillos.monpilulier.activities.add.AddRdvAnalyseActivity;
 
-import com.pouillos.monpilulier.activities.tools.RdvAnalyseNotificationBroadcastReceiver;
+import com.pouillos.monpilulier.activities.photo.MakePhotoActivity;
 
 import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.RdvAnalyse;
 import com.pouillos.monpilulier.entities.Utilisateur;
+import com.pouillos.monpilulier.enumeration.TypePhoto;
 import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
 
@@ -97,6 +98,8 @@ public class AfficherRdvAnalyseActivity extends NavDrawerActivity implements Ser
     FloatingActionButton fabCancel;
     @BindView(R.id.fabAdd)
     FloatingActionButton fabAdd;
+    @BindView(R.id.fabPhoto)
+    FloatingActionButton fabPhoto;
 
     @BindView(R.id.activity_main_toolbar)
     Toolbar toolbar;
@@ -166,18 +169,18 @@ public class AfficherRdvAnalyseActivity extends NavDrawerActivity implements Ser
 
     @OnClick(R.id.fabSave)
     public void fabSaveClick() {
-
-            rdvSelected.setDate(date);
-            if (textNote.getText() != null && !textNote.getText().toString().equalsIgnoreCase(rdvSelected.getNote())) {
-                rdvSelected.setNote(textNote.getText().toString());
-            }
-
-            rdvSelected.save();
-
-            enableFields(false);
-            displayAllFields(false);
-            displayFabs();
-            Toast.makeText(AfficherRdvAnalyseActivity.this, R.string.modification_saved, Toast.LENGTH_LONG).show();
+        deleteItem(AfficherRdvAnalyseActivity.this, rdvSelected, AfficherRdvAnalyseActivity.class,false);
+        rdvSelected.setDate(date);
+        if (textNote.getText() != null && !textNote.getText().toString().equalsIgnoreCase(rdvSelected.getNote())) {
+            rdvSelected.setNote(textNote.getText().toString());
+        }
+        rdvSelected.save();
+        //enregistrer la/les notification(s)
+        activerNotification(rdvSelected,AfficherRdvAnalyseActivity.this);
+        enableFields(false);
+        displayAllFields(false);
+        displayFabs();
+        Toast.makeText(AfficherRdvAnalyseActivity.this, R.string.modification_saved, Toast.LENGTH_LONG).show();
     }
 
     @OnClick(R.id.fabCancel)
@@ -206,17 +209,12 @@ public class AfficherRdvAnalyseActivity extends NavDrawerActivity implements Ser
 
     @OnClick(R.id.fabDelete)
     public void fabDeleteClick() {
+        deleteItem(AfficherRdvAnalyseActivity.this, rdvSelected, AfficherRdvAnalyseActivity.class,true);
+    }
 
-
-
-        deleteItem(AfficherRdvAnalyseActivity.this, rdvSelected, AfficherRdvAnalyseActivity.class);
-
-        //supprimer la/les notification(s)
-        //supprimerNotification(rdvSelected, AfficherRdvAnalyseActivity.this);
-
-       // supprimerNotification(RdvAnalyseNotificationBroadcastReceiver.class, rdvSelected.getDate(), rdvSelected.getAnalyse(), AfficherRdvAnalyseActivity.this);
-        //supprimerNotification(RdvNotificationBroadcastReceiver.class,rdvSelected.getDate(), rdvSelected.getContact(),AddRdvActivity.this);
-
+    @OnClick(R.id.fabPhoto)
+    public void fabPhotoClick() {
+        ouvrirActiviteSuivante(AfficherRdvAnalyseActivity.this, MakePhotoActivity.class,"type", TypePhoto.Analyse.toString(),"itemId",rdvSelected.getId());
     }
 
     private void resizeAllFields(boolean bool) {
@@ -250,10 +248,12 @@ public class AfficherRdvAnalyseActivity extends NavDrawerActivity implements Ser
         if (rdvSelected == null) {
             fabEdit.hide();
             fabDelete.hide();
+            fabPhoto.hide();
         } else {
             fabEdit.show();
             fabDelete.show();
             fabAdd.show();
+            fabPhoto.show();
         }
     }
 

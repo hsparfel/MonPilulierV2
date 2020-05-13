@@ -1,45 +1,62 @@
 package com.pouillos.monpilulier.activities.photo;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
+import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-
-
 import android.hardware.Camera;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.Size;
-import android.view.MotionEvent;
+import android.os.Environment;
+import android.view.SurfaceView;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.pouillos.monpilulier.R;
+import com.pouillos.monpilulier.activities.AccueilActivity;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
-import com.pouillos.monpilulier.interfaces.BasicUtils;
+import com.pouillos.monpilulier.entities.Contact;
+import com.pouillos.monpilulier.entities.Photo;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import icepick.Icepick;
+import icepick.State;
 
-public class MakePhotoActivity extends NavDrawerActivity implements Serializable, BasicUtils {
+public class MakePhotoActivity extends NavDrawerActivity {
 
-    static final int REQUEST_CODE = 777;
+    @BindView(R.id.fabTakePhoto)
+    FloatingActionButton fabTakePhoto;
+    @BindView(R.id.fabSavePhoto)
+    FloatingActionButton fabSavePhoto;
+    @BindView(R.id.fabCancelPhoto)
+    FloatingActionButton fabCancelPhoto;
+    @BindView(R.id.preview_layout)
+    FrameLayout previewFL;
 
-    public final static String DEBUG_TAG = "MakePhotoActivity";
-    private Camera camera;
-    private int cameraId = 0;
+    @State
+    Photo myPhoto;
 
-    @SuppressLint("UnsupportedChromeOsCameraSystemFeature")
+    String type;
+    Long itemId;
+
+    final Camera camera = Camera.open();
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(R.layout.activity_make_photo);
+
         // 6 - Configure all views
         this.configureToolBar();
         this.configureDrawerLayout();
@@ -47,97 +64,99 @@ public class MakePhotoActivity extends NavDrawerActivity implements Serializable
 
         ButterKnife.bind(this);
 
-        setTitle("Photo");
+        fabSavePhoto.hide();
+        fabCancelPhoto.hide();
 
-        if (!getPackageManager()
-                .hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-            Toast.makeText(this, "No camera on this device", Toast.LENGTH_LONG)
-                    .show();
-        } else {
-            cameraId = findBackFacingCamera();
-            if (cameraId < 0) {
-                Toast.makeText(this, "No back facing camera found.",
-                        Toast.LENGTH_LONG).show();
-            } else {
-                camera = Camera.open(cameraId);
-                setCamera(camera);
+        traiterIntent();
+
+        // needs explicit permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[] {Manifest.permission.CAMERA}, 1);
             }
         }
-    }
 
-    public void setCamera(Camera camera) {
-        if (camera == camera) { return; }
+       // final Camera camera = Camera.open();
+        CameraPreview cameraPreview = new CameraPreview(this, camera);
 
-      //  stopPreviewAndFreeCamera();
-
-        camera = camera;
-
-        if (camera != null) {
-    //        List<Size> localSizes = camera.getParameters().getSupportedPreviewSizes();
-     //       supportedPreviewSizes = localSizes;
-     //       requestLayout();
-
-        //    try {
-       //         camera.setPreviewDisplay(holder);
-       //     } catch (IOException e) {
-         //       e.printStackTrace();
-         //   }
-
-            // Important: Call startPreview() to start updating the preview
-            // surface. Preview must be started before you can take a picture.
-            camera.startPreview();
-        }
-    }
-
-    public void onClick(View view) {
+        // preview is required. But you can just cover it up in the layout.
+        FrameLayout previewFL = findViewById(R.id.preview_layout);
+        previewFL.addView(cameraPreview);
+        camera.setDisplayOrientation(90);
         camera.startPreview();
-    //    camera.takePicture(null, null,
-      //          new PhotoHandler(getApplicationContext()));
-    }
 
-    private int findBackFacingCamera() {
-        int cameraId = -1;
-        // Search for the back facing camera
-        int numberOfCameras = Camera.getNumberOfCameras();
-        for (int i = 0; i < numberOfCameras; i++) {
-            android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
-            Camera.getCameraInfo(i, info);
-            if (info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
-                Log.d(DEBUG_TAG, "Camera found");
-                cameraId = i;
-                break;
-            }
-        }
-        return cameraId;
+
     }
 
     @Override
-    protected void onPause() {
-        if (camera != null) {
-            camera.release();
-            camera = null;
+    public void traiterIntent() {
+        Intent intent = getIntent();
+        if (intent.hasExtra("type")) {
+            type = intent.getStringExtra("type");
         }
-        super.onPause();
+        if (intent.hasExtra("itemId")) {
+            itemId = intent.getLongExtra("itemId",0);
+        }
+    }
+
+    @OnClick(R.id.fabCancelPhoto)
+    public void fabCancelPhotoClick() {
+        myPhoto.delete();
+        recreate();
+    }
+
+    @OnClick(R.id.fabSavePhoto)
+    public void fabSavePhotoClick() {
+        Toast.makeText(MakePhotoActivity.this, "Photo Enregistrée",
+                Toast.LENGTH_LONG).show();
+        ouvrirActiviteSuivante(MakePhotoActivity.this, AccueilActivity.class);
+    }
+
+    @OnClick(R.id.fabTakePhoto)
+    public void fabTakePhotoClick() {
+        camera.takePicture(null, null, new Camera.PictureCallback() {
+            @Override
+            public void onPictureTaken(byte[] data, Camera camera) {
+                File pictureFileDir = getDir();
+                if (!pictureFileDir.exists() && !pictureFileDir.mkdirs()) {
+                    Toast.makeText(MakePhotoActivity.this, "Can't create directory to save image.",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyymmddhhmmss");
+                Date dateNew = new Date();
+                String date = dateFormat.format(dateNew);
+                String photoFile = "MonPilulierApp_Picture_" + date + ".jpg";
+                String filename = pictureFileDir.getPath() + File.separator + photoFile;
+                File pictureFile = new File(filename);
+                try {
+                    FileOutputStream fos = new FileOutputStream(pictureFile);
+                    fos.write(data);
+                    fos.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                myPhoto = new Photo();
+                myPhoto.setDate(dateNew);
+                myPhoto.setPath(filename);
+                myPhoto.setType(type);
+                myPhoto.setItemId(itemId);
+                myPhoto.setId(myPhoto.save());
+                }
+            });
+        fabSavePhoto.show();
+        fabCancelPhoto.show();
+        fabTakePhoto.hide();
+    }
+
+    private File getDir() {
+        File sdDir = Environment
+                .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        return new File(sdDir, "MonPilulierApp");
     }
 
 
 
-
-
-
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        View view = getCurrentFocus();
-        if (view != null && (ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_MOVE) && view instanceof EditText && !view.getClass().getName().startsWith("android.webkit.")) {
-            int scrcoords[] = new int[2];
-            view.getLocationOnScreen(scrcoords);
-            float x = ev.getRawX() + view.getLeft() - scrcoords[0];
-            float y = ev.getRawY() + view.getTop() - scrcoords[1];
-            if (x < view.getLeft() || x > view.getRight() || y < view.getTop() || y > view.getBottom())
-                ((InputMethodManager)this.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow((this.getWindow().getDecorView().getApplicationWindowToken()), 0);
-        }
-        return super.dispatchTouchEvent(ev);
-    }
 }
-

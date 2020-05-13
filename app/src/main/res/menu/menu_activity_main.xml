@@ -30,6 +30,10 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
 
         android:title="@string/take_a_picture"
         />
+    <item android:id="@+id/pickPicture"
+
+        android:title="afficher photo"
+        />
 <!-- <item
     android:id="@+id/menu_activity_main_params"
     android:icon="@drawable/outline_more_vert_white_18dp"

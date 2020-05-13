@@ -167,14 +167,15 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
 
     @OnClick(R.id.fabSave)
     public void fabSaveClick() {
-
+        deleteItem(AfficherRdvExamenActivity.this, rdvSelected, AfficherRdvExamenActivity.class,false);
             rdvSelected.setDate(date);
             if (textNote.getText() != null && !textNote.getText().toString().equalsIgnoreCase(rdvSelected.getNote())) {
                 rdvSelected.setNote(textNote.getText().toString());
             }
 
             rdvSelected.save();
-
+        //enregistrer la/les notification(s)
+        activerNotification(rdvSelected,AfficherRdvExamenActivity.this);
             enableFields(false);
             displayAllFields(false);
             displayFabs();
@@ -207,7 +208,7 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
 
     @OnClick(R.id.fabDelete)
     public void fabDeleteClick() {
-        deleteItem(AfficherRdvExamenActivity.this, rdvSelected, AfficherRdvExamenActivity.class);
+        deleteItem(AfficherRdvExamenActivity.this, rdvSelected, AfficherRdvExamenActivity.class,true);
 
         //supprimer la/les notification(s)
 

@@ -88,6 +88,7 @@
     <string name="text_search_contact">Chercher Contact</string>
     <string name="modification_saved">Modification Sauvegardée</string>
     <string name="my_meeting">Mon Rdv</string>
+    <string name="add_meeting">+ Rdv</string>
     <string name="not_valid">invalide</string>
     <string name="not_valid_five_digits">invalide (5 chiffres)</string>
     <string name="not_valid_ten_digits">invalide (10 chiffres)</string>
@@ -96,13 +97,14 @@
     <string name="my_exams">Mes Examens</string>
     <string name="add_meeting_analysis">+Rdv Analyse</string>
     <string name="add_meeting_exam">+Rdv Examen</string>
-    <string name="analysis">Analyse</string>
     <string name="add_exam">+ Examen</string>
     <string name="add_analyse">+ Analyse</string>
     <string name="list_all_exam">lister Examens</string>
     <string name="list_all_analysis">lister Analyses</string>
     <string name="list_my_profil">lister Profils</string>
     <string name="take_a_picture">prendre une photo</string>
+    <string name="analysis">Analyse</string>
+    <string name="exam">Examen</string>
 
 
 </resources>

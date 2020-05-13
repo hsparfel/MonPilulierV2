@@ -50,8 +50,7 @@ import icepick.Icepick;
 import icepick.State;
 
 public class AddRdvExamenActivity extends NavDrawerActivity implements Serializable, BasicUtils, AdapterView.OnItemClickListener {
-    //TODO sur les 3 classes de RDV pb si selection de l'heure avant la date metre enable(false ) puis enable true pour palier à ça
-    //TODO implementer les rappels / notif pour les 3 aussi
+
     @State
     Utilisateur activeUser;
     @State
@@ -108,12 +107,17 @@ public class AddRdvExamenActivity extends NavDrawerActivity implements Serializa
         selectedExamen.setOnItemClickListener(this);
         displayFabs();
         
-        setTitle(getString(R.string.add_meeting_analysis));
+        setTitle(getString(R.string.add_meeting_exam));
+
+        layoutDate.setEnabled(false);
+        layoutHeure.setEnabled(false);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         examenSelected = listExamenBD.get(position);
+        layoutDate.setEnabled(true);
+
     }
 
     public class AsyncTaskRunnerBD extends AsyncTask<Void, Integer, Void> {
@@ -291,6 +295,10 @@ public class AddRdvExamenActivity extends NavDrawerActivity implements Serializa
                 DateFormat df = new SimpleDateFormat("dd/MM/yy");
                 try{
                     date = df.parse(dateString);
+                    if (textHeure != null && !textHeure.getText().toString().equalsIgnoreCase("")) {
+                        date = ActualiserDate(date, textHeure.getText().toString());
+                    }
+                    layoutHeure.setEnabled(true);
                 }catch(ParseException e){
                     System.out.println("ERROR");
                 }
