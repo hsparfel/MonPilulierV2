@@ -58,6 +58,7 @@ public class CameraPreview  extends SurfaceView implements SurfaceHolder.Callbac
 
         // start preview with new settings
         try {
+            mCamera.setDisplayOrientation(90);
             mCamera.setPreviewDisplay(mHolder);
             mCamera.startPreview();
 

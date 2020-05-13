@@ -1,10 +1,14 @@
 package com.pouillos.monpilulier.activities.afficher;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -17,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.content.FileProvider;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -54,7 +59,7 @@ import icepick.Icepick;
 import icepick.State;
 
 public class AfficherPhotoActivity  extends NavDrawerActivity implements Serializable, BasicUtils, AdapterView.OnItemClickListener {
-//todo rajouter fab delete + modifier fab actuel pour partage divers
+//todo chercher pourquoi la photo es enregistre à 90° et que je suis oblige de rotate à l'affichage et la prise
     @State
     Utilisateur activeUser;
 
@@ -94,6 +99,8 @@ public class AfficherPhotoActivity  extends NavDrawerActivity implements Seriali
     TouchImageView imageView;
     @State
     Photo photoSelected;
+    @State
+    File file;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +126,49 @@ public class AfficherPhotoActivity  extends NavDrawerActivity implements Seriali
     @OnClick(R.id.fabShare)
     public void fabShareClick() {
         Toast.makeText(AfficherPhotoActivity.this, "a faire1", Toast.LENGTH_LONG).show();
+        shareIt();
+    }
+
+    private void shareIt() {
+//sharing implementation here
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+
+        try {
+            Uri fileUri = FileProvider.getUriForFile(
+                    AfficherPhotoActivity.this,
+                    "com.pouillos.monpilulier.fileprovider",
+                    file);
+            if (fileUri != null) {
+                // Grant temporary read permission to the content URI
+                sharingIntent.addFlags(
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            sharingIntent.setDataAndType(
+                    fileUri,
+                    getContentResolver().getType(fileUri));
+            // Set the result
+            AfficherPhotoActivity.this.setResult(Activity.RESULT_OK,
+                    sharingIntent);
+            } else {
+                sharingIntent.setDataAndType(null, "");
+                   AfficherPhotoActivity.this.setResult(RESULT_CANCELED,
+                        sharingIntent);
+             }
+        } catch (IllegalArgumentException e) {
+            Log.e("File Selector",
+                    "The selected file can't be shared: " + file.toString());
+        }
+
+        sharingIntent.setType("image/jpg");
+        String shareBody = activeUser.getName()+" - "+selectedItem.getText();
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject Here");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+        Uri photoURI = FileProvider.getUriForFile(AfficherPhotoActivity.this, "com.pouillos.monpilulier.fileprovider", file);
+
+        sharingIntent.putExtra(Intent.EXTRA_STREAM, photoURI);
+        startActivity(Intent.createChooser(sharingIntent, "Share via"));
+
+
+
     }
 
     @OnClick(R.id.fabDelete)
@@ -186,16 +236,16 @@ public class AfficherPhotoActivity  extends NavDrawerActivity implements Seriali
         //String imagePath = getExternalFilesDir() + "/" + filename;
         //String imagePath = Environment
              //   .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"/MonPilulierApp"+filename;
-        File file = new File(filename);
+        file = new File(filename);
         if (file.isFile()) {
             Picasso.with(AfficherPhotoActivity.this)
                     .load(new File(filename))
-                    .rotate(90)
+                    //.rotate(90)
                     .into(imageView);
             fabShare.show();
             fabDelete.show();
         } else {
-            Toast.makeText(AfficherPhotoActivity.this, "ficher image introuvable", Toast.LENGTH_LONG).show();
+            Toast.makeText(AfficherPhotoActivity.this, "fichier image introuvable", Toast.LENGTH_LONG).show();
             fabDelete.show();
         }
     }

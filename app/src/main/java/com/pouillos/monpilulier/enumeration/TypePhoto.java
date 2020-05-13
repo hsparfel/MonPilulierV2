@@ -3,7 +3,7 @@ package com.pouillos.monpilulier.enumeration;
 public enum TypePhoto {
     //Objets directement construits
     Analyse("Resultat Analyse"),
-    Examen("Examen");
+    Examen("Resultat Examen");
 
     private String name = "";
 

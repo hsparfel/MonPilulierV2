@@ -28,12 +28,14 @@ import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
 import com.pouillos.monpilulier.activities.add.AddRdvExamenActivity;
 
+import com.pouillos.monpilulier.activities.photo.MakePhotoActivity;
 import com.pouillos.monpilulier.activities.tools.RdvAnalyseNotificationBroadcastReceiver;
 import com.pouillos.monpilulier.activities.tools.RdvExamenNotificationBroadcastReceiver;
 
 import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.RdvExamen;
 import com.pouillos.monpilulier.entities.Utilisateur;
+import com.pouillos.monpilulier.enumeration.TypePhoto;
 import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
 
@@ -98,6 +100,8 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
     FloatingActionButton fabCancel;
     @BindView(R.id.fabAdd)
     FloatingActionButton fabAdd;
+    @BindView(R.id.fabPhoto)
+    FloatingActionButton fabPhoto;
 
     @BindView(R.id.activity_main_toolbar)
     Toolbar toolbar;
@@ -168,18 +172,17 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
     @OnClick(R.id.fabSave)
     public void fabSaveClick() {
         deleteItem(AfficherRdvExamenActivity.this, rdvSelected, AfficherRdvExamenActivity.class,false);
-            rdvSelected.setDate(date);
-            if (textNote.getText() != null && !textNote.getText().toString().equalsIgnoreCase(rdvSelected.getNote())) {
-                rdvSelected.setNote(textNote.getText().toString());
-            }
-
-            rdvSelected.save();
+        rdvSelected.setDate(date);
+        if (textNote.getText() != null && !textNote.getText().toString().equalsIgnoreCase(rdvSelected.getNote())) {
+            rdvSelected.setNote(textNote.getText().toString());
+        }
+        rdvSelected.save();
         //enregistrer la/les notification(s)
         activerNotification(rdvSelected,AfficherRdvExamenActivity.this);
-            enableFields(false);
-            displayAllFields(false);
-            displayFabs();
-            Toast.makeText(AfficherRdvExamenActivity.this, R.string.modification_saved, Toast.LENGTH_LONG).show();
+        enableFields(false);
+        displayAllFields(false);
+        displayFabs();
+        Toast.makeText(AfficherRdvExamenActivity.this, R.string.modification_saved, Toast.LENGTH_LONG).show();
     }
 
     @OnClick(R.id.fabCancel)
@@ -209,12 +212,11 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
     @OnClick(R.id.fabDelete)
     public void fabDeleteClick() {
         deleteItem(AfficherRdvExamenActivity.this, rdvSelected, AfficherRdvExamenActivity.class,true);
+    }
 
-        //supprimer la/les notification(s)
-
-        //supprimerNotification(rdvSelected, AfficherRdvExamenActivity.this);
-        //supprimerNotification(RdvNotificationBroadcastReceiver.class,rdvSelected.getDate(), rdvSelected.getContact(),AddRdvActivity.this);
-
+    @OnClick(R.id.fabPhoto)
+    public void fabPhotoClick() {
+        ouvrirActiviteSuivante(AfficherRdvExamenActivity.this, MakePhotoActivity.class,"type", TypePhoto.Examen.toString(),"itemId",rdvSelected.getId());
     }
 
     private void resizeAllFields(boolean bool) {
@@ -248,10 +250,12 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
         if (rdvSelected == null) {
             fabEdit.hide();
             fabDelete.hide();
+            fabPhoto.hide();
         } else {
             fabEdit.show();
             fabDelete.show();
             fabAdd.show();
+            fabPhoto.show();
         }
     }
 
@@ -365,7 +369,6 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
                 date = c1.getTime();
 
                 String dateString = dateJour+"/"+dateMois+"/"+dateAnnee;
-                //tv1.setText("date: "+dateString);
                 textDate.setText(dateString);
                 textDate.setError(null);
                 DateFormat df = new SimpleDateFormat("dd/MM/yy");

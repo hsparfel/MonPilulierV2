@@ -68,7 +68,6 @@
         <activity android:name=".activities.afficher.AfficherExamenActivity" />
         <activity android:name=".activities.afficher.AfficherProfilActivity" />
         <activity android:name=".activities.afficher.AfficherPhotoActivity" />
-        <activity android:name=".activities.photo.CameraActivity" />
         <activity android:name=".activities.photo.MakePhotoActivity" />
         <!-- <receiver android:name=".activities.tools.MyBroadcastReceiver" ></receiver> -->
         <!-- <receiver android:name = ".activities.tools.MyNotificationBroadcastReceiver" >
@@ -97,7 +96,15 @@
             </intent-filter>
         </receiver>
 
-
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.pouillos.monpilulier.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
     </application>
 
 </manifest>

@@ -367,7 +367,6 @@ public class AfficherRdvAnalyseActivity extends NavDrawerActivity implements Ser
                 date = c1.getTime();
 
                 String dateString = dateJour+"/"+dateMois+"/"+dateAnnee;
-                //tv1.setText("date: "+dateString);
                 textDate.setText(dateString);
                 textDate.setError(null);
                 DateFormat df = new SimpleDateFormat("dd/MM/yy");

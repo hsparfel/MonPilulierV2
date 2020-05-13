@@ -44,7 +44,6 @@ import com.pouillos.monpilulier.activities.afficher.AfficherProfilActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvContactActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvAnalyseActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvExamenActivity;
-import com.pouillos.monpilulier.activities.photo.CameraActivity;
 import com.pouillos.monpilulier.activities.photo.MakePhotoActivity;
 import com.pouillos.monpilulier.activities.recherche.ChercherContactActivity;
 
@@ -53,10 +52,7 @@ import com.pouillos.monpilulier.activities.tools.RdvExamenNotificationBroadcastR
 import com.pouillos.monpilulier.activities.tools.RdvContactNotificationBroadcastReceiver;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.AlarmRdv;
-import com.pouillos.monpilulier.entities.Analyse;
 import com.pouillos.monpilulier.entities.AssociationAlarmRdv;
-import com.pouillos.monpilulier.entities.Contact;
-import com.pouillos.monpilulier.entities.Examen;
 import com.pouillos.monpilulier.entities.Rdv;
 import com.pouillos.monpilulier.entities.RdvAnalyse;
 import com.pouillos.monpilulier.entities.RdvContact;

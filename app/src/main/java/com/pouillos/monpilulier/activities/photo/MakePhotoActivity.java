@@ -1,12 +1,17 @@
 package com.pouillos.monpilulier.activities.photo;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.Surface;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -33,7 +38,7 @@ import icepick.Icepick;
 import icepick.State;
 
 public class MakePhotoActivity extends NavDrawerActivity {
-
+//todo verifer car photo rognee entre preview et celle enreistre
     @BindView(R.id.fabTakePhoto)
     FloatingActionButton fabTakePhoto;
     @BindView(R.id.fabSavePhoto)
@@ -78,13 +83,22 @@ public class MakePhotoActivity extends NavDrawerActivity {
 
        // final Camera camera = Camera.open();
         CameraPreview cameraPreview = new CameraPreview(this, camera);
-
+       // cameraPreview.set
         // preview is required. But you can just cover it up in the layout.
         FrameLayout previewFL = findViewById(R.id.preview_layout);
         previewFL.addView(cameraPreview);
-        camera.setDisplayOrientation(90);
-        camera.startPreview();
+       // camera.setDisplayOrientation(90);
+        
+        //pr pb de resize
 
+        
+        
+        /////////
+        
+        
+        camera.startPreview();
+        
+//camera.getParameters();
 
     }
 
@@ -129,10 +143,22 @@ public class MakePhotoActivity extends NavDrawerActivity {
                 String photoFile = "MonPilulierApp_Picture_" + date + ".jpg";
                 String filename = pictureFileDir.getPath() + File.separator + photoFile;
                 File pictureFile = new File(filename);
+                int angleToRotate = getRoatationAngle(MakePhotoActivity.this, Camera.CameraInfo.CAMERA_FACING_FRONT);
+                // Solve image inverting problem
+                //angleToRotate = angleToRotate+180;
+                Bitmap orignalImage = BitmapFactory.decodeByteArray(data, 0, data.length);
+               Bitmap bitmapImage = rotate(orignalImage, angleToRotate);
                 try {
-                    FileOutputStream fos = new FileOutputStream(pictureFile);
+                    /*FileOutputStream fos = new FileOutputStream(pictureFile);
                     fos.write(data);
-                    fos.close();
+                    fos.close();*/
+
+                    FileOutputStream fOut = new FileOutputStream(pictureFile);
+                    //orignalImage.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+                    bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+                    fOut.flush();
+                    fOut.close();
+
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -157,6 +183,42 @@ public class MakePhotoActivity extends NavDrawerActivity {
         return new File(sdDir, "MonPilulierApp");
     }
 
+    public static int getRoatationAngle(Activity mContext, int cameraId) {
+        android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+        android.hardware.Camera.getCameraInfo(cameraId, info);
+        int rotation = mContext.getWindowManager().getDefaultDisplay().getRotation();
+        int degrees = 0;
+        switch (rotation) {
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
+        }
+        int result;
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            result = (info.orientation + degrees) % 360;
+            result = (360 - result) % 360; // compensate the mirror
+        } else { // back-facing
+            result = (info.orientation - degrees + 360) % 360;
+        }
+        return result;
+    }
 
+    public static Bitmap rotate(Bitmap bitmap, int degree) {
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
 
+        Matrix mtx = new Matrix();
+        mtx.postRotate(degree);
+
+        return Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, true);
+    }
 }

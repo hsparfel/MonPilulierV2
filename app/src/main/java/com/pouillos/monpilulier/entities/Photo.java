@@ -67,7 +67,7 @@ public class Photo extends SugarRecord implements Serializable, Comparable<Photo
                 RdvAnalyse rdvAnalyse = RdvAnalyse.findById(RdvAnalyse.class, itemId);
                 reponse += rdvAnalyse.getAnalyse().getName();
                 break;
-            case "Examen":
+            case "Resultat Examen":
                 RdvExamen rdvExamen = RdvExamen.findById(RdvExamen.class, itemId);
                 reponse += rdvExamen.getExamen().getName();
                 break;
