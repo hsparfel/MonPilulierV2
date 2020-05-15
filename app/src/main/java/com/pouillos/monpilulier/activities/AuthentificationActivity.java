@@ -110,7 +110,7 @@ public class AuthentificationActivity extends NavDrawerActivity implements Seria
 
     @OnClick(R.id.authFab)
     public void fabClick() {
-        ouvrirActiviteSuivante(AuthentificationActivity.this, AddUserActivity.class);
+        ouvrirActiviteSuivante(AuthentificationActivity.this, AddUserActivity.class,true);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class AuthentificationActivity extends NavDrawerActivity implements Seria
             activeUser.save();
         }*/
         /////////////////
-        ouvrirActiviteSuivante(AuthentificationActivity.this, AccueilActivity.class);
+        ouvrirActiviteSuivante(AuthentificationActivity.this, AccueilActivity.class,true);
     }
 
 

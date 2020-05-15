@@ -19,8 +19,6 @@
     <string name="dialog_overwrite_positive_toast">Le Remplacement a été effectuée</string>
 
 
-
-
     <string name="title_connexion">Connexion</string>
     <string name="text_change_account">Changer de compte</string>
     <string name="id_user">userId</string>
@@ -106,5 +104,8 @@
     <string name="analysis">Analyse</string>
     <string name="exam">Examen</string>
     <string name="file_provider_authority" translatable="false">androidx.core.content.FileProvider</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

@@ -285,6 +285,7 @@ public class AfficherPhotoActivity  extends NavDrawerActivity implements Seriali
 
                 //todo
                 // requete += "\"Contact\"";
+                requete += "\""+ TypePhoto.Ordonnance.toString() +"\"";
             } else if (booleanAnalyse) {
                 //requete += "\""+ "Analyses" +"\"";
                 //requete += "\""+ TypePhoto.RdvAnalyse +"\"";

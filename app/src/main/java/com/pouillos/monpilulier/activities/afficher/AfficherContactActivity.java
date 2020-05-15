@@ -486,7 +486,7 @@ public class AfficherContactActivity extends NavDrawerActivity implements Serial
 //TODO revoir tous les fabs
     @OnClick(R.id.fabRdv)
     public void fabRdvClick() {
-        ouvrirActiviteSuivante(AfficherContactActivity.this, AddRdvContactActivity.class,"contactId",contactSelected.getId());
+        ouvrirActiviteSuivante(AfficherContactActivity.this, AddRdvContactActivity.class,"contactId",contactSelected.getId(),true);
     }
 
     @OnClick(R.id.fabPrescription)

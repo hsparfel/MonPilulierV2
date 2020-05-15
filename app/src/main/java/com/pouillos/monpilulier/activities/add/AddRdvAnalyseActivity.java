@@ -185,7 +185,7 @@ public class AddRdvAnalyseActivity extends NavDrawerActivity implements Serializ
         if (checkFields()) {
             if (!isExistant()) {
                 saveToDb();
-                ouvrirActiviteSuivante(AddRdvAnalyseActivity.this, AccueilActivity.class);
+                ouvrirActiviteSuivante(AddRdvAnalyseActivity.this, AccueilActivity.class,true);
             } else {
                 Toast.makeText(AddRdvAnalyseActivity.this, "Rdv déjà existant", Toast.LENGTH_LONG).show();
             }

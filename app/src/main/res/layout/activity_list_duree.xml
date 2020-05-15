@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/activity_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <RadioGroup
+        android:id="@+id/rgDuree"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/rbNoEnding"
+            android:onClick="onRGDureeClick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pas de date de fin" />
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/rbUntilDate"
+            android:onClick="onRGDureeClick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Jusqu'à une date" />
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/rbDuringDays"
+            android:onClick="onRGDureeClick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pendant X jours" />
+
+    </RadioGroup>
+
+</LinearLayout>

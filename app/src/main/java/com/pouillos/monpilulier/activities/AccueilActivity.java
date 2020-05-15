@@ -1,41 +1,31 @@
 package com.pouillos.monpilulier.activities;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
 import com.facebook.stetho.Stetho;
-import com.orm.SchemaGenerator;
-import com.orm.SugarContext;
-import com.orm.SugarDb;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.entities.Analyse;
 import com.pouillos.monpilulier.entities.AssociationFormeDose;
 import com.pouillos.monpilulier.entities.Departement;
 import com.pouillos.monpilulier.entities.Dose;
-import com.pouillos.monpilulier.entities.Duree;
 import com.pouillos.monpilulier.entities.Examen;
 import com.pouillos.monpilulier.entities.FormePharmaceutique;
 import com.pouillos.monpilulier.entities.ImportContact;
 import com.pouillos.monpilulier.entities.Profession;
 import com.pouillos.monpilulier.entities.Region;
 import com.pouillos.monpilulier.entities.SavoirFaire;
-import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import icepick.Icepick;
-import icepick.State;
 
 public class AccueilActivity extends NavDrawerActivity implements BasicUtils {
 
@@ -467,7 +457,7 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils {
             Toast.makeText(AccueilActivity.this, R.string.text_DB_created, Toast.LENGTH_LONG).show();
 
             if (activeUser == null){
-                ouvrirActiviteSuivante(AccueilActivity.this, AuthentificationActivity.class);
+                ouvrirActiviteSuivante(AccueilActivity.this, AuthentificationActivity.class,true);
             } else {
                 setTitle(getResources().getString(R.string.welcome)+" "+activeUser.getName());
             }
@@ -1124,14 +1114,14 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils {
     }
 
     public void remplirDefaultBD() {
-        Long count = Duree.count(Duree.class);
+        /*Long count = Duree.count(Duree.class);
         if (count ==0) {
             new Duree("jour").save();
             new Duree("semaine").save();
             new Duree("mois").save();
             new Duree("an").save();
-        }
-        count = Analyse.count(Analyse.class);
+        }*/
+        Long count = Analyse.count(Analyse.class);
         if (count ==0) {
             new Analyse("sang").save();
             new Analyse("urine").save();

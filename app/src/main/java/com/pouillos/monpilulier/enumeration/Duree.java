@@ -1,15 +1,15 @@
 package com.pouillos.monpilulier.enumeration;
 
-public enum TypePhoto {
+public enum Duree {
     //Objets directement construits
-    Analyse("Resultat Analyse"),
-    Examen("Resultat Examen"),
-    Ordonnance("Ordonnance");
+    NoEnding("Pas de date de fin"),
+    UntilDate("Jusqu'à une date"),
+    DuringDays("Pendant X jours");
 
     private String name = "";
 
     //Constructeur
-    TypePhoto(String name){
+    Duree(String name){
         this.name = name;
     }
 

@@ -166,7 +166,7 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
 
     @OnClick(R.id.fabAdd)
     public void fabAddClick() {
-        ouvrirActiviteSuivante(AfficherRdvExamenActivity.this, AddRdvExamenActivity.class);
+        ouvrirActiviteSuivante(AfficherRdvExamenActivity.this, AddRdvExamenActivity.class,true);
     }
 
     @OnClick(R.id.fabSave)
@@ -216,7 +216,7 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
 
     @OnClick(R.id.fabPhoto)
     public void fabPhotoClick() {
-        ouvrirActiviteSuivante(AfficherRdvExamenActivity.this, MakePhotoActivity.class,"type", TypePhoto.Examen.toString(),"itemId",rdvSelected.getId());
+        ouvrirActiviteSuivante(AfficherRdvExamenActivity.this, MakePhotoActivity.class,"type", TypePhoto.Examen.toString(),"itemId",rdvSelected.getId(),true);
     }
 
     private void resizeAllFields(boolean bool) {

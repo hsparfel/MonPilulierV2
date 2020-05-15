@@ -28,11 +28,13 @@ import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
 
 import com.pouillos.monpilulier.activities.add.AddRdvContactActivity;
+import com.pouillos.monpilulier.activities.photo.MakePhotoActivity;
 import com.pouillos.monpilulier.activities.tools.RdvContactNotificationBroadcastReceiver;
 
 import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.RdvContact;
 import com.pouillos.monpilulier.entities.Utilisateur;
+import com.pouillos.monpilulier.enumeration.TypePhoto;
 import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
 
@@ -97,6 +99,8 @@ public class AfficherRdvContactActivity extends NavDrawerActivity implements Ser
     FloatingActionButton fabSave;
     @BindView(R.id.fabCancel)
     FloatingActionButton fabCancel;
+    @BindView(R.id.fabPhoto)
+    FloatingActionButton fabPhoto;
 
     @BindView(R.id.activity_main_toolbar)
     Toolbar toolbar;
@@ -177,6 +181,11 @@ public class AfficherRdvContactActivity extends NavDrawerActivity implements Ser
         protected void onProgressUpdate(Integer... integer) {
             progressBar.setProgress(integer[0],true);
         }
+    }
+
+    @OnClick(R.id.fabPhoto)
+    public void fabPhotoClick() {
+        ouvrirActiviteSuivante(AfficherRdvContactActivity.this, MakePhotoActivity.class,"type", TypePhoto.Ordonnance.toString(),"itemId",rdvContactSelected.getId(),true);
     }
 
     @OnClick(R.id.fabSave)
@@ -289,9 +298,11 @@ public class AfficherRdvContactActivity extends NavDrawerActivity implements Ser
         if (rdvContactSelected == null) {
             fabEdit.hide();
             fabDelete.hide();
+            fabPhoto.hide();
         } else {
             fabEdit.show();
             fabDelete.show();
+            fabPhoto.show();
         }
     }
 

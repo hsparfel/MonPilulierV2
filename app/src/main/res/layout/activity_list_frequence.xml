@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/activity_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <RadioGroup
+        android:id="@+id/rgFrequence"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/rbEveryDay"
+            android:onClick="onRGFrequenceClick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chaque jour, X fois par jour" />
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/rbEveryDayByHour"
+            android:onClick="onRGFrequenceClick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chaque jour, toutes les X heures" />
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/rbEveryXDays"
+            android:onClick="onRGFrequenceClick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tous les X jours" />
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/rbChosenDays"
+            android:onClick="onRGFrequenceClick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Certains jours de la semaine" />
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/rbCycle"
+            android:onClick="onRGFrequenceClick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="X jours de prise, Y jours sans prise" />
+    </RadioGroup>
+
+</LinearLayout>

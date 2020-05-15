@@ -244,7 +244,7 @@ public class AddProfilActivity extends NavDrawerActivity implements Serializable
                             profilToCreate.save();
                             Toast.makeText(AddProfilActivity.this, R.string.modification_saved, Toast.LENGTH_LONG).show();
 
-                            ouvrirActiviteSuivante(AddProfilActivity.this, AccueilActivity.class);
+                            ouvrirActiviteSuivante(AddProfilActivity.this, AccueilActivity.class,true);
                         }
                     })
                     .show();
@@ -252,7 +252,7 @@ public class AddProfilActivity extends NavDrawerActivity implements Serializable
             profilToCreate.setId(null);
             profilToCreate.save();
             Toast.makeText(AddProfilActivity.this, R.string.modification_saved, Toast.LENGTH_LONG).show();
-            ouvrirActiviteSuivante(AddProfilActivity.this, AccueilActivity.class);
+            ouvrirActiviteSuivante(AddProfilActivity.this, AccueilActivity.class,true);
         }
         //profilToCreate.save();
         //ouvrirActiviteSuivante(AddProfilActivity.this, AccueilActivity.class);

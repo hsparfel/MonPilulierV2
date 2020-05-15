@@ -242,9 +242,9 @@ public class AddUserActivity extends NavDrawerActivity implements Serializable, 
                 userToCreateId = userToCreate.save();
             }
             if (userToModify != null) {
-                ouvrirActiviteSuivante(AddUserActivity.this, AccueilActivity.class);
+                ouvrirActiviteSuivante(AddUserActivity.this, AccueilActivity.class,true);
             } else {
-                ouvrirActiviteSuivante(AddUserActivity.this, AddProfilActivity.class, getResources().getString(R.string.id_user), userToCreateId);
+                ouvrirActiviteSuivante(AddUserActivity.this, AddProfilActivity.class, getResources().getString(R.string.id_user), userToCreateId,true);
             }
 
         } else {

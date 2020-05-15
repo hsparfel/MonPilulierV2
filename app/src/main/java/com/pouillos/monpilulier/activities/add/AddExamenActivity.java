@@ -132,7 +132,7 @@ public class AddExamenActivity extends NavDrawerActivity implements Serializable
         if (checkFields()) {
             if (!isExistant()) {
                 saveToDb();
-                ouvrirActiviteSuivante(AddExamenActivity.this, AccueilActivity.class);
+                ouvrirActiviteSuivante(AddExamenActivity.this, AccueilActivity.class,true);
             } else {
                 Toast.makeText(AddExamenActivity.this, "Examen déjà existant", Toast.LENGTH_LONG).show();
             }

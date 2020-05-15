@@ -36,7 +36,6 @@ import com.pouillos.monpilulier.entities.AssociationFormeDose;
 import com.pouillos.monpilulier.entities.Contact;
 import com.pouillos.monpilulier.entities.Departement;
 import com.pouillos.monpilulier.entities.Dose;
-import com.pouillos.monpilulier.entities.Duree;
 import com.pouillos.monpilulier.entities.Examen;
 import com.pouillos.monpilulier.entities.FormePharmaceutique;
 import com.pouillos.monpilulier.entities.ContactLight;
@@ -281,9 +280,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
            // SugarRecord.executeQuery("DELETE FROM RDV_ANALYSE");
             //SugarRecord.executeQuery("DELETE FROM RDV_EXAMEN");
             //SugarRecord.executeQuery("DELETE FROM RDV_CONTACT");
-            SugarRecord.executeQuery("DELETE FROM PHOTO");
-
-
+            //SugarRecord.executeQuery("DELETE FROM PHOTO");
+            SugarRecord.executeQuery("DELETE FROM ORDONNANCE");
+            SugarRecord.executeQuery("DELETE FROM PRESCRIPTION");
 
 
 
@@ -1305,15 +1304,15 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     public void remplirDefaultBD() {
 
 
-        Long count = Duree.count(Duree.class);
+      /*  Long count = Duree.count(Duree.class);
         if (count ==0) {
             new Duree("jour").save();
             new Duree("semaine").save();
             new Duree("mois").save();
             new Duree("an").save();
-        }
+        }*/
 
-        count = Analyse.count(Analyse.class);
+        Long count = Analyse.count(Analyse.class);
         if (count ==0) {
             new Analyse("sang").save();
             new Analyse("urine").save();

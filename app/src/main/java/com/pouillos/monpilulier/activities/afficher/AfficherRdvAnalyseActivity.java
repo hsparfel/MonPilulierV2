@@ -164,7 +164,7 @@ public class AfficherRdvAnalyseActivity extends NavDrawerActivity implements Ser
 
     @OnClick(R.id.fabAdd)
     public void fabAddClick() {
-        ouvrirActiviteSuivante(AfficherRdvAnalyseActivity.this, AddRdvAnalyseActivity.class);
+        ouvrirActiviteSuivante(AfficherRdvAnalyseActivity.this, AddRdvAnalyseActivity.class,true);
     }
 
     @OnClick(R.id.fabSave)
@@ -214,7 +214,7 @@ public class AfficherRdvAnalyseActivity extends NavDrawerActivity implements Ser
 
     @OnClick(R.id.fabPhoto)
     public void fabPhotoClick() {
-        ouvrirActiviteSuivante(AfficherRdvAnalyseActivity.this, MakePhotoActivity.class,"type", TypePhoto.Analyse.toString(),"itemId",rdvSelected.getId());
+        ouvrirActiviteSuivante(AfficherRdvAnalyseActivity.this, MakePhotoActivity.class,"type", TypePhoto.Analyse.toString(),"itemId",rdvSelected.getId(),true);
     }
 
     private void resizeAllFields(boolean bool) {

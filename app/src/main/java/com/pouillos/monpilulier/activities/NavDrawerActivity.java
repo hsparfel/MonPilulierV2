@@ -33,6 +33,7 @@ import com.orm.SugarRecord;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.add.AddAnalyseActivity;
 import com.pouillos.monpilulier.activities.add.AddExamenActivity;
+import com.pouillos.monpilulier.activities.add.AddOrdonnanceActivity;
 import com.pouillos.monpilulier.activities.add.AddProfilActivity;
 import com.pouillos.monpilulier.activities.add.AddUserActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherAnalyseActivity;
@@ -121,38 +122,45 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
 
         switch (id) {
             case R.id.activity_main_drawer_home:
-                ouvrirActiviteSuivante(NavDrawerActivity.this, AccueilActivity.class);
+                ouvrirActiviteSuivante(NavDrawerActivity.this, AccueilActivity.class,true);
                 break;
             case R.id.activity_main_drawer_profile:
-                ouvrirActiviteSuivante(NavDrawerActivity.this, AddProfilActivity.class);
+                ouvrirActiviteSuivante(NavDrawerActivity.this, AddProfilActivity.class,true);
                 break;
             case R.id.activity_main_drawer_evolution:
-                ouvrirActiviteSuivante(NavDrawerActivity.this, AfficherGraphiqueActivity.class);
+                ouvrirActiviteSuivante(NavDrawerActivity.this, AfficherGraphiqueActivity.class,true);
                 break;
             case R.id.activity_main_drawer_account:
-                ouvrirActiviteSuivante(NavDrawerActivity.this, AddUserActivity.class, getResources().getString(R.string.id_user), activeUser.getId());
+               // ouvrirActiviteSuivante(NavDrawerActivity.this, AddUserActivity.class, getResources().getString(R.string.id_user), activeUser.getId());
+                ouvrirActiviteSuivante(NavDrawerActivity.this, AddUserActivity.class,true);
+
                 break;
             case R.id.activity_main_drawer_change_account:
-                ouvrirActiviteSuivante(NavDrawerActivity.this, AuthentificationActivity.class, getResources().getString(R.string.id_user), activeUser.getId());
+               // ouvrirActiviteSuivante(NavDrawerActivity.this, AuthentificationActivity.class, getResources().getString(R.string.id_user), activeUser.getId());
+                ouvrirActiviteSuivante(NavDrawerActivity.this, AuthentificationActivity.class,true);
+                break;
+            case R.id.activity_main_drawer_ordonnances:
+                ouvrirActiviteSuivante(NavDrawerActivity.this, AddOrdonnanceActivity.class,true);
+
                 break;
             case R.id.activity_main_drawer_treatments:
                 Toast.makeText(this, "à implementer 2", Toast.LENGTH_LONG).show();
                 break;
 
             case R.id.activity_main_drawer_contact_appointments:
-                ouvrirActiviteSuivante(NavDrawerActivity.this, AfficherRdvContactActivity.class);
+                ouvrirActiviteSuivante(NavDrawerActivity.this, AfficherRdvContactActivity.class,true);
                 break;
             case R.id.activity_main_drawer_analysis_appointments:
-                ouvrirActiviteSuivante(NavDrawerActivity.this, AfficherRdvAnalyseActivity.class);
+                ouvrirActiviteSuivante(NavDrawerActivity.this, AfficherRdvAnalyseActivity.class,true);
                 break;
             case R.id.activity_main_drawer_exam_appointments:
-                ouvrirActiviteSuivante(NavDrawerActivity.this, AfficherRdvExamenActivity.class);
+                ouvrirActiviteSuivante(NavDrawerActivity.this, AfficherRdvExamenActivity.class,true);
                 break;
             case R.id.activity_main_drawer_contacts:
-                ouvrirActiviteSuivante(NavDrawerActivity.this, AfficherContactActivity.class);
+                ouvrirActiviteSuivante(NavDrawerActivity.this, AfficherContactActivity.class,true);
                 break;
             case R.id.activity_main_drawer_oldAccueil:
-                ouvrirActiviteSuivante(NavDrawerActivity.this, MainActivity.class);
+                ouvrirActiviteSuivante(NavDrawerActivity.this, MainActivity.class,true);
                 break;
             default:
                 break;
@@ -234,25 +242,32 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    public void ouvrirActiviteSuivante(Context context, Class classe) {
+    public void ouvrirActiviteSuivante(Context context, Class classe, boolean bool) {
         Intent intent = new Intent(context, classe);
         startActivity(intent);
-        finish();
+        if (bool) {
+            finish();
+        }
     }
 
-    public void ouvrirActiviteSuivante(Context context, Class classe, String nomExtra, Long objetIdExtra) {
+
+    public void ouvrirActiviteSuivante(Context context, Class classe, String nomExtra, Long objetIdExtra, boolean bool) {
         Intent intent = new Intent(context, classe);
         intent.putExtra(nomExtra, objetIdExtra);
         startActivity(intent);
-        finish();
+        if (bool) {
+            finish();
+        }
     }
 
-    public void ouvrirActiviteSuivante(Context context, Class classe, String nomExtra, String objetExtra, String nomExtra2, Long objetIdExtra2) {
+    public void ouvrirActiviteSuivante(Context context, Class classe, String nomExtra, String objetExtra, String nomExtra2, Long objetIdExtra2, boolean bool) {
         Intent intent = new Intent(context, classe);
         intent.putExtra(nomExtra, objetExtra);
         intent.putExtra(nomExtra2, objetIdExtra2);
         startActivity(intent);
-        finish();
+        if (bool) {
+            finish();
+        }
     }
 
     @Override
@@ -317,7 +332,7 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
                             item.delete();
                             supprimerNotification(item, context);
 
-                            ouvrirActiviteSuivante(context, classe);
+                            ouvrirActiviteSuivante(context, classe,true);
 
                         }
                     })
@@ -325,7 +340,7 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
         } else {
             item.delete();
             supprimerNotification(item, context);
-            ouvrirActiviteSuivante(context, classe);
+            ouvrirActiviteSuivante(context, classe,true);
         }
 
 

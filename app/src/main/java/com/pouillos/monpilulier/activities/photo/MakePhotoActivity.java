@@ -30,6 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -90,9 +91,20 @@ public class MakePhotoActivity extends NavDrawerActivity {
        // camera.setDisplayOrientation(90);
         
         //pr pb de resize
+     /*   Camera.Parameters params = camera.getParameters();
+        List<Camera.Size> supportedSizes = params.getSupportedPictureSizes();
+        List<Camera.Size> supportedPreviews = params.getSupportedPreviewSizes();
 
-        
-        
+        // layout in the activity that the cameraView will placed in
+        int layoutWidth = previewFL.getWidth();
+        int layoutHeight = previewFL.getHeight();
+
+        Camera.Size sizePicture = supportedSizes.get(supportedSizes.size()-1);
+
+        params.setPictureSize(sizePicture.width, sizePicture.height);
+
+        params.setPictureSize(2304, 4096);
+        params.setPreviewSize(720,1280);*/
         /////////
         
         
@@ -123,7 +135,7 @@ public class MakePhotoActivity extends NavDrawerActivity {
     public void fabSavePhotoClick() {
         Toast.makeText(MakePhotoActivity.this, "Photo Enregistrée",
                 Toast.LENGTH_LONG).show();
-        ouvrirActiviteSuivante(MakePhotoActivity.this, AccueilActivity.class);
+        ouvrirActiviteSuivante(MakePhotoActivity.this, AccueilActivity.class,true);
     }
 
     @OnClick(R.id.fabTakePhoto)

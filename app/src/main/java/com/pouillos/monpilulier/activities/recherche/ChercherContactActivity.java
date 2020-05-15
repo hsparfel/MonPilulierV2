@@ -152,6 +152,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
         @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
         protected void onPostExecute(Void result) {
             progressBar.setVisibility(View.GONE);
+
             }
 
         @RequiresApi(api = Build.VERSION_CODES.N)
@@ -586,7 +587,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
             }
             Toast.makeText(ChercherContactActivity.this, activeUser.getName()+" & "+ contactSelected.getNom()+" ont été associés", Toast.LENGTH_LONG).show();
 
-            ouvrirActiviteSuivante(ChercherContactActivity.this,AfficherContactActivity.class,"contactId", contactSelected.getId());
+            ouvrirActiviteSuivante(ChercherContactActivity.this,AfficherContactActivity.class,"contactId", contactSelected.getId(),true);
         }
 
 

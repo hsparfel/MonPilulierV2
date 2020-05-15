@@ -143,7 +143,7 @@ public class AddAnalyseActivity extends NavDrawerActivity implements Serializabl
         if (checkFields()) {
             if (!isExistant()) {
                 saveToDb();
-                ouvrirActiviteSuivante(AddAnalyseActivity.this, AccueilActivity.class);
+                ouvrirActiviteSuivante(AddAnalyseActivity.this, AccueilActivity.class,true);
             } else {
                 Toast.makeText(AddAnalyseActivity.this, "Analyse déjà existant", Toast.LENGTH_LONG).show();
             }

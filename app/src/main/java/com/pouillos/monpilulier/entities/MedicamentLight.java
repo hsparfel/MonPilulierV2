@@ -1,18 +1,17 @@
 package com.pouillos.monpilulier.entities;
 
 import com.orm.SugarRecord;
+import com.orm.dsl.Table;
 
 import java.io.Serializable;
 
-
-public class Medicament extends SugarRecord implements Serializable, Comparable<Medicament> {
+@Table(name = "Medicament")
+public class MedicamentLight extends SugarRecord implements Serializable, Comparable<MedicamentLight> {
 
 private Long codeCIS;
 private String denomination;
-private FormePharmaceutique formePharmaceutique;
-private String titulaire;
 
-    public Medicament() {
+    public MedicamentLight() {
     }
 
     public Long getCodeCIS() {
@@ -31,24 +30,8 @@ private String titulaire;
         this.denomination = denomination;
     }
 
-    public FormePharmaceutique getFormePharmaceutique() {
-        return formePharmaceutique;
-    }
-
-    public void setFormePharmaceutique(FormePharmaceutique formePharmaceutique) {
-        this.formePharmaceutique = formePharmaceutique;
-    }
-
-    public String getTitulaire() {
-        return titulaire;
-    }
-
-    public void setTitulaire(String titulaire) {
-        this.titulaire = titulaire;
-    }
-
     @Override
-    public int compareTo(Medicament o) {
+    public int compareTo(MedicamentLight o) {
         return this.denomination.compareTo(o.denomination);
     }
 

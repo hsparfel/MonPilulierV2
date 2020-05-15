@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main_drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start"
+    tools:context=".activities.add.AddPrescriptionActivity"
+    >
+
+    <!-- 1 | MainActivity RootView -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <!-- Toolbar -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/activity_main_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:theme="@style/ToolBarStyle"/>
+
+        <ProgressBar
+            android:id="@+id/my_progressBar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="false"
+            android:visibility="gone"
+            android:max="100"
+            android:progress="0"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutMedicament"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <AutoCompleteTextView
+                android:id="@+id/textMedicament"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:dropDownWidth="wrap_content"
+                android:ems="10"
+                android:gravity="center_horizontal"
+                android:hint="Saisir le Nom *"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutFrequence"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:hint="Frequence"
+            android:paddingLeft="40dip"
+            android:paddingRight="40dip"
+            app:startIconDrawable="@drawable/outline_update_black_24dp"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textFrequence"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:focusable="false"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+        <fragment
+            android:id="@+id/fragment_list_frequence"
+            android:name="com.pouillos.monpilulier.fragments.FragmentListFrequence"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+         />
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupJour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            >
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipLundi"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="L"
+                />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipMardi"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="M"
+                />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipMercredi"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="M"
+                />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipJeudi"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="J"
+                />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipVendredi"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="V"
+                />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipSamedi"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="S"
+                />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipDimanche"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="D"
+                />
+
+        </com.google.android.material.chip.ChipGroup>
+
+        <NumberPicker
+            android:id="@+id/numberPickerFrequence"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutDuree"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:hint="Duree"
+            android:paddingLeft="40dip"
+            android:paddingRight="40dip"
+            app:startIconDrawable="@drawable/outline_timelapse_black_24dp"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textDuree"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:focusable="false"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+        <fragment
+            android:id="@+id/fragment_list_duree"
+            android:name="com.pouillos.monpilulier.fragments.FragmentListDuree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutDate"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:hint="@string/text_date"
+            app:errorEnabled="true"
+            android:paddingLeft="80dip"
+            android:paddingRight="80dip"
+            app:startIconDrawable="@drawable/outline_event_black_24dp"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:editable="false"
+                android:onClick="showDatePickerDialog"
+                android:focusableInTouchMode="false"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+        <NumberPicker
+            android:id="@+id/numberPickerDuree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabSave"
+            style="@style/Widget.MaterialComponents.FloatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:layout_margin="20dip"
+            app:srcCompat="@drawable/outline_save_black_24dp"
+            />
+
+
+
+
+    </LinearLayout>
+
+    <!-- 2 | NavigationView -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/activity_main_nav_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/activity_accueil_nav_header"
+        app:menu="@menu/activity_accueil_menu_drawer" />
+
+</androidx.drawerlayout.widget.DrawerLayout>

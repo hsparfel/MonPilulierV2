@@ -135,7 +135,7 @@ public class AfficherAnalyseActivity extends NavDrawerActivity implements Serial
 
     @OnClick(R.id.fabAdd)
     public void fabAddClick() {
-        ouvrirActiviteSuivante(AfficherAnalyseActivity.this, AddAnalyseActivity.class);
+        ouvrirActiviteSuivante(AfficherAnalyseActivity.this, AddAnalyseActivity.class,true);
     }
 
     @OnClick(R.id.fabSave)
@@ -146,7 +146,7 @@ public class AfficherAnalyseActivity extends NavDrawerActivity implements Serial
         analyseSelected.save();
        // AfficherAnalyseActivity.AsyncTaskRunner runner = new AfficherAnalyseActivity.AsyncTaskRunner();
       //  runner.execute();
-        ouvrirActiviteSuivante(AfficherAnalyseActivity.this,AfficherAnalyseActivity.class);
+        ouvrirActiviteSuivante(AfficherAnalyseActivity.this,AfficherAnalyseActivity.class,true);
         enableFields(false);
         displayAllFields(false);
         displayFabs();

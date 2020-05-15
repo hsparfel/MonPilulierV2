@@ -30,6 +30,10 @@
         <menu>
             <group android:checkableBehavior="single">
                 <item
+                    android:id="@+id/activity_main_drawer_ordonnances"
+                    android:icon="@drawable/prescription"
+                    android:title="Mes Ordonnances" />
+                <item
                     android:id="@+id/activity_main_drawer_treatments"
                     android:icon="@drawable/medicine_medical_pharmacy_health_prescription_pill_drug_icon_140910"
                     android:title="@string/text_my_treatments" />

@@ -135,7 +135,7 @@ public class AfficherExamenActivity extends NavDrawerActivity implements Seriali
 
     @OnClick(R.id.fabAdd)
     public void fabAddClick() {
-        ouvrirActiviteSuivante(AfficherExamenActivity.this, AddExamenActivity.class);
+        ouvrirActiviteSuivante(AfficherExamenActivity.this, AddExamenActivity.class,true);
     }
 
     @OnClick(R.id.fabSave)
@@ -146,7 +146,7 @@ public class AfficherExamenActivity extends NavDrawerActivity implements Seriali
         examenSelected.save();
         //AfficherExamenActivity.AsyncTaskRunner runner = new AfficherExamenActivity.AsyncTaskRunner();
         //runner.execute();
-        ouvrirActiviteSuivante(AfficherExamenActivity.this,AfficherExamenActivity.class);
+        ouvrirActiviteSuivante(AfficherExamenActivity.this,AfficherExamenActivity.class,true);
         enableFields(false);
         displayAllFields(false);
         displayFabs();
