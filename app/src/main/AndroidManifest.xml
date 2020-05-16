@@ -24,7 +24,7 @@
         <meta-data
             android:name="VERSION"
 
-            android:value="61" />
+            android:value="63" />
 
         <meta-data
             android:name="QUERY_LOG"

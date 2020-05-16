@@ -72,10 +72,12 @@ dependencies {
     //zoom imag view
     //implementation 'com.github.MikeOrtiz:TouchImageView:3.0.1'
     //implementation 'com.github.hannesa2:TouchImageView:2.3.0'
-    implementation 'com.github.MikeOrtiz:TouchImageView:1.4.1'
+    implementation 'com.github.MikeOrtiz:TouchImageView:3.0.1'
     //implementation 'com.github.MikeOrtiz:TouchImageView:Tag'
     //implementation 'com.github.MikeOrtiz:TouchImageView:1.4.1' // Support Lib
     // or
     //implementation 'com.github.MikeOrtiz:TouchImageView:3.0.1' // Android X
     //implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+
+    implementation 'com.github.ShawnLin013:NumberPicker:2.4.9'
 }

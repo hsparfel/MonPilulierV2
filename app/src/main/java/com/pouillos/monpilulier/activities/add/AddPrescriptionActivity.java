@@ -2,6 +2,7 @@ package com.pouillos.monpilulier.activities.add;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,15 +13,18 @@ import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -60,6 +64,8 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
     Medicament medicamentSelected;
     @State
     Ordonnance ordonnance;
+    @State
+    Prescription prescription;
 
     //pr eviter erreur compile ene tattendan de creer le champ
     //EditText textDate;
@@ -86,7 +92,6 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
     @BindView(R.id.textDate)
     TextInputEditText textDate;
 
-    boolean whenNeeded = false;
 
     public Frequence frequence;
     public Duree duree;
@@ -98,24 +103,23 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
 
     @BindView(R.id.fabSave)
     FloatingActionButton fabSave;
+    @BindView(R.id.fabAddRappel)
+    FloatingActionButton fabAddRappel;
 
     @BindView(R.id.my_progressBar)
     ProgressBar progressBar;
 
+    @BindView(R.id.rbWhenNeeded)
+    RadioButton rbWhenNeeded;
     @BindView(R.id.rbEveryDay)
     RadioButton rbEveryDay;
-
     @BindView(R.id.rbEveryDayByHour)
     RadioButton rbEveryDayByHour;
-
     @BindView(R.id.rbEveryXDays)
     RadioButton rbEveryXDays;
-
     @BindView(R.id.rbChosenDays)
     RadioButton rbChosenDays;
 
-    @BindView(R.id.rbCycle)
-    RadioButton rbCycle;
 
     @BindView(R.id.rbNoEnding)
     RadioButton rbNoEnding;
@@ -140,12 +144,30 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
     Chip chipSamedi;
     @BindView(R.id.chipDimanche)
     Chip chipDimanche;
+    @BindView(R.id.chipGroupJour)
+    ChipGroup chipGroupJour;
 
     @BindView(R.id.numberPickerFrequence)
-    NumberPicker numberPickerFrequence;
+    com.shawnlin.numberpicker.NumberPicker numberPickerFrequence;
 
     @BindView(R.id.numberPickerDuree)
-    NumberPicker numberPickerDuree;
+    com.shawnlin.numberpicker.NumberPicker numberPickerDuree;
+
+    @BindView(R.id.preFreq)
+    TextView preFreq;
+    @BindView(R.id.preDuree)
+    TextView preDuree;
+    @BindView(R.id.postFreq)
+    TextView postFreq;
+    @BindView(R.id.postDuree)
+    TextView postDuree;
+
+    @BindView(R.id.layoutFrequenceOption)
+    LinearLayout layoutFrequenceOption;
+    @BindView(R.id.layoutDureeOption)
+    LinearLayout layoutDureeOption;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,16 +182,18 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
         ButterKnife.bind(this);
         fragmentListFrequence = (Fragment) this.getSupportFragmentManager().findFragmentById(R.id.fragment_list_frequence);
         fragmentListDuree = (Fragment) this.getSupportFragmentManager().findFragmentById(R.id.fragment_list_duree);
+        fragmentListFrequence.getView().setBackgroundColor(Color.LTGRAY);
+        fragmentListDuree.getView().setBackgroundColor(Color.LTGRAY);
 
         progressBar.setVisibility(View.VISIBLE);
 
         AddPrescriptionActivity.AsyncTaskRunnerBDMedicament runnerBDMedicament = new AddPrescriptionActivity.AsyncTaskRunnerBDMedicament();
         runnerBDMedicament.execute();
-
+        hideAll(true);
         updateDisplay();
 
         setTitle("+ Prescription");
-
+        listMedicament.setEnabled(false);
      //   hideAll(true);
         traiterIntent();
         //selectedContact.setOnItemClickListener(this);
@@ -177,7 +201,13 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                // hideAll(true);
-                MedicamentLight medicamentLight = listMedicamentLightBD.get(position);
+                String selection = (String) adapterView.getItemAtPosition(position);
+                List<MedicamentLight> listMedicamentLight = MedicamentLight.find(MedicamentLight.class,"denomination = ?", selection);
+                //MedicamentLight medicamentLight = listMedicamentLightBD.get(position);
+                MedicamentLight medicamentLight = null;
+                if (listMedicamentLight.size() > 0) {
+                    medicamentLight = listMedicamentLight.get(0);
+                }
                 medicamentSelected = Medicament.findById(Medicament.class,medicamentLight.getId());
                 //selectedMedicament.setText(null);
 
@@ -185,12 +215,13 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
             }
         });
 
-        numberPickerFrequence.setMinValue(1);
-        numberPickerFrequence.setMaxValue(365);
+        //numberPickerFrequence.setMinValue(1);
+      //  numberPickerFrequence.setMaxValue(365);
         numberPickerFrequence.setOnValueChangedListener(onValueChangeListenerFrequence);
-        numberPickerDuree.setMinValue(1);
-        numberPickerDuree.setMaxValue(15);
+    //    numberPickerDuree.setMinValue(1);
+     //   numberPickerDuree.setMaxValue(15);
         numberPickerDuree.setOnValueChangedListener(onValueChangeListenerDuree);
+
     }
 
     public void traiterIntent() {
@@ -201,54 +232,75 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
         }
     }
 
-    NumberPicker.OnValueChangeListener onValueChangeListenerFrequence =
-            new 	NumberPicker.OnValueChangeListener(){
+    com.shawnlin.numberpicker.NumberPicker.OnValueChangeListener onValueChangeListenerFrequence =
+            new 	com.shawnlin.numberpicker.NumberPicker.OnValueChangeListener(){
                 @Override
-                public void onValueChange(NumberPicker numberPicker, int i, int i1) {
+                public void onValueChange(com.shawnlin.numberpicker.NumberPicker numberPicker, int i, int i1) {
                     Toast.makeText(AddPrescriptionActivity.this,"selected number freq"+numberPicker.getValue(), Toast.LENGTH_SHORT).show();
                 }
             };
 
-    NumberPicker.OnValueChangeListener onValueChangeListenerDuree =
-            new 	NumberPicker.OnValueChangeListener(){
+    com.shawnlin.numberpicker.NumberPicker.OnValueChangeListener onValueChangeListenerDuree =
+            new 	com.shawnlin.numberpicker.NumberPicker.OnValueChangeListener(){
                 @Override
-                public void onValueChange(NumberPicker numberPicker, int i, int i1) {
+                public void onValueChange(com.shawnlin.numberpicker.NumberPicker numberPicker, int i, int i1) {
                     Toast.makeText(AddPrescriptionActivity.this,"selected number duree"+numberPicker.getValue(), Toast.LENGTH_SHORT).show();
                 }
             };
 
 
     public void onRGFrequenceClick(View view){
-        if (rbEveryDay.isChecked()) {
+
+        if (rbWhenNeeded.isChecked()) {
+            frequence = Frequence.WhenNeeded;
+            preFreq.setText("");
+            postFreq.setText("");
+        } else if (rbEveryDay.isChecked()) {
             frequence = Frequence.EveryDay;
+            preFreq.setText("");
+            postFreq.setText("");
         } else if (rbEveryDayByHour.isChecked()) {
             frequence = Frequence.EveryDayByHour;
+            preFreq.setText("toutes les");
+            postFreq.setText("heures");
         } else if (rbEveryXDays.isChecked()) {
             frequence = Frequence.EveryXDays;
+            preFreq.setText("tous les");
+            postFreq.setText("jours");
         } else if (rbChosenDays.isChecked()) {
             frequence = Frequence.ChosenDays;
-        } else if (rbCycle.isChecked()) {
-            frequence = Frequence.Cycle;
+            preFreq.setText("");
+            preFreq.setText("");
         }
         textFrequence.setText(frequence.toString());
         fragmentListFrequence.getView().setVisibility(View.GONE);
+        updateDisplay();
     }
 
     public void onRGDureeClick(View view){
         if (rbNoEnding.isChecked()) {
             duree = Duree.NoEnding;
+            preDuree.setText("");
+            postDuree.setText("");
         } else if (rbUntilDate.isChecked()) {
             duree = Duree.UntilDate;
+            preDuree.setText("");
+            postDuree.setText("");
         } else if (rbDuringDays.isChecked()) {
             duree = Duree.DuringDays;
+            preDuree.setText("pendant");
+            postDuree.setText("jours");
         }
         textDuree.setText(duree.toString());
         fragmentListDuree.getView().setVisibility(View.GONE);
+        updateDisplay();
     }
 
     @OnClick(R.id.fabSave)
     public void fabSaveClick() {
         saveToDb();
+        //revenirActivitePrecedente("prescription","id",prescription.getId());
+        finish();
     }
 
     @OnClick(R.id.textFrequence)
@@ -263,17 +315,45 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
 
 
     private void hideAll(boolean bool){
-        fabSave.setVisibility(View.GONE);
-        fragmentListFrequence.getView().setVisibility(View.GONE);
+
         layoutFrequence.setVisibility(View.GONE);
-        fragmentListDuree.getView().setVisibility(View.GONE);
+        fragmentListFrequence.getView().setVisibility(View.GONE);
+        chipGroupJour.setVisibility(View.GONE);
+        layoutFrequenceOption.setVisibility(View.GONE);
         layoutDuree.setVisibility(View.GONE);
+        fragmentListDuree.getView().setVisibility(View.GONE);
+        layoutDate.setVisibility(View.GONE);
+        layoutDureeOption.setVisibility(View.GONE);
+        fabAddRappel.hide();
+        fabSave.hide();
     }
 
     public void updateDisplay() {
-        if (selectedMedicament != null) {
+        if (medicamentSelected != null) {
             layoutFrequence.setVisibility(View.VISIBLE);
+        } else {
+            layoutFrequence.setVisibility(View.GONE);
         }
+        if (frequence != null && frequence != Frequence.WhenNeeded && medicamentSelected != null) {
+            layoutDuree.setVisibility(View.VISIBLE);
+        } else {
+            layoutDuree.setVisibility(View.GONE);
+        }
+        if (frequence == Frequence.WhenNeeded) {
+            fabSave.show();
+        }
+
+        if (frequence == Frequence.EveryDayByHour || frequence == Frequence.EveryXDays) {
+            layoutFrequenceOption.setVisibility(View.VISIBLE);
+        } else {
+            layoutFrequenceOption.setVisibility(View.GONE);
+        }
+        if (frequence == Frequence.ChosenDays) {
+            chipGroupJour.setVisibility(View.VISIBLE);
+        } else {
+            chipGroupJour.setVisibility(View.GONE);
+        }
+
     }
 
     public class AsyncTaskRunnerBDMedicament extends AsyncTask<Void, Integer, Void> {
@@ -293,7 +373,8 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
         @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
         protected void onPostExecute(Void result) {
             progressBar.setVisibility(View.GONE);
-                buildDropdownMenu(listMedicamentLightBD, AddPrescriptionActivity.this,selectedMedicament);
+            buildDropdownMenu(listMedicamentLightBD, AddPrescriptionActivity.this,selectedMedicament);
+            listMedicament.setEnabled(true);
         }
 
         @RequiresApi(api = Build.VERSION_CODES.N)
@@ -304,12 +385,19 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
 
     @Override
     public void saveToDb() {
-        Prescription prescription = new Prescription();
+        prescription = new Prescription();
         prescription.setMedicament(medicamentSelected);
-        prescription.setWhenNeeded(whenNeeded);
-        // A FAIRE prescription.setDuree();
-        // A FAIRE prescription.setFrequence();
+        prescription.setDuree(duree);
+        prescription.setFrequence(frequence);
         prescription.setOrdonnance(ordonnance);
+        if (frequence != null && frequence != Frequence.WhenNeeded) {
+            prescription.setFrequenceOption(numberPickerFrequence.getValue());
+        }
+        if (duree != null) {
+            prescription.setDureeOption(numberPickerDuree.getValue());
+        }
+
+
         prescription.setId(prescription.save());
     }
 
@@ -335,7 +423,7 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
         newFragment.setOnDateClickListener(new DatePickerFragmentDateJour.onDateClickListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-                datePicker.setMaxDate(new Date().getTime());
+                datePicker.setMinDate(new Date().getTime());
                // TextView tv1= (TextView) findViewById(R.id.textDate);
                 String dateJour = ""+datePicker.getDayOfMonth();
                 String dateMois = ""+(datePicker.getMonth()+1);

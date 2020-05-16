@@ -450,7 +450,7 @@ public class ChercherContactActivity extends NavDrawerActivity implements Adapte
 
         protected void onPostExecute(Void result) {
             progressBar.setVisibility(View.GONE);
-            publishProgress(0);
+            //publishProgress(0);
             if (listContact.size() == 0) {
                 Toast.makeText(ChercherContactActivity.this, R.string.text_no_matching, Toast.LENGTH_LONG).show();
                 //textRechercheIntervenant.setVisibility(View.GONE);

@@ -54,6 +54,7 @@
                 android:ems="10"
                 android:gravity="center_horizontal"
                 android:hint="Saisir le Nom *"
+                android:completionThreshold="2"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -78,12 +79,7 @@
                 android:focusable="false"
                 />
         </com.google.android.material.textfield.TextInputLayout>
-        <fragment
-            android:id="@+id/fragment_list_frequence"
-            android:name="com.pouillos.monpilulier.fragments.FragmentListFrequence"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-         />
+
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chipGroupJour"
             android:layout_width="wrap_content"
@@ -148,12 +144,58 @@
 
         </com.google.android.material.chip.ChipGroup>
 
-        <NumberPicker
-            android:id="@+id/numberPickerFrequence"
+        <LinearLayout
+            android:id="@+id/layoutFrequenceOption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/preFreq"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="preFreq" />
+
+            <com.shawnlin.numberpicker.NumberPicker
+                android:id="@+id/numberPickerFrequence"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                app:np_width="180dp"
+                app:np_height="64dp"
+                app:np_dividerColor="@color/colorPrimary"
+                app:np_selectedTextColor="@color/colorPrimary"
+                app:np_textColor="@color/colorPrimary"
+                app:np_orientation="horizontal"
+                app:np_value="1"
+                app:np_hideWheelUntilFocused="true"
+                app:np_wheelItemCount="1"
+                app:np_min="1"
+                app:np_max="365"/>
+
+           <!--
+           app:np_hideWheelUntilFocused="true"
+
+           <NumberPicker
+                android:id="@+id/numberPickerFrequence"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:orientation="horizontal"/> -->
+
+            <TextView
+                android:id="@+id/postFreq"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="postFreq" />
+        </LinearLayout>
+
+
+
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/layoutDuree"
@@ -174,12 +216,7 @@
                 android:focusable="false"
                 />
         </com.google.android.material.textfield.TextInputLayout>
-        <fragment
-            android:id="@+id/fragment_list_duree"
-            android:name="com.pouillos.monpilulier.fragments.FragmentListDuree"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/layoutDate"
@@ -202,12 +239,63 @@
                 android:focusableInTouchMode="false"
                 />
         </com.google.android.material.textfield.TextInputLayout>
-        <NumberPicker
-            android:id="@+id/numberPickerDuree"
+
+        <LinearLayout
+            android:id="@+id/layoutDureeOption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/preDuree"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="preDuree" />
+
+            <com.shawnlin.numberpicker.NumberPicker
+                android:id="@+id/numberPickerDuree"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                app:np_width="180dp"
+                app:np_height="64dp"
+                app:np_dividerColor="@color/colorPrimary"
+                app:np_selectedTextColor="@color/colorPrimary"
+                app:np_textColor="@color/colorPrimary"
+                app:np_orientation="horizontal"
+                app:np_value="1"
+                app:np_min="1"
+                app:np_max="15"
+                app:np_hideWheelUntilFocused="true"
+                app:np_wheelItemCount="1"/>
+       <!--     <NumberPicker
+                android:id="@+id/numberPickerDuree"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal" /> -->
+
+            <TextView
+                android:id="@+id/postDuree"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="postDuree" />
+        </LinearLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAddRappel"
+            style="@style/Widget.MaterialComponents.FloatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:layout_margin="20dip"
+            android:text="+ Rappel"
+
             />
+
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabSave"
@@ -223,6 +311,20 @@
 
 
     </LinearLayout>
+
+    <fragment
+        android:id="@+id/fragment_list_frequence"
+        android:name="com.pouillos.monpilulier.fragments.FragmentListFrequence"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="40dip" />
+
+    <fragment
+        android:id="@+id/fragment_list_duree"
+        android:name="com.pouillos.monpilulier.fragments.FragmentListDuree"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="40dip" />
 
     <!-- 2 | NavigationView -->
     <com.google.android.material.navigation.NavigationView

@@ -123,6 +123,11 @@
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/listPrescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabAddPrescription"
             style="@style/Widget.MaterialComponents.FloatingActionButton"
@@ -131,6 +136,15 @@
             android:layout_gravity="bottom|center"
             android:layout_margin="10dip"
             app:srcCompat="@drawable/eyedropper_plus" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabSave"
+            style="@style/Widget.MaterialComponents.FloatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:layout_margin="30dip"
+            app:srcCompat="@drawable/outline_save_black_24dp" />
 
     </LinearLayout>
 

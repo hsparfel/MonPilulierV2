@@ -13,6 +13,7 @@ public class Ordonnance extends SugarRecord implements Serializable, Comparable<
     Contact contact;
     RdvContact rdvContact;
     Date date;
+    boolean validated = false;
 
     public Ordonnance() {
     }
@@ -47,6 +48,14 @@ public class Ordonnance extends SugarRecord implements Serializable, Comparable<
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public boolean isValidated() {
+        return validated;
+    }
+
+    public void setValidated(boolean validated) {
+        this.validated = validated;
     }
 
     @Override

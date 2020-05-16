@@ -2,6 +2,7 @@ package com.pouillos.monpilulier.activities.add;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -33,12 +36,14 @@ import com.pouillos.monpilulier.entities.Analyse;
 import com.pouillos.monpilulier.entities.Contact;
 import com.pouillos.monpilulier.entities.Ordonnance;
 import com.pouillos.monpilulier.entities.Photo;
+import com.pouillos.monpilulier.entities.Prescription;
 import com.pouillos.monpilulier.entities.RdvAnalyse;
 import com.pouillos.monpilulier.entities.RdvContact;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.enumeration.TypePhoto;
 import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
+import com.pouillos.monpilulier.recycler.adapter.RecyclerAdapter;
 
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -94,12 +99,34 @@ public class AddOrdonnanceActivity extends NavDrawerActivity implements Serializ
     boolean withoutRdv;
     private List<Contact> listContactBD;
     private List<RdvContact> listRdvContactBD;
+    private List<Prescription> listPrescriptionBD;
 
     @BindView(R.id.fabAddPrescription)
     FloatingActionButton fabAddPrescription;
+    @BindView(R.id.fabSave)
+    FloatingActionButton fabSave;
+
+    @BindView(R.id.listPrescription)
+    RecyclerView listPrescription;
+
+    private RecyclerAdapter adapter;
 
     @BindView(R.id.my_progressBar)
     ProgressBar progressBar;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //SharedPreferences preferences=getSharedPreferences("prescription",MODE_PRIVATE);
+        //int prescriptionId = preferences.getInt("registration_id", 0);
+        if (ordonnance != null) {
+            AddOrdonnanceActivity.AsyncTaskRunnerBDPrescription runnerBDPrescription = new AddOrdonnanceActivity.AsyncTaskRunnerBDPrescription();
+            runnerBDPrescription.execute();
+        }
+
+
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -248,7 +275,12 @@ public class AddOrdonnanceActivity extends NavDrawerActivity implements Serializ
         @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
         protected void onPostExecute(Void result) {
             progressBar.setVisibility(View.GONE);
-                buildDropdownMenu(listContactBD, AddOrdonnanceActivity.this,selectedContact);
+            buildDropdownMenu(listContactBD, AddOrdonnanceActivity.this,selectedContact);
+            if (ordonnance != null) {
+                AddOrdonnanceActivity.AsyncTaskRunnerBDPrescription runnerBDPrescription = new AddOrdonnanceActivity.AsyncTaskRunnerBDPrescription();
+                runnerBDPrescription.execute();
+            }
+
         }
 
         @RequiresApi(api = Build.VERSION_CODES.N)
@@ -257,6 +289,43 @@ public class AddOrdonnanceActivity extends NavDrawerActivity implements Serializ
         }
     }
 
+    public class AsyncTaskRunnerBDPrescription extends AsyncTask<Void, Integer, Void> {
+
+        protected Void doInBackground(Void...voids) {
+            publishProgress(0);
+            //activeUser = findActiveUser();
+            publishProgress(50);
+            listPrescriptionBD = Prescription.find(Prescription.class,"ordonnance = ?", ordonnance.getId().toString());
+            //listContactBD = Contact.findWithQuery(Contact.class, requete);
+            Collections.sort(listPrescriptionBD);
+            publishProgress(100);
+            return null;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+        protected void onPostExecute(Void result) {
+            progressBar.setVisibility(View.GONE);
+            //buildDropdownMenu(listContactBD, AddOrdonnanceActivity.this,selectedContact);
+            //todo alimenter la listview
+            //this.githubUsers = new ArrayList<>();
+            // 3.2 - Create adapter passing the list of users
+            configureRecyclerView();
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        protected void onProgressUpdate(Integer... integer) {
+            progressBar.setProgress(integer[0],true);
+        }
+    }
+
+    public void configureRecyclerView() {
+        adapter = new RecyclerAdapter(listPrescriptionBD);
+        // 3.3 - Attach the adapter to the recyclerview to populate items
+        listPrescription.setAdapter(adapter);
+        // 3.4 - Set layout manager to position the items
+        //this.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        listPrescription.setLayoutManager(new LinearLayoutManager(this));
+    }
     public class AsyncTaskRunnerBDRdvContact extends AsyncTask<Void, Integer, Void> {
 
         protected Void doInBackground(Void...voids) {
@@ -303,9 +372,22 @@ public class AddOrdonnanceActivity extends NavDrawerActivity implements Serializ
         //passer l'id ordo ne extra
     }
 
+    @OnClick(R.id.fabSave)
+    public void fabSaveClick() {
+        //Toast.makeText(AddOrdonnanceActivity.this, "a faire", Toast.LENGTH_LONG).show();
+        //todo enregistrer ordo en base
+        ordonnance.setValidated(true);
+        ordonnance.save();
+        ouvrirActiviteSuivante(AddOrdonnanceActivity.this,AccueilActivity.class,false);
+        //passer l'id ordo ne extra
+    }
+
     @Override
     public void saveToDb() {
-        ordonnance = new Ordonnance();
+        if (ordonnance == null) {
+            ordonnance = new Ordonnance();
+        }
+        //ordonnance = new Ordonnance();
         ordonnance.setContact(contactSelected);
         ordonnance.setDate(date);
         ordonnance.setRdvContact(rdvContactSelected);

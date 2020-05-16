@@ -12,7 +12,8 @@ public class Prescription extends SugarRecord implements Serializable, Comparabl
     Medicament medicament;
     Duree duree;
     Frequence frequence;
-    boolean whenNeeded;
+    int dureeOption;
+    int frequenceOption;
 
     public Prescription() {
     }
@@ -49,12 +50,20 @@ public class Prescription extends SugarRecord implements Serializable, Comparabl
         this.frequence = frequence;
     }
 
-    public boolean isWhenNeeded() {
-        return whenNeeded;
+    public int getDureeOption() {
+        return dureeOption;
     }
 
-    public void setWhenNeeded(boolean whenNeeded) {
-        this.whenNeeded = whenNeeded;
+    public void setDureeOption(int dureeOption) {
+        this.dureeOption = dureeOption;
+    }
+
+    public int getFrequenceOption() {
+        return frequenceOption;
+    }
+
+    public void setFrequenceOption(int frequenceOption) {
+        this.frequenceOption = frequenceOption;
     }
 
     @Override

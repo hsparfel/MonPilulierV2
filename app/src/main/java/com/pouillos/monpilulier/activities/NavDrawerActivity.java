@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -248,6 +249,13 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
         if (bool) {
             finish();
         }
+    }
+    public void revenirActivitePrecedente(String sharedName, String dataName, Long itemId) {
+        SharedPreferences preferences=getSharedPreferences(sharedName,MODE_PRIVATE);
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putLong(dataName,itemId);
+        editor.commit();
+        finish();
     }
 
 

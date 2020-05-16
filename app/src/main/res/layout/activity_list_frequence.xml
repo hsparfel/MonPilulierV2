@@ -15,6 +15,14 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/rbWhenNeeded"
+            android:onClick="onRGFrequenceClick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="En cas de besoin" />
+
         <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/rbEveryDay"
             android:onClick="onRGFrequenceClick"
@@ -43,12 +51,6 @@
             android:layout_height="wrap_content"
             android:text="Certains jours de la semaine" />
 
-        <com.google.android.material.radiobutton.MaterialRadioButton
-            android:id="@+id/rbCycle"
-            android:onClick="onRGFrequenceClick"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="X jours de prise, Y jours sans prise" />
     </RadioGroup>
 
 </LinearLayout>
