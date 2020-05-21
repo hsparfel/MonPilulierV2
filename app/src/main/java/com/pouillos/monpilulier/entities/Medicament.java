@@ -9,6 +9,7 @@ public class Medicament extends SugarRecord implements Serializable, Comparable<
 
 private Long codeCIS;
 private String denomination;
+private String denominationShort;
 private FormePharmaceutique formePharmaceutique;
 private String titulaire;
 
@@ -29,6 +30,12 @@ private String titulaire;
 
     public void setDenomination(String denomination) {
         this.denomination = denomination;
+        if (denomination.length()>20) { //nb il s'agit de l'affichage pour les notifs 20 c'est ok peut-etre que je peux monter jusqu'à 30 à voir
+            this.denominationShort = denomination.substring(0,21)+"...";
+        } else {
+            this.denominationShort = denomination;
+        }
+
     }
 
     public FormePharmaceutique getFormePharmaceutique() {
@@ -45,6 +52,14 @@ private String titulaire;
 
     public void setTitulaire(String titulaire) {
         this.titulaire = titulaire;
+    }
+
+    public String getDenominationShort() {
+        return denominationShort;
+    }
+
+    public void setDenominationShort(String denominationShort) {
+        this.denominationShort = denominationShort;
     }
 
     @Override

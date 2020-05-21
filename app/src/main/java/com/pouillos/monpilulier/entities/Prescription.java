@@ -5,6 +5,7 @@ import com.pouillos.monpilulier.enumeration.Duree;
 import com.pouillos.monpilulier.enumeration.Frequence;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class Prescription extends SugarRecord implements Serializable, Comparable<Prescription>  {
 
@@ -14,6 +15,7 @@ public class Prescription extends SugarRecord implements Serializable, Comparabl
     Frequence frequence;
     int dureeOption;
     int frequenceOption;
+    Date dateFin;
 
     public Prescription() {
     }
@@ -64,6 +66,14 @@ public class Prescription extends SugarRecord implements Serializable, Comparabl
 
     public void setFrequenceOption(int frequenceOption) {
         this.frequenceOption = frequenceOption;
+    }
+
+    public Date getDateFin() {
+        return dateFin;
+    }
+
+    public void setDateFin(Date dateFin) {
+        this.dateFin = dateFin;
     }
 
     @Override

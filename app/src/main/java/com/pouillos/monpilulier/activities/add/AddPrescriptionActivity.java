@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -22,23 +23,31 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
+import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.Medicament;
 import com.pouillos.monpilulier.entities.MedicamentLight;
 import com.pouillos.monpilulier.entities.Ordonnance;
 import com.pouillos.monpilulier.entities.Prescription;
+import com.pouillos.monpilulier.entities.Rappel;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.enumeration.Duree;
 import com.pouillos.monpilulier.enumeration.Frequence;
 import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
+import com.pouillos.monpilulier.recycler.adapter.RecyclerAdapterPrescription;
+import com.pouillos.monpilulier.recycler.adapter.RecyclerAdapterRappel;
+import com.pouillos.monpilulier.utils.ItemClickSupport;
 
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -52,10 +61,11 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTextChanged;
 import icepick.Icepick;
 import icepick.State;
 
-public class AddPrescriptionActivity extends NavDrawerActivity implements Serializable, BasicUtils {
+public class AddPrescriptionActivity extends NavDrawerActivity implements Serializable, BasicUtils, RecyclerAdapterRappel.Listener {
     @State
     Utilisateur activeUser;
     @State
@@ -86,6 +96,7 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
     TextInputEditText textDuree;
 
     List<MedicamentLight> listMedicamentLightBD;
+    private List<Rappel> listRappelBD;
 
     @BindView(R.id.layoutDate)
     TextInputLayout layoutDate;
@@ -104,7 +115,7 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
     @BindView(R.id.fabSave)
     FloatingActionButton fabSave;
     @BindView(R.id.fabAddRappel)
-    FloatingActionButton fabAddRappel;
+    ExtendedFloatingActionButton fabAddRappel;
 
     @BindView(R.id.my_progressBar)
     ProgressBar progressBar;
@@ -167,7 +178,24 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
     @BindView(R.id.layoutDureeOption)
     LinearLayout layoutDureeOption;
 
+    @BindView(R.id.listRappel)
+    RecyclerView listRappel;
 
+    private RecyclerAdapterRappel adapter;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //SharedPreferences preferences=getSharedPreferences("prescription",MODE_PRIVATE);
+        //int prescriptionId = preferences.getInt("registration_id", 0);
+        if (prescription != null) {
+            AddPrescriptionActivity.AsyncTaskRunnerBDRappel runnerBDRappel = new AddPrescriptionActivity.AsyncTaskRunnerBDRappel();
+            runnerBDRappel.execute();
+        }
+
+
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,6 +217,7 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
 
         AddPrescriptionActivity.AsyncTaskRunnerBDMedicament runnerBDMedicament = new AddPrescriptionActivity.AsyncTaskRunnerBDMedicament();
         runnerBDMedicament.execute();
+        fabAddRappel.hide();
         hideAll(true);
         updateDisplay();
 
@@ -200,28 +229,19 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
         selectedMedicament.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-               // hideAll(true);
                 String selection = (String) adapterView.getItemAtPosition(position);
                 List<MedicamentLight> listMedicamentLight = MedicamentLight.find(MedicamentLight.class,"denomination = ?", selection);
-                //MedicamentLight medicamentLight = listMedicamentLightBD.get(position);
                 MedicamentLight medicamentLight = null;
                 if (listMedicamentLight.size() > 0) {
                     medicamentLight = listMedicamentLight.get(0);
                 }
                 medicamentSelected = Medicament.findById(Medicament.class,medicamentLight.getId());
-                //selectedMedicament.setText(null);
-
+                hideAll(true);
                 updateDisplay();
             }
         });
-
-        //numberPickerFrequence.setMinValue(1);
-      //  numberPickerFrequence.setMaxValue(365);
         numberPickerFrequence.setOnValueChangedListener(onValueChangeListenerFrequence);
-    //    numberPickerDuree.setMinValue(1);
-     //   numberPickerDuree.setMaxValue(15);
         numberPickerDuree.setOnValueChangedListener(onValueChangeListenerDuree);
-
     }
 
     public void traiterIntent() {
@@ -245,6 +265,7 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
                 @Override
                 public void onValueChange(com.shawnlin.numberpicker.NumberPicker numberPicker, int i, int i1) {
                     Toast.makeText(AddPrescriptionActivity.this,"selected number duree"+numberPicker.getValue(), Toast.LENGTH_SHORT).show();
+                    date = DateUtils.ajouterJour(ordonnance.getDate(),numberPicker.getValue());
                 }
             };
 
@@ -274,10 +295,12 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
         }
         textFrequence.setText(frequence.toString());
         fragmentListFrequence.getView().setVisibility(View.GONE);
-        updateDisplay();
+        //updateDisplay();
     }
 
     public void onRGDureeClick(View view){
+        date = null;
+        textDate.setText("");
         if (rbNoEnding.isChecked()) {
             duree = Duree.NoEnding;
             preDuree.setText("");
@@ -293,7 +316,7 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
         }
         textDuree.setText(duree.toString());
         fragmentListDuree.getView().setVisibility(View.GONE);
-        updateDisplay();
+        //updateDisplay();
     }
 
     @OnClick(R.id.fabSave)
@@ -303,9 +326,22 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
         finish();
     }
 
+    @OnClick(R.id.fabAddRappel)
+    public void fabAddRappelClick() {
+        saveToDb();
+        //revenirActivitePrecedente("prescription","id",prescription.getId());
+        ouvrirActiviteSuivante(AddPrescriptionActivity.this,AddRappelActivity.class,"prescriptionId", prescription.getId(),false);
+    }
+
     @OnClick(R.id.textFrequence)
     public void textFrequenceClick() {
         fragmentListFrequence.getView().setVisibility(View.VISIBLE);
+    }
+
+    @OnTextChanged(R.id.textFrequence)
+    public void textFrequenceChanged() {
+        hideAll(true);
+        updateDisplay();
     }
 
     @OnClick(R.id.textDuree)
@@ -313,9 +349,16 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
         fragmentListDuree.getView().setVisibility(View.VISIBLE);
     }
 
+    @OnTextChanged(R.id.textDuree)
+    public void textDureeChanged() {
+        hideAll(true);
+        updateDisplay();
+    }
+
 
     private void hideAll(boolean bool){
-
+        //fabAddRappel.hide();
+        fabSave.hide();
         layoutFrequence.setVisibility(View.GONE);
         fragmentListFrequence.getView().setVisibility(View.GONE);
         chipGroupJour.setVisibility(View.GONE);
@@ -324,25 +367,68 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
         fragmentListDuree.getView().setVisibility(View.GONE);
         layoutDate.setVisibility(View.GONE);
         layoutDureeOption.setVisibility(View.GONE);
-        fabAddRappel.hide();
-        fabSave.hide();
+
+
     }
 
     public void updateDisplay() {
+       // hideAll(true);
         if (medicamentSelected != null) {
             layoutFrequence.setVisibility(View.VISIBLE);
-        } else {
-            layoutFrequence.setVisibility(View.GONE);
-        }
-        if (frequence != null && frequence != Frequence.WhenNeeded && medicamentSelected != null) {
-            layoutDuree.setVisibility(View.VISIBLE);
-        } else {
-            layoutDuree.setVisibility(View.GONE);
-        }
-        if (frequence == Frequence.WhenNeeded) {
-            fabSave.show();
-        }
+            if (frequence != null) {
+                if (frequence == Frequence.WhenNeeded) {
+                    fabSave.show();
+                } else {
+                    layoutDuree.setVisibility(View.VISIBLE);
+                }
+                if (duree != null) {
+                    if (duree == Duree.NoEnding) {
+                        date = DateUtils.ajouterAnnee(ordonnance.getDate(),3);
+                    } else if (duree == Duree.UntilDate) {
+                        layoutDate.setVisibility(View.VISIBLE);
+                    } else if (duree == Duree.DuringDays) {
+                        layoutDureeOption.setVisibility(View.VISIBLE);
 
+                        date = DateUtils.ajouterJour(ordonnance.getDate(),1);
+                    }
+                    if (date != null) {
+                        fabAddRappel.show();
+                        if (adapter != null && adapter.getItemCount() > 0) {
+                            fabSave.show();
+                        }
+                    } else {
+                        fabAddRappel.hide();
+                    }
+
+                }
+
+            }
+        }
+       /* if (frequence != null && frequence != Frequence.WhenNeeded && frequence != Frequence.EveryDayByHour) {
+            if (duree != null && duree == Duree.NoEnding) {
+                fabAddRappel.show();
+                layoutDate.setVisibility(View.GONE);
+                layoutDureeOption.setVisibility(View.GONE);
+            } else {
+                fabAddRappel.hide();
+                if (duree == Duree.UntilDate) {
+                    layoutDate.setVisibility(View.VISIBLE);
+                    layoutDureeOption.setVisibility(View.GONE);
+                    if (textDate.getText() != null && !textDate.getText().toString().equalsIgnoreCase("")) {
+                        fabAddRappel.show();
+                    }
+                } else if (duree == Duree.DuringDays) {
+                    layoutDate.setVisibility(View.GONE);
+                    layoutDureeOption.setVisibility(View.VISIBLE);
+                    fabAddRappel.show();
+                } else {
+                    layoutDate.setVisibility(View.GONE);
+                    layoutDureeOption.setVisibility(View.GONE);
+                }
+            }
+        } else {
+            fabAddRappel.hide();
+        }
         if (frequence == Frequence.EveryDayByHour || frequence == Frequence.EveryXDays) {
             layoutFrequenceOption.setVisibility(View.VISIBLE);
         } else {
@@ -353,6 +439,15 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
         } else {
             chipGroupJour.setVisibility(View.GONE);
         }
+        if (adapter != null && adapter.getItemCount() > 0) {
+            fabSave.show();
+        }*/
+    }
+
+    @Override
+    public void onClickDeleteButton(int position) {
+        Rappel rappel = adapter.getRappel(position);
+        Toast.makeText(AddPrescriptionActivity.this, "You are trying to delete user : "+ rappel.getHeure()+" - "+rappel.getQuantiteDose()+ " " + rappel.getDose().getName(), Toast.LENGTH_SHORT).show();
 
     }
 
@@ -375,6 +470,10 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
             progressBar.setVisibility(View.GONE);
             buildDropdownMenu(listMedicamentLightBD, AddPrescriptionActivity.this,selectedMedicament);
             listMedicament.setEnabled(true);
+            if (prescription != null) {
+                AddPrescriptionActivity.AsyncTaskRunnerBDRappel runnerBDRappel = new AddPrescriptionActivity.AsyncTaskRunnerBDRappel();
+                runnerBDRappel.execute();
+            }
         }
 
         @RequiresApi(api = Build.VERSION_CODES.N)
@@ -385,7 +484,10 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
 
     @Override
     public void saveToDb() {
-        prescription = new Prescription();
+        if (prescription == null) {
+            prescription = new Prescription();
+        }
+
         prescription.setMedicament(medicamentSelected);
         prescription.setDuree(duree);
         prescription.setFrequence(frequence);
@@ -396,6 +498,7 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
         if (duree != null) {
             prescription.setDureeOption(numberPickerDuree.getValue());
         }
+        prescription.setDateFin(date);
 
 
         prescription.setId(prescription.save());
@@ -452,6 +555,8 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
                 DateFormat df = new SimpleDateFormat("dd/MM/yy");
                 try{
                     date = df.parse(dateString);
+                    hideAll(true);
+                    updateDisplay();
                 }catch(ParseException e){
                     System.out.println("ERROR");
                 }
@@ -459,4 +564,54 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
         });
     }
 
+    public class AsyncTaskRunnerBDRappel extends AsyncTask<Void, Integer, Void> {
+
+        protected Void doInBackground(Void...voids) {
+            publishProgress(0);
+            //activeUser = findActiveUser();
+            publishProgress(50);
+            listRappelBD = Rappel.find(Rappel.class,"prescription = ?", prescription.getId().toString());
+            //listContactBD = Contact.findWithQuery(Contact.class, requete);
+            Collections.sort(listRappelBD);
+            publishProgress(100);
+            return null;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+        protected void onPostExecute(Void result) {
+            progressBar.setVisibility(View.GONE);
+            //buildDropdownMenu(listContactBD, AddOrdonnanceActivity.this,selectedContact);
+            //todo alimenter la listview
+            //this.githubUsers = new ArrayList<>();
+            // 3.2 - Create adapter passing the list of users
+            configureRecyclerView();
+            configureOnClickRecyclerView();
+            hideAll(true);
+            updateDisplay();
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        protected void onProgressUpdate(Integer... integer) {
+            progressBar.setProgress(integer[0],true);
+        }
+    }
+
+    private void configureOnClickRecyclerView(){
+        ItemClickSupport.addTo(listRappel, R.layout.recycler_list_item)
+                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        Log.e("TAG", "Position : "+position);
+                    }
+                });
+    }
+
+    public void configureRecyclerView() {
+        adapter = new RecyclerAdapterRappel(listRappelBD, this);
+        // 3.3 - Attach the adapter to the recyclerview to populate items
+        listRappel.setAdapter(adapter);
+        // 3.4 - Set layout manager to position the items
+        //this.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        listRappel.setLayoutManager(new LinearLayoutManager(this));
+    }
 }

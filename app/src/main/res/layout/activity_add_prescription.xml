@@ -161,15 +161,15 @@
 
             <com.shawnlin.numberpicker.NumberPicker
                 android:id="@+id/numberPickerFrequence"
-                android:layout_width="180dp"
+                android:layout_width="64dp"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                app:np_width="180dp"
-                app:np_height="64dp"
+                app:np_width="64dp"
+                app:np_height="180dp"
                 app:np_dividerColor="@color/colorPrimary"
                 app:np_selectedTextColor="@color/colorPrimary"
                 app:np_textColor="@color/colorPrimary"
-                app:np_orientation="horizontal"
+                app:np_orientation="vertical"
                 app:np_value="1"
                 app:np_hideWheelUntilFocused="true"
                 app:np_wheelItemCount="1"
@@ -285,7 +285,12 @@
                 android:text="postDuree" />
         </LinearLayout>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/listRappel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fabAddRappel"
             style="@style/Widget.MaterialComponents.FloatingActionButton"
             android:layout_width="wrap_content"

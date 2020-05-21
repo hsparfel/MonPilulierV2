@@ -2,6 +2,7 @@ package com.pouillos.monpilulier.activities.afficher;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -57,7 +58,7 @@ public class AfficherRdvAnalyseActivity extends NavDrawerActivity implements Ser
     @State
     Utilisateur activeUser;
     @State
-    RdvAnalyse rdvSelected;
+    RdvAnalyse rdvAnalyseSelected;
     @State
     Date date;
 
@@ -129,8 +130,23 @@ public class AfficherRdvAnalyseActivity extends NavDrawerActivity implements Ser
         runner.execute();
 
         setTitle("Mes Analyses");
-
+        traiterIntent();
         selectedRdv.setOnItemClickListener(this);
+    }
+
+    @Override
+    public void traiterIntent() {
+        Intent intent = getIntent();
+        if (intent.hasExtra("rdvAnalyseId")) {
+            Long rdvAnalyseId = intent.getLongExtra("rdvAnalyseId", 0);
+            rdvAnalyseSelected = RdvAnalyse.findById(RdvAnalyse.class, rdvAnalyseId);
+            selectedRdv.setText(rdvAnalyseSelected.toString());
+            // rdvContactSelected = listRdvContactBD.get(position);
+            enableFields(false);
+            displayFabs();
+            fillAllFields();
+            displayAllFields(false);
+        }
     }
 
     public class AsyncTaskRunner extends AsyncTask<Void, Integer, Void> {
@@ -169,14 +185,14 @@ public class AfficherRdvAnalyseActivity extends NavDrawerActivity implements Ser
 
     @OnClick(R.id.fabSave)
     public void fabSaveClick() {
-        deleteItem(AfficherRdvAnalyseActivity.this, rdvSelected, AfficherRdvAnalyseActivity.class,false);
-        rdvSelected.setDate(date);
-        if (textNote.getText() != null && !textNote.getText().toString().equalsIgnoreCase(rdvSelected.getNote())) {
-            rdvSelected.setNote(textNote.getText().toString());
+        deleteItem(AfficherRdvAnalyseActivity.this, rdvAnalyseSelected, AfficherRdvAnalyseActivity.class,false);
+        rdvAnalyseSelected.setDate(date);
+        if (textNote.getText() != null && !textNote.getText().toString().equalsIgnoreCase(rdvAnalyseSelected.getNote())) {
+            rdvAnalyseSelected.setNote(textNote.getText().toString());
         }
-        rdvSelected.save();
+        rdvAnalyseSelected.save();
         //enregistrer la/les notification(s)
-        activerNotification(rdvSelected,AfficherRdvAnalyseActivity.this);
+        activerNotification(rdvAnalyseSelected,AfficherRdvAnalyseActivity.this);
         enableFields(false);
         displayAllFields(false);
         displayFabs();
@@ -209,12 +225,12 @@ public class AfficherRdvAnalyseActivity extends NavDrawerActivity implements Ser
 
     @OnClick(R.id.fabDelete)
     public void fabDeleteClick() {
-        deleteItem(AfficherRdvAnalyseActivity.this, rdvSelected, AfficherRdvAnalyseActivity.class,true);
+        deleteItem(AfficherRdvAnalyseActivity.this, rdvAnalyseSelected, AfficherRdvAnalyseActivity.class,true);
     }
 
     @OnClick(R.id.fabPhoto)
     public void fabPhotoClick() {
-        ouvrirActiviteSuivante(AfficherRdvAnalyseActivity.this, MakePhotoActivity.class,"type", TypePhoto.Analyse.toString(),"itemId",rdvSelected.getId(),true);
+        ouvrirActiviteSuivante(AfficherRdvAnalyseActivity.this, MakePhotoActivity.class,"type", TypePhoto.Analyse.toString(),"itemId", rdvAnalyseSelected.getId(),true);
     }
 
     private void resizeAllFields(boolean bool) {
@@ -227,7 +243,7 @@ public class AfficherRdvAnalyseActivity extends NavDrawerActivity implements Ser
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        rdvSelected = listRdvBD.get(position);
+        rdvAnalyseSelected = listRdvBD.get(position);
         enableFields(false);
         displayFabs();
         fillAllFields();
@@ -245,7 +261,7 @@ public class AfficherRdvAnalyseActivity extends NavDrawerActivity implements Ser
     public void displayFabs() {
         fabSave.hide();
         fabCancel.hide();
-        if (rdvSelected == null) {
+        if (rdvAnalyseSelected == null) {
             fabEdit.hide();
             fabDelete.hide();
             fabPhoto.hide();
@@ -258,10 +274,10 @@ public class AfficherRdvAnalyseActivity extends NavDrawerActivity implements Ser
     }
 
     private void fillAllFields() {
-        textAnalyse.setText(rdvSelected.getAnalyse().toString());
-        textDate.setText(DateUtils.ecrireDate(rdvSelected.getDate()));
-        textHeure.setText(DateUtils.ecrireHeure(rdvSelected.getDate()));
-        textNote.setText(rdvSelected.getNote());
+        textAnalyse.setText(rdvAnalyseSelected.getAnalyse().toString());
+        textDate.setText(DateUtils.ecrireDate(rdvAnalyseSelected.getDate()));
+        textHeure.setText(DateUtils.ecrireHeure(rdvAnalyseSelected.getDate()));
+        textNote.setText(rdvAnalyseSelected.getNote());
     }
 
     private void enableFields(boolean bool) {
@@ -275,7 +291,7 @@ public class AfficherRdvAnalyseActivity extends NavDrawerActivity implements Ser
         layoutAnalyse.setVisibility(View.VISIBLE);
         layoutDate.setVisibility(View.VISIBLE);
         layoutHeure.setVisibility(View.VISIBLE);
-        if (bool || !TextUtils.isEmpty(rdvSelected.getNote())) {
+        if (bool || !TextUtils.isEmpty(rdvAnalyseSelected.getNote())) {
             layoutNote.setVisibility(View.VISIBLE);
         } else {
             layoutNote.setVisibility(View.GONE);

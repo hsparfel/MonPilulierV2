@@ -2,10 +2,10 @@ package com.pouillos.monpilulier.activities.add;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -15,7 +15,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
@@ -29,21 +28,19 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.AccueilActivity;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
-import com.pouillos.monpilulier.activities.afficher.AfficherAnalyseActivity;
-import com.pouillos.monpilulier.activities.afficher.AfficherExamenActivity;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
-import com.pouillos.monpilulier.entities.Analyse;
 import com.pouillos.monpilulier.entities.Contact;
 import com.pouillos.monpilulier.entities.Ordonnance;
-import com.pouillos.monpilulier.entities.Photo;
 import com.pouillos.monpilulier.entities.Prescription;
-import com.pouillos.monpilulier.entities.RdvAnalyse;
+import com.pouillos.monpilulier.entities.Prise;
+import com.pouillos.monpilulier.entities.Rappel;
 import com.pouillos.monpilulier.entities.RdvContact;
 import com.pouillos.monpilulier.entities.Utilisateur;
-import com.pouillos.monpilulier.enumeration.TypePhoto;
+import com.pouillos.monpilulier.enumeration.Frequence;
 import com.pouillos.monpilulier.fragments.DatePickerFragmentDateJour;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
-import com.pouillos.monpilulier.recycler.adapter.RecyclerAdapter;
+import com.pouillos.monpilulier.recycler.adapter.RecyclerAdapterPrescription;
+import com.pouillos.monpilulier.utils.ItemClickSupport;
 
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -61,7 +58,7 @@ import butterknife.OnClick;
 import icepick.Icepick;
 import icepick.State;
 
-public class AddOrdonnanceActivity extends NavDrawerActivity implements Serializable, BasicUtils {
+public class AddOrdonnanceActivity extends NavDrawerActivity implements Serializable, BasicUtils, RecyclerAdapterPrescription.Listener {
     @State
     Utilisateur activeUser;
     @State
@@ -109,10 +106,14 @@ public class AddOrdonnanceActivity extends NavDrawerActivity implements Serializ
     @BindView(R.id.listPrescription)
     RecyclerView listPrescription;
 
-    private RecyclerAdapter adapter;
+    private RecyclerAdapterPrescription adapter;
 
     @BindView(R.id.my_progressBar)
     ProgressBar progressBar;
+
+    AddOrdonnanceActivity.AsyncTaskRunnerBDPrescription runnerBDPrescription = new AddOrdonnanceActivity.AsyncTaskRunnerBDPrescription();
+    AddOrdonnanceActivity.AsyncTaskRunnerBDPrescription runnerBDPrescriptionResume = new AddOrdonnanceActivity.AsyncTaskRunnerBDPrescription();
+
 
     @Override
     protected void onResume() {
@@ -120,10 +121,16 @@ public class AddOrdonnanceActivity extends NavDrawerActivity implements Serializ
         //SharedPreferences preferences=getSharedPreferences("prescription",MODE_PRIVATE);
         //int prescriptionId = preferences.getInt("registration_id", 0);
         if (ordonnance != null) {
-            AddOrdonnanceActivity.AsyncTaskRunnerBDPrescription runnerBDPrescription = new AddOrdonnanceActivity.AsyncTaskRunnerBDPrescription();
-            runnerBDPrescription.execute();
-        }
+            //AddOrdonnanceActivity.AsyncTaskRunnerBDPrescription runnerBDPrescription = new AddOrdonnanceActivity.AsyncTaskRunnerBDPrescription();
+            //runnerBDPrescriptionResume.execute();
+            listPrescriptionBD = Prescription.find(Prescription.class,"ordonnance = ?", ordonnance.getId().toString());
+            //listContactBD = Contact.findWithQuery(Contact.class, requete);
+            Collections.sort(listPrescriptionBD);
 
+            configureRecyclerView();
+            configureOnClickRecyclerView();
+        }
+        updateDisplay();
 
 
     }
@@ -193,6 +200,7 @@ public class AddOrdonnanceActivity extends NavDrawerActivity implements Serializ
         }
 
         fabAddPrescription.hide();
+        fabSave.hide();
     }
 
     public void updateDisplay() {
@@ -213,6 +221,9 @@ public class AddOrdonnanceActivity extends NavDrawerActivity implements Serializ
             fabAddPrescription.show();
         } else {
             fabAddPrescription.hide();
+        }
+        if (adapter != null && adapter.getItemCount() > 0) {
+            fabSave.show();
         }
     }
 
@@ -277,7 +288,7 @@ public class AddOrdonnanceActivity extends NavDrawerActivity implements Serializ
             progressBar.setVisibility(View.GONE);
             buildDropdownMenu(listContactBD, AddOrdonnanceActivity.this,selectedContact);
             if (ordonnance != null) {
-                AddOrdonnanceActivity.AsyncTaskRunnerBDPrescription runnerBDPrescription = new AddOrdonnanceActivity.AsyncTaskRunnerBDPrescription();
+                //AddOrdonnanceActivity.AsyncTaskRunnerBDPrescription runnerBDPrescription = new AddOrdonnanceActivity.AsyncTaskRunnerBDPrescription();
                 runnerBDPrescription.execute();
             }
 
@@ -310,6 +321,7 @@ public class AddOrdonnanceActivity extends NavDrawerActivity implements Serializ
             //this.githubUsers = new ArrayList<>();
             // 3.2 - Create adapter passing the list of users
             configureRecyclerView();
+            configureOnClickRecyclerView();
         }
 
         @RequiresApi(api = Build.VERSION_CODES.N)
@@ -318,8 +330,19 @@ public class AddOrdonnanceActivity extends NavDrawerActivity implements Serializ
         }
     }
 
+    private void configureOnClickRecyclerView(){
+        ItemClickSupport.addTo(listPrescription, R.layout.recycler_list_item)
+                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        Log.e("TAG", "Position : "+position);
+                    }
+                });
+    }
+
+
     public void configureRecyclerView() {
-        adapter = new RecyclerAdapter(listPrescriptionBD);
+        adapter = new RecyclerAdapterPrescription(listPrescriptionBD,this);
         // 3.3 - Attach the adapter to the recyclerview to populate items
         listPrescription.setAdapter(adapter);
         // 3.4 - Set layout manager to position the items
@@ -377,9 +400,53 @@ public class AddOrdonnanceActivity extends NavDrawerActivity implements Serializ
         //Toast.makeText(AddOrdonnanceActivity.this, "a faire", Toast.LENGTH_LONG).show();
         //todo enregistrer ordo en base
         ordonnance.setValidated(true);
-        ordonnance.save();
+        ordonnance.setId(ordonnance.save());
+        //todo enregistrer les prises selon les donnéesenregistrées ordo/prescription/rappel
+        enregistrerPrises();
+
         ouvrirActiviteSuivante(AddOrdonnanceActivity.this,AccueilActivity.class,false);
         //passer l'id ordo ne extra
+    }
+
+    public void enregistrerPrises() {
+        //todo
+        Date dateDebut = null;
+        Date dateFin = null;
+        if (ordonnance.getDate() != null) {
+            dateDebut = ordonnance.getDate();
+        } else if (ordonnance.getRdvContact().getDate() != null) {
+            dateDebut = ordonnance.getRdvContact().getDate();
+        }
+        List<Prescription> listPrescriptionAssociees = Prescription.find(Prescription.class,"ordonnance = ?", ordonnance.getId().toString());
+        for (Prescription currentPrescription : listPrescriptionAssociees) {
+            dateFin = currentPrescription.getDateFin();
+            int jourSuivant = 0;
+            List<Rappel> listRappelAssocies = Rappel.find(Rappel.class,"prescription = ?", currentPrescription.getId().toString());
+            if (currentPrescription.getFrequence() == Frequence.EveryDay) {
+                jourSuivant = 1;
+            }
+            List<Date> listJourPrises = new ArrayList<>();
+            Date currentDate = dateDebut;
+            while (currentDate.before(DateUtils.ajouterJour(dateFin,1))) {
+                Date dateEvolutive = currentDate;
+                for (Rappel currentRappel : listRappelAssocies) {
+                    dateEvolutive.setHours(Integer.parseInt(currentRappel.getHeure().substring(0,2)));
+                    dateEvolutive.setMinutes(Integer.parseInt(currentRappel.getHeure().substring(3)));
+                    Prise prise = new Prise();
+                    prise.setOrdonnance(ordonnance);
+                    prise.setEffectue(false);
+                    prise.setDate(dateEvolutive);
+                    prise.setMedicament(currentPrescription.getMedicament());
+                    prise.setDose(currentRappel.getDose());
+                    prise.setQteDose(currentRappel.getQuantiteDose());
+
+
+                    prise.setId(prise.save());
+                    activerNotification(prise,this);
+                }
+                currentDate = DateUtils.ajouterJourArrondi(currentDate,jourSuivant,0);
+            }
+        }
     }
 
     @Override
@@ -451,6 +518,12 @@ public class AddOrdonnanceActivity extends NavDrawerActivity implements Serializ
                 }
             }
         });
+    }
+
+    @Override
+    public void onClickDeleteButton(int position) {
+        Prescription prescription = adapter.getPrescription(position);
+        Toast.makeText(AddOrdonnanceActivity.this, "You are trying to delete user : "+ prescription.getMedicament(), Toast.LENGTH_SHORT).show();
     }
 
 }

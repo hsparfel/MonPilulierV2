@@ -10,12 +10,13 @@ import androidx.fragment.app.Fragment;
 
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.add.AddPrescriptionActivity;
+import com.pouillos.monpilulier.enumeration.Duree;
 import com.pouillos.monpilulier.enumeration.Frequence;
 
 
 public class FragmentListDuree extends Fragment {
 
-    Frequence frequence;
+    Duree duree;
 
     AddPrescriptionActivity addPrescriptionActivity;
 
@@ -35,6 +36,6 @@ public class FragmentListDuree extends Fragment {
     }
 
     public void sendResponse() {
-        this.addPrescriptionActivity.frequence = frequence;
+        this.addPrescriptionActivity.duree = duree;
     }
 }

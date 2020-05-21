@@ -23,9 +23,9 @@
         android:paddingLeft="20dip"
         android:text="TextView" />
 
-    <ImageView
-        android:id="@+id/delete"
+    <ImageButton
+        android:id="@+id/buttonDelete"
         android:layout_width="20dip"
         android:layout_height="20dip"
-        app:srcCompat="@drawable/outline_delete_black_24dp" />
+        android:background="@drawable/outline_delete_black_24dp" />
 </LinearLayout>

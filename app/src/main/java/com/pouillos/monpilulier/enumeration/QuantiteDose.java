@@ -78,7 +78,7 @@ public enum QuantiteDose {
     }
 
     public String toString(){
-        return name;
+        return number.toString();
     }
 
 }

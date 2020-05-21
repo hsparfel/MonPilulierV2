@@ -23,6 +23,9 @@ import androidx.core.app.NotificationCompat;
 
 import com.facebook.stetho.Stetho;
 
+import com.orm.SchemaGenerator;
+import com.orm.SugarContext;
+import com.orm.SugarDb;
 import com.orm.SugarRecord;
 import com.pouillos.monpilulier.R;
 ///import com.pouillos.monpilulier.activities.listallx.ListAllProfilActivity;
@@ -247,6 +250,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         protected Void doInBackground(Void...voids) {
             publishProgress(0);
 
+
             //RAZ A LA DEMANDE
             //SugarRecord.executeQuery("DROP TABLE PATIENT_MEDECIN");
             //SugarRecord.executeQuery("DELETE FROM RDV");
@@ -281,17 +285,17 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             //SugarRecord.executeQuery("DELETE FROM RDV_EXAMEN");
             //SugarRecord.executeQuery("DELETE FROM RDV_CONTACT");
             //SugarRecord.executeQuery("DELETE FROM PHOTO");
-            SugarRecord.executeQuery("DELETE FROM ORDONNANCE");
-            SugarRecord.executeQuery("DELETE FROM PRESCRIPTION");
-
-
-
-
+            //SugarRecord.executeQuery("DELETE FROM ORDONNANCE");
+            //SugarRecord.executeQuery("DELETE FROM PRESCRIPTION");
+            //SugarRecord.executeQuery("DELETE FROM RAPPEL");
+           // SugarRecord.executeQuery("DELETE FROM IMPORT_CONTACT");
+          // SugarRecord.executeQuery("DELETE FROM CONTACT");
+            //SugarRecord.executeQuery("DROP TABLE IMPORT_CONTACT");
+          //  SugarRecord.executeQuery("DROP TABLE CONTACT");
             //
            // SugarRecord.executeQuery("DROP TABLE RDV_ACTE_MEDICAL");
             //RAZ TOTAL
-            /*SugarContext.terminate();
-
+            SugarContext.terminate();
             publishProgress(20);
             SchemaGenerator schemaGenerator = new SchemaGenerator(getApplicationContext());
             publishProgress(40);
@@ -299,8 +303,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             publishProgress(60);
             SugarContext.init(getApplicationContext());
             publishProgress(80);
-
-            schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());*/
+            schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());
 
 
             publishProgress(100);
@@ -1160,7 +1163,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     String line = null;
 
 
-                    int readerSize = 5000;
+                    int readerSize = 1500;
                     int readerCount = 0;
                     int compteur = 0;
                     publishProgress(compteur);
@@ -1168,7 +1171,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                         readerCount ++;
                         compteur = readerCount*100/readerSize;
                         publishProgress(compteur);
-                        final String SEPARATEUR = "\\|";
+                        final String SEPARATEUR = "\\;";
                         String lineSplitted[] = line.split(SEPARATEUR);
 
                         if (lineSplitted[1].equals("Identifiant PP")) {

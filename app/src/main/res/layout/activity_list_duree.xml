@@ -37,5 +37,4 @@
             android:text="Pendant X jours" />
 
     </RadioGroup>
-
 </LinearLayout>

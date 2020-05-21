@@ -3,14 +3,21 @@ package com.pouillos.monpilulier.activities;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.facebook.stetho.Stetho;
+import com.google.android.material.button.MaterialButton;
 import com.pouillos.monpilulier.R;
+import com.pouillos.monpilulier.activities.afficher.AfficherRdvAnalyseActivity;
+import com.pouillos.monpilulier.activities.afficher.AfficherRdvContactActivity;
+import com.pouillos.monpilulier.activities.afficher.AfficherRdvExamenActivity;
 import com.pouillos.monpilulier.entities.Analyse;
 import com.pouillos.monpilulier.entities.AssociationFormeDose;
 import com.pouillos.monpilulier.entities.Departement;
@@ -19,18 +26,55 @@ import com.pouillos.monpilulier.entities.Examen;
 import com.pouillos.monpilulier.entities.FormePharmaceutique;
 import com.pouillos.monpilulier.entities.ImportContact;
 import com.pouillos.monpilulier.entities.Profession;
+import com.pouillos.monpilulier.entities.RdvAnalyse;
+import com.pouillos.monpilulier.entities.RdvContact;
+import com.pouillos.monpilulier.entities.RdvExamen;
 import com.pouillos.monpilulier.entities.Region;
 import com.pouillos.monpilulier.entities.SavoirFaire;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
+import com.pouillos.monpilulier.recycler.adapter.RecyclerAdapterRdvAnalyse;
+import com.pouillos.monpilulier.recycler.adapter.RecyclerAdapterRdvContact;
+import com.pouillos.monpilulier.recycler.adapter.RecyclerAdapterRdvExamen;
+import com.pouillos.monpilulier.utils.ItemClickSupport;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import icepick.Icepick;
 
-public class AccueilActivity extends NavDrawerActivity implements BasicUtils {
+public class AccueilActivity extends NavDrawerActivity implements BasicUtils, RecyclerAdapterRdvContact.Listener, RecyclerAdapterRdvAnalyse.Listener, RecyclerAdapterRdvExamen.Listener {
 
     @BindView(R.id.my_progressBar)
     ProgressBar progressBar;
+
+    @BindView(R.id.list_rdv_contact)
+    RecyclerView listRdvContact;
+    @BindView(R.id.button_list_rdv_contact)
+    MaterialButton buttonListRdvContact;
+    private boolean rdvContactDisplay = true;
+    private RecyclerAdapterRdvContact adapterRdvContact;
+    private List<RdvContact> listeRdvContact = new ArrayList<>();
+
+    @BindView(R.id.list_rdv_analyse)
+    RecyclerView listRdvAnalyse;
+    @BindView(R.id.button_list_rdv_analyse)
+    MaterialButton buttonListRdvAnalyse;
+    private boolean rdvAnalyseDisplay = true;
+    private RecyclerAdapterRdvAnalyse adapterRdvAnalyse;
+    private List<RdvAnalyse> listeRdvAnalyse = new ArrayList<>();
+
+    @BindView(R.id.list_rdv_examen)
+    RecyclerView listRdvExamen;
+    @BindView(R.id.button_list_rdv_examen)
+    MaterialButton buttonListRdvExamen;
+    private boolean rdvExamenDisplay = true;
+    private RecyclerAdapterRdvExamen adapterRdvExamen;
+    private List<RdvExamen> listeRdvExamen = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,354 +119,56 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils {
             new ImportContact("PS_LibreAcces_Personne_activite_16.csv", false).save();
             new ImportContact("PS_LibreAcces_Personne_activite_17.csv", false).save();
             new ImportContact("PS_LibreAcces_Personne_activite_18.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_19.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_20.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_21.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_22.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_23.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_24.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_25.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_26.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_27.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_28.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_29.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_30.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_31.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_32.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_33.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_34.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_35.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_36.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_37.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_38.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_39.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_40.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_41.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_42.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_43.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_44.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_45.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_46.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_47.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_48.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_49.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_50.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_51.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_52.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_53.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_54.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_55.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_56.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_57.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_58.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_59.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_60.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_61.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_62.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_63.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_64.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_65.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_66.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_67.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_68.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_69.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_70.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_71.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_72.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_73.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_74.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_75.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_76.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_77.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_78.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_79.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_80.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_81.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_82.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_83.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_84.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_85.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_86.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_87.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_88.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_89.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_90.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_91.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_92.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_93.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_94.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_95.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_96.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_97.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_98.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_99.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_100.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_101.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_102.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_103.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_104.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_105.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_106.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_107.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_108.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_109.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_110.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_111.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_112.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_113.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_114.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_115.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_116.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_117.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_118.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_119.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_120.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_121.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_122.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_123.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_124.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_125.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_126.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_127.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_128.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_129.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_130.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_131.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_132.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_133.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_134.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_135.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_136.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_137.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_138.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_139.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_140.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_141.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_142.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_143.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_144.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_145.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_146.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_147.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_148.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_149.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_150.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_151.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_152.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_153.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_154.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_155.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_156.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_157.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_158.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_159.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_160.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_161.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_162.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_163.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_164.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_165.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_166.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_167.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_168.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_169.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_170.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_171.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_172.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_173.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_174.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_175.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_176.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_177.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_178.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_179.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_180.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_181.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_182.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_183.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_184.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_185.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_186.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_187.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_188.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_189.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_190.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_191.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_192.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_193.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_194.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_195.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_196.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_197.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_198.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_199.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_200.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_201.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_202.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_203.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_204.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_205.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_206.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_207.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_208.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_209.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_210.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_211.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_212.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_213.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_214.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_215.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_216.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_217.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_218.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_219.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_220.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_221.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_222.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_223.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_224.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_225.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_226.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_227.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_228.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_229.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_230.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_231.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_232.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_233.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_234.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_235.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_236.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_237.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_238.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_239.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_240.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_241.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_242.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_243.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_244.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_245.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_246.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_247.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_248.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_249.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_250.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_251.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_252.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_253.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_254.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_255.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_256.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_257.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_258.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_259.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_260.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_261.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_262.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_263.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_264.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_265.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_266.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_267.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_268.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_269.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_270.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_271.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_272.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_273.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_274.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_275.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_276.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_277.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_278.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_279.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_280.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_281.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_282.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_283.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_284.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_285.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_286.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_287.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_288.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_289.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_290.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_291.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_292.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_293.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_294.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_295.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_296.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_297.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_298.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_299.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_300.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_301.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_302.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_303.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_304.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_305.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_306.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_307.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_308.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_309.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_310.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_311.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_312.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_313.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_314.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_315.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_316.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_317.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_318.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_319.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_320.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_321.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_322.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_323.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_324.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_325.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_326.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_327.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_328.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_329.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_330.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_331.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_332.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_333.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_334.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_335.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_336.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_337.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_338.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_339.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_340.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_341.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_342.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_343.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_344.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_345.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_346.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_347.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_348.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_349.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_350.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_351.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_352.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_353.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_354.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_355.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_356.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_357.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_358.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_359.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_360.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_361.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_362.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_363.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_364.csv", false).save();
-            new ImportContact("PS_LibreAcces_Personne_activite_365.csv", false).save();
         }
+    }
+
+    @Override
+    public void onClickRdvContactButton(int position) {
+        Toast.makeText(AccueilActivity.this, "click sur rdv contact", Toast.LENGTH_LONG).show();
+        RdvContact rdvContact = listeRdvContact.get(position);
+        ouvrirActiviteSuivante(this, AfficherRdvContactActivity.class,"rdvContactId",rdvContact.getId(),false);
+    }
+
+    @Override
+    public void onClickRdvAnalyseButton(int position) {
+        Toast.makeText(AccueilActivity.this, "click sur rdv analyse", Toast.LENGTH_LONG).show();
+        RdvAnalyse rdvAnalyse = listeRdvAnalyse.get(position);
+        ouvrirActiviteSuivante(this, AfficherRdvAnalyseActivity.class,"rdvAnalyseId",rdvAnalyse.getId(),false);
+    }
+
+    @Override
+    public void onClickRdvExamenButton(int position) {
+        Toast.makeText(AccueilActivity.this, "click sur rdv examen", Toast.LENGTH_LONG).show();
+        RdvExamen rdvExamen = listeRdvExamen.get(position);
+        ouvrirActiviteSuivante(this, AfficherRdvExamenActivity.class,"rdvExamenId",rdvExamen.getId(),false);
+    }
+
+    @OnClick(R.id.button_list_rdv_contact)
+    public void buttonListRdvContactClick() {
+        if (!rdvContactDisplay) {
+            listRdvContact.setVisibility(View.VISIBLE);
+        } else {
+            listRdvContact.setVisibility(View.GONE);
+        }
+        rdvContactDisplay = !rdvContactDisplay;
+    }
+    @OnClick(R.id.button_list_rdv_analyse)
+    public void buttonListRdvAnalyseClick() {
+        if (!rdvAnalyseDisplay) {
+            listRdvAnalyse.setVisibility(View.VISIBLE);
+        } else {
+            listRdvAnalyse.setVisibility(View.GONE);
+        }
+        rdvAnalyseDisplay = !rdvAnalyseDisplay;
+    }
+    @OnClick(R.id.button_list_rdv_examen)
+    public void buttonListRdvExamenClick() {
+        if (!rdvExamenDisplay) {
+            listRdvExamen.setVisibility(View.VISIBLE);
+        } else {
+            listRdvExamen.setVisibility(View.GONE);
+        }
+        rdvExamenDisplay = !rdvExamenDisplay;
     }
 
     private class AsyncTaskRunnerBD extends AsyncTask<Void, Integer, Void> {
@@ -445,9 +191,13 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils {
             remplirDepartementBD();
             publishProgress(70);
             remplirImportContactBD();
-            publishProgress(90);
-
-
+            publishProgress(80);
+            ActualiserListRdvContact();
+            publishProgress(84);
+            ActualiserListRdvAnalyse();
+            publishProgress(88);
+            ActualiserListRdvExamen();
+            publishProgress(92);
             publishProgress(100);
             return null;
         }
@@ -461,6 +211,9 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils {
             } else {
                 setTitle(getResources().getString(R.string.welcome)+" "+activeUser.getName());
             }
+
+            configureRecyclerView();
+            configureOnClickRecyclerView();
         }
 
         @RequiresApi(api = Build.VERSION_CODES.N)
@@ -469,7 +222,71 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils {
         }
     }
 
+    private void ActualiserListRdvContact() {
+        List<RdvContact> listAllRdvContact = RdvContact.find(RdvContact.class,"utilisateur = ?",activeUser.getId().toString());
+        for (RdvContact currentContact : listAllRdvContact) {
+            if (currentContact.getDate().after(new Date())) {
+                listeRdvContact.add(currentContact);
+            }
+        }
+        Collections.sort(listeRdvContact);
+    }
+    private void ActualiserListRdvAnalyse() {
+        List<RdvAnalyse> listAllRdvAnalyse = RdvAnalyse.find(RdvAnalyse.class,"utilisateur = ?",activeUser.getId().toString());
+        for (RdvAnalyse currentAnalyse : listAllRdvAnalyse) {
+            if (currentAnalyse.getDate().after(new Date())) {
+                listeRdvAnalyse.add(currentAnalyse);
+            }
+        }
+        Collections.sort(listeRdvAnalyse);
+    }
+    private void ActualiserListRdvExamen() {
+        List<RdvExamen> listAllRdvExamen = RdvExamen.find(RdvExamen.class,"utilisateur = ?",activeUser.getId().toString());
+        for (RdvExamen currentExamen : listAllRdvExamen) {
+            if (currentExamen.getDate().after(new Date())) {
+                listeRdvExamen.add(currentExamen);
+            }
+        }
+        Collections.sort(listeRdvExamen);
+    }
 
+    private void configureOnClickRecyclerView(){
+        ItemClickSupport.addTo(listRdvContact, R.layout.recycler_list_rdv_contact)
+                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        Log.e("TAG", "Position : "+position);
+                    }
+                });
+        ItemClickSupport.addTo(listRdvAnalyse, R.layout.recycler_list_rdv_analyse)
+                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        Log.e("TAG", "Position : "+position);
+                    }
+                });
+        ItemClickSupport.addTo(listRdvExamen, R.layout.recycler_list_rdv_examen)
+                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        Log.e("TAG", "Position : "+position);
+                    }
+                });
+    }
+
+    public void configureRecyclerView() {
+        adapterRdvContact = new RecyclerAdapterRdvContact(listeRdvContact, this);
+        listRdvContact.setAdapter(adapterRdvContact);
+        listRdvContact.setLayoutManager(new LinearLayoutManager(this));
+
+        adapterRdvAnalyse = new RecyclerAdapterRdvAnalyse(listeRdvAnalyse, this);
+        listRdvAnalyse.setAdapter(adapterRdvAnalyse);
+        listRdvAnalyse.setLayoutManager(new LinearLayoutManager(this));
+
+        adapterRdvExamen = new RecyclerAdapterRdvExamen(listeRdvExamen, this);
+        listRdvExamen.setAdapter(adapterRdvExamen);
+        listRdvExamen.setLayoutManager(new LinearLayoutManager(this));
+    }
 
     public void remplirDepartementBD() {
         Long count = Departement.count(Departement.class);

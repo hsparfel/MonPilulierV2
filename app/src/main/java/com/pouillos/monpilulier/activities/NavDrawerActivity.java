@@ -49,12 +49,15 @@ import com.pouillos.monpilulier.activities.afficher.AfficherRdvExamenActivity;
 import com.pouillos.monpilulier.activities.photo.MakePhotoActivity;
 import com.pouillos.monpilulier.activities.recherche.ChercherContactActivity;
 
+import com.pouillos.monpilulier.activities.tools.ImportContactActivity;
+import com.pouillos.monpilulier.activities.tools.PriseNotificationBroadcastReceiver;
 import com.pouillos.monpilulier.activities.tools.RdvAnalyseNotificationBroadcastReceiver;
 import com.pouillos.monpilulier.activities.tools.RdvExamenNotificationBroadcastReceiver;
 import com.pouillos.monpilulier.activities.tools.RdvContactNotificationBroadcastReceiver;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.AlarmRdv;
 import com.pouillos.monpilulier.entities.AssociationAlarmRdv;
+import com.pouillos.monpilulier.entities.Prise;
 import com.pouillos.monpilulier.entities.Rdv;
 import com.pouillos.monpilulier.entities.RdvAnalyse;
 import com.pouillos.monpilulier.entities.RdvContact;
@@ -212,6 +215,10 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
                 return true;
             case R.id.pickPicture:
                 myProfilActivity = new Intent(NavDrawerActivity.this, AfficherPhotoActivity.class);
+                startActivity(myProfilActivity);
+                return true;
+            case R.id.importContact:
+                myProfilActivity = new Intent(NavDrawerActivity.this, ImportContactActivity.class);
                 startActivity(myProfilActivity);
                 return true;
             default:
@@ -438,6 +445,8 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
         } else if (object instanceof RdvExamen) {
             startAlert((RdvExamen) object, Echeance.OneHourAfter.toString(), context);
             startAlert((RdvExamen) object, Echeance.OneDayAfter.toString(), context);
+        } else if (object instanceof Prise) {
+            startAlert((Prise) object, context);
         }
 
     }
@@ -538,21 +547,16 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
         }
     }*/
 
-    protected<T> void startAlert(T object, String echeance, Context context) {
+    protected<T> void startAlert(T object, Context context) {
         //Class classe = object.getClass();
         Intent intent = null;
-        Rdv rdv = (Rdv) object;
-        if (object instanceof RdvContact) {
-            intent = new Intent(this, RdvContactNotificationBroadcastReceiver.class);
-            intent.putExtra("detail",((RdvContact) object).getContact().toStringShort());
-        } else if (object instanceof RdvAnalyse) {
-            intent = new Intent(this, RdvAnalyseNotificationBroadcastReceiver.class);
-            intent.putExtra("detail",((RdvAnalyse) object).getAnalyse().getName());
-        } else if (object instanceof RdvExamen) {
-            intent = new Intent(this, RdvExamenNotificationBroadcastReceiver.class);
-            intent.putExtra("detail",((RdvExamen) object).getExamen().getName());
-        }
-        intent.putExtra("echeance",echeance);
+
+        Prise prise = (Prise) object;
+
+            intent = new Intent(this, PriseNotificationBroadcastReceiver.class);
+            intent.putExtra("detail",prise.getMedicament().getDenominationShort()+ " - "+prise.getQteDose()+ " "+prise.getDose().getName());
+
+        //intent.putExtra("echeance",echeance);
         Date dateJour = new Date();
         Long dateJourLong = dateJour.getTime();
         int requestCode =dateJourLong.intValue();
@@ -560,12 +564,8 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, 0);
         AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
-        Date dateAlerte = new Date();
-        if (echeance.equalsIgnoreCase(Echeance.OneHourAfter.toString())){
-            dateAlerte = DateUtils.ajouterHeure(rdv.getDate(),-1);
-        } else if (echeance.equalsIgnoreCase(Echeance.OneDayAfter.toString())){
-            dateAlerte = DateUtils.ajouterJourArrondi(rdv.getDate(),-1,7);
-        }
+        Date dateAlerte = prise.getDate();
+
 
 
         alarmManager.set(AlarmManager.RTC_WAKEUP, dateAlerte.getTime(), pendingIntent);
@@ -574,22 +574,69 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
         alarmRdv.setDate(dateAlerte);
         alarmRdv.setDateString(dateAlerte.toString());
         alarmRdv.setDetail(intent.getStringExtra("detail"));
-        alarmRdv.setEcheance(echeance);
+        //alarmRdv.setEcheance(echeance);
         alarmRdv.setRequestCode(requestCode);
         alarmRdv.setId(alarmRdv.save());
 
-        AssociationAlarmRdv associationAlarmRdv = new AssociationAlarmRdv();
-        associationAlarmRdv.setAlarmRdv(alarmRdv);
 
-        if (object instanceof RdvContact) {
-            associationAlarmRdv.setRdvContact((RdvContact) object);
-        } else if (object instanceof RdvAnalyse) {
-            associationAlarmRdv.setRdvAnalyse((RdvAnalyse) object);
-        } else if (object instanceof RdvExamen) {
-            associationAlarmRdv.setRdvExamen((RdvExamen) object);
-        }
-        associationAlarmRdv.setId(associationAlarmRdv.save());
-        Toast.makeText(this, "Alarm set : " + rdv.getDate().toString(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Alarm set : " + prise.getDate().toString(), Toast.LENGTH_LONG).show();
+    }
+
+    protected<T> void startAlert(T object, String echeance, Context context) {
+        //Class classe = object.getClass();
+        Intent intent = null;
+
+            Rdv rdv = (Rdv) object;
+            if (object instanceof RdvContact) {
+                intent = new Intent(this, RdvContactNotificationBroadcastReceiver.class);
+                intent.putExtra("detail",((RdvContact) object).getContact().toStringShort());
+            } else if (object instanceof RdvAnalyse) {
+                intent = new Intent(this, RdvAnalyseNotificationBroadcastReceiver.class);
+                intent.putExtra("detail",((RdvAnalyse) object).getAnalyse().getName());
+            } else if (object instanceof RdvExamen) {
+                intent = new Intent(this, RdvExamenNotificationBroadcastReceiver.class);
+                intent.putExtra("detail",((RdvExamen) object).getExamen().getName());
+            }
+            intent.putExtra("echeance",echeance);
+            Date dateJour = new Date();
+            Long dateJourLong = dateJour.getTime();
+            int requestCode =dateJourLong.intValue();
+            Log.i("requestCode",""+requestCode);
+
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, 0);
+            AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+            Date dateAlerte = new Date();
+            if (echeance.equalsIgnoreCase(Echeance.OneHourAfter.toString())){
+                dateAlerte = DateUtils.ajouterHeure(rdv.getDate(),-1);
+            } else if (echeance.equalsIgnoreCase(Echeance.OneDayAfter.toString())){
+                dateAlerte = DateUtils.ajouterJourArrondi(rdv.getDate(),-1,7);
+            }
+
+
+            alarmManager.set(AlarmManager.RTC_WAKEUP, dateAlerte.getTime(), pendingIntent);
+            AlarmRdv alarmRdv = new AlarmRdv();
+            alarmRdv.setClasse(object.getClass().getName());
+            alarmRdv.setDate(dateAlerte);
+            alarmRdv.setDateString(dateAlerte.toString());
+            alarmRdv.setDetail(intent.getStringExtra("detail"));
+            alarmRdv.setEcheance(echeance);
+            alarmRdv.setRequestCode(requestCode);
+            alarmRdv.setId(alarmRdv.save());
+
+            AssociationAlarmRdv associationAlarmRdv = new AssociationAlarmRdv();
+            associationAlarmRdv.setAlarmRdv(alarmRdv);
+
+            if (object instanceof RdvContact) {
+                associationAlarmRdv.setRdvContact((RdvContact) object);
+            } else if (object instanceof RdvAnalyse) {
+                associationAlarmRdv.setRdvAnalyse((RdvAnalyse) object);
+            } else if (object instanceof RdvExamen) {
+                associationAlarmRdv.setRdvExamen((RdvExamen) object);
+            }
+            associationAlarmRdv.setId(associationAlarmRdv.save());
+            Toast.makeText(this, "Alarm set : " + rdv.getDate().toString(), Toast.LENGTH_LONG).show();
+
+
     }
 
     /*protected void startAlert(Class classe, Date dateRdv, String detail, String echeance, Context context) {

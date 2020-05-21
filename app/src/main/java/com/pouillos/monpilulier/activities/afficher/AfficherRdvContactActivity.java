@@ -2,6 +2,7 @@ package com.pouillos.monpilulier.activities.afficher;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import com.pouillos.monpilulier.activities.photo.MakePhotoActivity;
 import com.pouillos.monpilulier.activities.tools.RdvContactNotificationBroadcastReceiver;
 
 import com.pouillos.monpilulier.activities.utils.DateUtils;
+import com.pouillos.monpilulier.entities.Ordonnance;
 import com.pouillos.monpilulier.entities.RdvContact;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.enumeration.TypePhoto;
@@ -64,6 +66,7 @@ public class AfficherRdvContactActivity extends NavDrawerActivity implements Ser
     @State
     Date date;
 
+    //RdvContact rdvContact;
     TimePickerDialog picker;
 
     List<RdvContact> listRdvContactBD;
@@ -131,8 +134,25 @@ public class AfficherRdvContactActivity extends NavDrawerActivity implements Ser
 
         setTitle("Mes Rdv");
 
+        traiterIntent();
         selectedRdv.setOnItemClickListener(this);
     }
+
+    @Override
+    public void traiterIntent() {
+        Intent intent = getIntent();
+        if (intent.hasExtra("rdvContactId")) {
+            Long rdvContactId = intent.getLongExtra("rdvContactId", 0);
+            rdvContactSelected = RdvContact.findById(RdvContact.class, rdvContactId);
+            selectedRdv.setText(rdvContactSelected.toString());
+           // rdvContactSelected = listRdvContactBD.get(position);
+            enableFields(false);
+            displayFabs();
+            fillAllFields();
+            displayAllFields(false);
+        }
+    }
+
 
     public class AsyncTaskRunner extends AsyncTask<Void, Integer, Void> {
 

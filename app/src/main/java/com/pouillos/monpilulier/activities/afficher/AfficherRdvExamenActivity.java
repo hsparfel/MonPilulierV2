@@ -2,6 +2,7 @@ package com.pouillos.monpilulier.activities.afficher;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,10 +30,9 @@ import com.pouillos.monpilulier.activities.NavDrawerActivity;
 import com.pouillos.monpilulier.activities.add.AddRdvExamenActivity;
 
 import com.pouillos.monpilulier.activities.photo.MakePhotoActivity;
-import com.pouillos.monpilulier.activities.tools.RdvAnalyseNotificationBroadcastReceiver;
-import com.pouillos.monpilulier.activities.tools.RdvExamenNotificationBroadcastReceiver;
 
 import com.pouillos.monpilulier.activities.utils.DateUtils;
+import com.pouillos.monpilulier.entities.RdvContact;
 import com.pouillos.monpilulier.entities.RdvExamen;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.enumeration.TypePhoto;
@@ -59,7 +59,7 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
     @State
     Utilisateur activeUser;
     @State
-    RdvExamen rdvSelected;
+    RdvExamen rdvExamenSelected;
     @State
     Date date;
 
@@ -131,8 +131,23 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
         runner.execute();
 
         setTitle("Mes Examens");
-
+        traiterIntent();
         selectedRdv.setOnItemClickListener(this);
+    }
+
+    @Override
+    public void traiterIntent() {
+        Intent intent = getIntent();
+        if (intent.hasExtra("rdvExamenId")) {
+            Long rdvExamenId = intent.getLongExtra("rdvExamenId", 0);
+            rdvExamenSelected = RdvExamen.findById(RdvExamen.class, rdvExamenId);
+            selectedRdv.setText(rdvExamenSelected.toString());
+            // rdvContactSelected = listRdvContactBD.get(position);
+            enableFields(false);
+            displayFabs();
+            fillAllFields();
+            displayAllFields(false);
+        }
     }
 
     public class AsyncTaskRunner extends AsyncTask<Void, Integer, Void> {
@@ -171,14 +186,14 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
 
     @OnClick(R.id.fabSave)
     public void fabSaveClick() {
-        deleteItem(AfficherRdvExamenActivity.this, rdvSelected, AfficherRdvExamenActivity.class,false);
-        rdvSelected.setDate(date);
-        if (textNote.getText() != null && !textNote.getText().toString().equalsIgnoreCase(rdvSelected.getNote())) {
-            rdvSelected.setNote(textNote.getText().toString());
+        deleteItem(AfficherRdvExamenActivity.this, rdvExamenSelected, AfficherRdvExamenActivity.class,false);
+        rdvExamenSelected.setDate(date);
+        if (textNote.getText() != null && !textNote.getText().toString().equalsIgnoreCase(rdvExamenSelected.getNote())) {
+            rdvExamenSelected.setNote(textNote.getText().toString());
         }
-        rdvSelected.save();
+        rdvExamenSelected.save();
         //enregistrer la/les notification(s)
-        activerNotification(rdvSelected,AfficherRdvExamenActivity.this);
+        activerNotification(rdvExamenSelected,AfficherRdvExamenActivity.this);
         enableFields(false);
         displayAllFields(false);
         displayFabs();
@@ -211,12 +226,12 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
 
     @OnClick(R.id.fabDelete)
     public void fabDeleteClick() {
-        deleteItem(AfficherRdvExamenActivity.this, rdvSelected, AfficherRdvExamenActivity.class,true);
+        deleteItem(AfficherRdvExamenActivity.this, rdvExamenSelected, AfficherRdvExamenActivity.class,true);
     }
 
     @OnClick(R.id.fabPhoto)
     public void fabPhotoClick() {
-        ouvrirActiviteSuivante(AfficherRdvExamenActivity.this, MakePhotoActivity.class,"type", TypePhoto.Examen.toString(),"itemId",rdvSelected.getId(),true);
+        ouvrirActiviteSuivante(AfficherRdvExamenActivity.this, MakePhotoActivity.class,"type", TypePhoto.Examen.toString(),"itemId", rdvExamenSelected.getId(),true);
     }
 
     private void resizeAllFields(boolean bool) {
@@ -229,7 +244,7 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        rdvSelected = listRdvBD.get(position);
+        rdvExamenSelected = listRdvBD.get(position);
         enableFields(false);
         displayFabs();
         fillAllFields();
@@ -247,7 +262,7 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
     public void displayFabs() {
         fabSave.hide();
         fabCancel.hide();
-        if (rdvSelected == null) {
+        if (rdvExamenSelected == null) {
             fabEdit.hide();
             fabDelete.hide();
             fabPhoto.hide();
@@ -260,10 +275,10 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
     }
 
     private void fillAllFields() {
-        textExamen.setText(rdvSelected.getExamen().toString());
-        textDate.setText(DateUtils.ecrireDate(rdvSelected.getDate()));
-        textHeure.setText(DateUtils.ecrireHeure(rdvSelected.getDate()));
-        textNote.setText(rdvSelected.getNote());
+        textExamen.setText(rdvExamenSelected.getExamen().toString());
+        textDate.setText(DateUtils.ecrireDate(rdvExamenSelected.getDate()));
+        textHeure.setText(DateUtils.ecrireHeure(rdvExamenSelected.getDate()));
+        textNote.setText(rdvExamenSelected.getNote());
     }
 
     private void enableFields(boolean bool) {
@@ -277,7 +292,7 @@ public class AfficherRdvExamenActivity extends NavDrawerActivity implements Seri
         layoutExamen.setVisibility(View.VISIBLE);
         layoutDate.setVisibility(View.VISIBLE);
         layoutHeure.setVisibility(View.VISIBLE);
-        if (bool || !TextUtils.isEmpty(rdvSelected.getNote())) {
+        if (bool || !TextUtils.isEmpty(rdvExamenSelected.getNote())) {
             layoutNote.setVisibility(View.VISIBLE);
         } else {
             layoutNote.setVisibility(View.GONE);
