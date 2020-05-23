@@ -148,106 +148,134 @@ public class ImportContactActivity extends NavDrawerActivity implements Serializ
 
             List<ImportContact> listImportContact = ImportContact.find(ImportContact.class,"import_completed = ?","0");
             //List<ImportContact> listImportContact = ImportContact.listAll(ImportContact.class);
-
+//TODO A REVOIR
             int nbImportEffectue =0;
             int nbImportIgnore = 0;
+            int readerCount=0;
+            int nbLigneLue=0;
             //ImportContact current = listImportContact.get(0);
-               for (ImportContact current : listImportContact) {
-            nbImportEffectue = 0;
-            nbImportIgnore = 0;
-            try {
-                is = getAssets().open(current.getPath());
-                reader = new BufferedReader(new InputStreamReader(is,"UTF-8"));
-                String line = null;
+            for (ImportContact current : listImportContact) {
+                nbImportEffectue =0;
+                nbImportIgnore = 0;
+                //readerCount=0;
+                nbLigneLue=0;
+                if (current.getDateDebut() == null) {
+                    current.setDateDebut(DateUtils.ecrireDateHeure(new Date()));
+                }
+                if (current.getNbLigneLue() != 0) {
+                    nbLigneLue = current.getNbLigneLue();
+                }
+                if (current.getNbImportEffectue() != 0) {
+                    nbImportEffectue = current.getNbImportEffectue();
+                }
+                if (current.getNbImportIgnore() != 0) {
+                    nbImportIgnore = current.getNbImportIgnore();
+                }
 
-                current.setDateDebut(DateUtils.ecrireDateHeure(new Date()));
-                current.setDateFin("");
-                current.setNbImportEffectue(nbImportEffectue);
-                current.setNbImportIgnore(nbImportIgnore);
+                //current.setDateFin("");
+                //current.setNbImportEffectue(nbImportEffectue);
+                ///current.setNbImportIgnore(nbImportIgnore);
+                // nbImportEffectue = 0;
+                // nbImportIgnore = 0;
 
-                int readerSize = 1500;
-                int readerCount = 0;
-                int compteur = 0;
-                publishProgress(compteur);
-                while ((line = reader.readLine()) != null) {
-                    readerCount ++;
-                    compteur = readerCount*100/readerSize;
-                    //compteur ++;
+                try {
+                    is = getAssets().open(current.getPath());
+                    reader = new BufferedReader(new InputStreamReader(is,"UTF-8"));
+                    String line = null;
+
+                    int readerSize = 20000;
+                    readerCount = 0;
+                    int compteur = 0;
                     publishProgress(compteur);
-                    final String SEPARATEUR = "\\;";
-                    String lineSplitted[] = line.split(SEPARATEUR);
+                    while ((line = reader.readLine()) != null) {
+                        //todo revoir cette condition
 
-                    if (lineSplitted[1].equals("Identifiant PP")) {
-                        nbImportIgnore++;
-                        continue;
-                    }
+                            if (readerCount<nbLigneLue) {
+                                readerCount ++;
+                                continue;
+                            }
+                        readerCount ++;
+                        compteur = readerCount*100/readerSize;
+                        //compteur ++;
+                        publishProgress(compteur);
+                        final String SEPARATEUR = "\\|";
+                        String lineSplitted[] = line.split(SEPARATEUR);
 
-                    Contact contact = new Contact();
-                    contact.setIdPP(lineSplitted[2]);
-                    contact.setCodeCivilite(lineSplitted[3]);
-                    contact.setNom(lineSplitted[7].toUpperCase());
-                    if (lineSplitted[8].length()>1) {
-                        String prenom = lineSplitted[8].substring(0,1).toUpperCase()+lineSplitted[8].substring(1,lineSplitted[8].length()-1).toLowerCase();
-                    }
-                    contact.setPrenom(lineSplitted[8]);
-                    contact.setProfession(mapProfession.get(lineSplitted[10]));
-
-                    if (lineSplitted[16].equals("Qualifié en Médecine Générale") || lineSplitted[16].equals("Spécialiste en Médecine Générale")) {
-                        contact.setSavoirFaire(mapSavoirFaire.get("Médecine Générale"));
-                    } else {
-                        contact.setSavoirFaire(mapSavoirFaire.get(lineSplitted[16]));
-                    }
-                    if (lineSplitted.length>24) {
-                        contact.setRaisonSocial(lineSplitted[24]);
-                    }
-                    if (lineSplitted.length>26) {
-                        contact.setComplement(lineSplitted[26]);
-                        if (contact.getComplement().equalsIgnoreCase(contact.getRaisonSocial())) {
-                            contact.setComplement(null);
+                        if (lineSplitted[1].equals("Identifiant PP")) {
+                            nbImportIgnore++;
+                            current.setNbImportIgnore(nbImportIgnore);
+                            nbLigneLue++;
+                            current.setNbLigneLue(nbLigneLue);
+                            current.save();
+                            continue;
                         }
-                    }
-                    String adresse = "";
-                    if ((lineSplitted.length>28) && (!lineSplitted[28].isEmpty())){
-                        adresse = lineSplitted[28]+" ";
-                    }
 
-                    if ((lineSplitted.length>31) && (!lineSplitted[31].isEmpty())){
-                        adresse += lineSplitted[31]+" ";
-                    }
-                    if ((lineSplitted.length>32) && (!lineSplitted[32].isEmpty())){
-                        adresse += lineSplitted[32];
-                    }
-                    contact.setAdresse(adresse.toUpperCase());
-
-                    if (lineSplitted.length>34 && !lineSplitted[34].isEmpty())  {
-
-                        contact.setCp(lineSplitted[34].substring(0,5));
-                        contact.setVille(lineSplitted[34].substring(6));
-
-                    } else {
-                        contact.setCp("");
-                    }
-                    if (lineSplitted.length>40 && !lineSplitted[40].isEmpty())  {
-                        lineSplitted[40] = lineSplitted[40].replace(" ", "");
-                        lineSplitted[40] = lineSplitted[40].replace(".", "");
-                        if (lineSplitted[40].length() == 9) {
-                            contact.setTelephone("0" + lineSplitted[40]);
-                        } else if (lineSplitted[40].length() == 10) {
-                            contact.setTelephone(lineSplitted[40]);
+                        Contact contact = new Contact();
+                        contact.setIdPP(lineSplitted[2]);
+                        contact.setCodeCivilite(lineSplitted[3]);
+                        contact.setNom(lineSplitted[7].toUpperCase());
+                        if (lineSplitted[8].length()>1) {
+                            String prenom = lineSplitted[8].substring(0,1).toUpperCase()+lineSplitted[8].substring(1,lineSplitted[8].length()-1).toLowerCase();
                         }
-                    }
-                    if (lineSplitted.length>42 && !lineSplitted[42].isEmpty())  {
-                        lineSplitted[42] = lineSplitted[42].replace(" ", "");
-                        lineSplitted[42] = lineSplitted[42].replace(".", "");
-                        if (lineSplitted[42].length() == 9) {
-                            contact.setFax("0" + lineSplitted[42]);
-                        } else if (lineSplitted[42].length() == 10) {
-                            contact.setFax(lineSplitted[42]);
+                        contact.setPrenom(lineSplitted[8]);
+                        contact.setProfession(mapProfession.get(lineSplitted[10]));
+
+                        if (lineSplitted[16].equals("Qualifié en Médecine Générale") || lineSplitted[16].equals("Spécialiste en Médecine Générale")) {
+                            contact.setSavoirFaire(mapSavoirFaire.get("Médecine Générale"));
+                        } else {
+                            contact.setSavoirFaire(mapSavoirFaire.get(lineSplitted[16]));
                         }
-                    }
-                    if (lineSplitted.length>43 && !lineSplitted[43].isEmpty())  {
-                        contact.setEmail(lineSplitted[43]);
-                    }
+                        if (lineSplitted.length>24) {
+                            contact.setRaisonSocial(lineSplitted[24]);
+                        }
+                        if (lineSplitted.length>26) {
+                            contact.setComplement(lineSplitted[26]);
+                            if (contact.getComplement().equalsIgnoreCase(contact.getRaisonSocial())) {
+                                contact.setComplement(null);
+                            }
+                        }
+                        String adresse = "";
+                        if ((lineSplitted.length>28) && (!lineSplitted[28].isEmpty())){
+                            adresse = lineSplitted[28]+" ";
+                        }
+
+                        if ((lineSplitted.length>31) && (!lineSplitted[31].isEmpty())){
+                            adresse += lineSplitted[31]+" ";
+                        }
+                        if ((lineSplitted.length>32) && (!lineSplitted[32].isEmpty())){
+                            adresse += lineSplitted[32];
+                        }
+                        contact.setAdresse(adresse.toUpperCase());
+
+                        if (lineSplitted.length>34 && !lineSplitted[34].isEmpty())  {
+
+                            contact.setCp(lineSplitted[34].substring(0,5));
+                            contact.setVille(lineSplitted[34].substring(6));
+
+                        } else {
+                            contact.setCp("");
+                        }
+                        if (lineSplitted.length>40 && !lineSplitted[40].isEmpty())  {
+                            lineSplitted[40] = lineSplitted[40].replace(" ", "");
+                            lineSplitted[40] = lineSplitted[40].replace(".", "");
+                            if (lineSplitted[40].length() == 9) {
+                                contact.setTelephone("0" + lineSplitted[40]);
+                            } else if (lineSplitted[40].length() == 10) {
+                                contact.setTelephone(lineSplitted[40]);
+                            }
+                        }
+                        if (lineSplitted.length>42 && !lineSplitted[42].isEmpty())  {
+                            lineSplitted[42] = lineSplitted[42].replace(" ", "");
+                            lineSplitted[42] = lineSplitted[42].replace(".", "");
+                            if (lineSplitted[42].length() == 9) {
+                                contact.setFax("0" + lineSplitted[42]);
+                            } else if (lineSplitted[42].length() == 10) {
+                                contact.setFax(lineSplitted[42]);
+                            }
+                        }
+                        if (lineSplitted.length>43 && !lineSplitted[43].isEmpty())  {
+                            contact.setEmail(lineSplitted[43]);
+                        }
 
                        /* List<ContactLight> listContactLight = ContactLight.find(ContactLight.class, "id_pp = ?",lineSplitted[2]);
                         if (listContactLight.size()>0) {
@@ -264,38 +292,44 @@ public class ImportContactActivity extends NavDrawerActivity implements Serializ
                                 continue;
                             }
                         }*/
-                    if (contact.getAdresse() != null && contact.getCp() != null && contact.getVille() != null) {
-                        contact.enregisterCoordonnees(context);
+                        if (contact.getAdresse() != null && contact.getCp() != null && contact.getVille() != null) {
+                            contact.enregisterCoordonnees(context);
+                        }
+                        //Log.i("enregistre","medecin new: "+lineSplitted[2]);
+                        contact.save();
+                        nbLigneLue++;
+                        nbImportEffectue++;
+                        current.setNbLigneLue(nbLigneLue);
+                        current.setNbImportEffectue(nbImportEffectue);
+                        current.save();
                     }
-                    //Log.i("enregistre","medecin new: "+lineSplitted[2]);
-                    contact.save();
-                    nbImportEffectue++;
-                }
-            } catch (final Exception e) {
-                nbImportIgnore++;
-                e.printStackTrace();
-            } finally {
-                if (is != null) {
-                    try {
-                        is.close();
-                    } catch (IOException ignored) {
+                } catch (final Exception e) {
+                    nbImportIgnore++;
+                    current.setNbImportIgnore(nbImportIgnore);
+                    current.save();
+                    e.printStackTrace();
+                } finally {
+                    if (is != null) {
+                        try {
+                            is.close();
+                        } catch (IOException ignored) {
+                        }
+                    }
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException ignored) {
+                        }
                     }
                 }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException ignored) {
-                    }
-                }
-            }
-            current.setDateFin(DateUtils.ecrireDateHeure(new Date()));
-            current.setNbImportIgnore(nbImportIgnore);
-            current.setNbImportEffectue(nbImportEffectue);
-            current.setImportCompleted(true);
-            current.save();
-            publishProgress(100);
-            //a voir si ça passe
-            //Toast.makeText(MainActivity.this, "Import de " + current.getPath() + " fini", Toast.LENGTH_LONG).show();
+                current.setDateFin(DateUtils.ecrireDateHeure(new Date()));
+                current.setNbImportIgnore(nbImportIgnore);
+                current.setNbImportEffectue(nbImportEffectue);
+                current.setImportCompleted(true);
+                current.save();
+                publishProgress(100);
+                //a voir si ça passe
+                //Toast.makeText(MainActivity.this, "Import de " + current.getPath() + " fini", Toast.LENGTH_LONG).show();
             }
 
             return null;

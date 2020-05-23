@@ -147,9 +147,9 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
                 ouvrirActiviteSuivante(NavDrawerActivity.this, AddOrdonnanceActivity.class,true);
 
                 break;
-            case R.id.activity_main_drawer_treatments:
+            /*case R.id.activity_main_drawer_treatments:
                 Toast.makeText(this, "à implementer 2", Toast.LENGTH_LONG).show();
-                break;
+                break;*/
 
             case R.id.activity_main_drawer_contact_appointments:
                 ouvrirActiviteSuivante(NavDrawerActivity.this, AfficherRdvContactActivity.class,true);

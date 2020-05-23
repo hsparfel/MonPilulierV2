@@ -13,6 +13,7 @@ public class ImportContact extends SugarRecord implements Serializable, Comparab
     private boolean importCompleted;
     private String dateDebut;
     private String dateFin;
+    private int nbLigneLue;
     private int nbImportEffectue;
     private int nbImportIgnore;
 
@@ -73,6 +74,14 @@ public class ImportContact extends SugarRecord implements Serializable, Comparab
 
     public void setNbImportIgnore(int nbImportIgnore) {
         this.nbImportIgnore = nbImportIgnore;
+    }
+
+    public int getNbLigneLue() {
+        return nbLigneLue;
+    }
+
+    public void setNbLigneLue(int nbLigneLue) {
+        this.nbLigneLue = nbLigneLue;
     }
 
     @Override

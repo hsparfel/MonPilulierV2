@@ -166,7 +166,13 @@ public class AddProfilActivity extends NavDrawerActivity implements Serializable
 
             profilToCreate = new Profil();
             profilToCreate.setUtilisateur(activeUser);
-            profilToCreate.setDate(new Date());
+            Date dateParDefaut = new Date();
+            dateParDefaut.setHours(0);
+            dateParDefaut.setMinutes(0);
+            dateParDefaut.setSeconds(0);
+            Long temp = dateParDefaut.getTime()/1000;
+            dateParDefaut.setTime(temp*1000);
+            profilToCreate.setDate(dateParDefaut);
             new DateUtils();
             String dateString = DateUtils.ecrireDate(profilToCreate.getDate());
             textDate.setText(dateString);

@@ -521,7 +521,7 @@ public class AddOrdonnanceActivity extends NavDrawerActivity implements Serializ
     }
 
     @Override
-    public void onClickDeleteButton(int position) {
+    public void onClickPrescriptionButton(int position) {
         Prescription prescription = adapter.getPrescription(position);
         Toast.makeText(AddOrdonnanceActivity.this, "You are trying to delete user : "+ prescription.getMedicament(), Toast.LENGTH_SHORT).show();
     }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
@@ -14,10 +15,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.facebook.stetho.Stetho;
 import com.google.android.material.button.MaterialButton;
+import com.orm.SchemaGenerator;
+import com.orm.SugarContext;
+import com.orm.SugarDb;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvAnalyseActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvContactActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvExamenActivity;
+import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.Analyse;
 import com.pouillos.monpilulier.entities.AssociationFormeDose;
 import com.pouillos.monpilulier.entities.Departement;
@@ -25,6 +30,8 @@ import com.pouillos.monpilulier.entities.Dose;
 import com.pouillos.monpilulier.entities.Examen;
 import com.pouillos.monpilulier.entities.FormePharmaceutique;
 import com.pouillos.monpilulier.entities.ImportContact;
+import com.pouillos.monpilulier.entities.Ordonnance;
+import com.pouillos.monpilulier.entities.Prescription;
 import com.pouillos.monpilulier.entities.Profession;
 import com.pouillos.monpilulier.entities.RdvAnalyse;
 import com.pouillos.monpilulier.entities.RdvContact;
@@ -32,6 +39,7 @@ import com.pouillos.monpilulier.entities.RdvExamen;
 import com.pouillos.monpilulier.entities.Region;
 import com.pouillos.monpilulier.entities.SavoirFaire;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
+import com.pouillos.monpilulier.recycler.adapter.RecyclerAdapterPrescription;
 import com.pouillos.monpilulier.recycler.adapter.RecyclerAdapterRdvAnalyse;
 import com.pouillos.monpilulier.recycler.adapter.RecyclerAdapterRdvContact;
 import com.pouillos.monpilulier.recycler.adapter.RecyclerAdapterRdvExamen;
@@ -47,10 +55,21 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import icepick.Icepick;
 
-public class AccueilActivity extends NavDrawerActivity implements BasicUtils, RecyclerAdapterRdvContact.Listener, RecyclerAdapterRdvAnalyse.Listener, RecyclerAdapterRdvExamen.Listener {
+public class AccueilActivity extends NavDrawerActivity implements BasicUtils, RecyclerAdapterRdvContact.Listener, RecyclerAdapterRdvAnalyse.Listener, RecyclerAdapterRdvExamen.Listener, RecyclerAdapterPrescription.Listener {
 
     @BindView(R.id.my_progressBar)
     ProgressBar progressBar;
+
+    @BindView(R.id.textView)
+    TextView textView;
+
+    @BindView(R.id.list_prescription)
+    RecyclerView listPrescription;
+    @BindView(R.id.button_list_prescription)
+    MaterialButton buttonListPrescription;
+    private boolean prescriptionDisplay = true;
+    private RecyclerAdapterPrescription adapterPrescription;
+    private List<Prescription> listePrescription = new ArrayList<>();
 
     @BindView(R.id.list_rdv_contact)
     RecyclerView listRdvContact;
@@ -92,8 +111,19 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils, Re
 
         progressBar.setVisibility(View.VISIBLE);
 
-        AccueilActivity.AsyncTaskRunnerBD runnerBD = new AccueilActivity.AsyncTaskRunnerBD();
-        runnerBD.execute();
+        textView.setText(DateUtils.ecrireDate(new Date()));
+
+        //RAZ de secours
+       /* SugarContext.terminate();
+        SchemaGenerator schemaGenerator = new SchemaGenerator(getApplicationContext());
+        schemaGenerator.deleteTables(new SugarDb(getApplicationContext()).getDB());
+        SugarContext.init(getApplicationContext());
+        schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());
+*/
+
+
+       AccueilActivity.AsyncTaskRunnerBD runnerBD = new AccueilActivity.AsyncTaskRunnerBD();
+       runnerBD.execute();
 
     }
 
@@ -119,7 +149,89 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils, Re
             new ImportContact("PS_LibreAcces_Personne_activite_16.csv", false).save();
             new ImportContact("PS_LibreAcces_Personne_activite_17.csv", false).save();
             new ImportContact("PS_LibreAcces_Personne_activite_18.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_19.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_20.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_21.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_22.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_23.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_24.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_25.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_26.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_27.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_28.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_29.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_30.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_31.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_32.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_33.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_34.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_35.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_36.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_37.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_38.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_39.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_40.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_41.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_42.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_43.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_44.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_45.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_46.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_47.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_48.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_49.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_50.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_51.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_52.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_53.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_54.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_55.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_56.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_57.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_58.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_59.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_60.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_61.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_62.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_63.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_64.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_65.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_66.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_67.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_68.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_69.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_70.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_71.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_72.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_73.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_74.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_75.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_76.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_77.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_78.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_79.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_80.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_81.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_82.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_83.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_84.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_85.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_86.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_87.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_88.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_89.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_90.csv", false).save();
+            new ImportContact("PS_LibreAcces_Personne_activite_91.csv", false).save();
+
         }
+    }
+
+    @Override
+    public void onClickPrescriptionButton(int position) {
+        Toast.makeText(AccueilActivity.this, "click sur prescription", Toast.LENGTH_LONG).show();
+        Prescription prescription = listePrescription.get(position);
+        //creer la classe
+        //ouvrirActiviteSuivante(this, AfficherPrescriptionActivity.class,"rdvContactId",prescription.getId(),false);
     }
 
     @Override
@@ -143,6 +255,15 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils, Re
         ouvrirActiviteSuivante(this, AfficherRdvExamenActivity.class,"rdvExamenId",rdvExamen.getId(),false);
     }
 
+    @OnClick(R.id.button_list_prescription)
+    public void buttonListPrescriptionClick() {
+        if (!prescriptionDisplay) {
+            listPrescription.setVisibility(View.VISIBLE);
+        } else {
+            listPrescription.setVisibility(View.GONE);
+        }
+        prescriptionDisplay = !prescriptionDisplay;
+    }
     @OnClick(R.id.button_list_rdv_contact)
     public void buttonListRdvContactClick() {
         if (!rdvContactDisplay) {
@@ -192,11 +313,25 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils, Re
             publishProgress(70);
             remplirImportContactBD();
             publishProgress(80);
-            ActualiserListRdvContact();
+
+            if (activeUser != null) {
+                ActualiserListPrescription();
+            }
+            publishProgress(82);
+            if (activeUser != null) {
+                ActualiserListRdvContact();
+            }
+
             publishProgress(84);
-            ActualiserListRdvAnalyse();
+            if (activeUser != null) {
+                ActualiserListRdvAnalyse();
+            }
+
             publishProgress(88);
-            ActualiserListRdvExamen();
+            if (activeUser != null) {
+                ActualiserListRdvExamen();
+            }
+
             publishProgress(92);
             publishProgress(100);
             return null;
@@ -214,6 +349,18 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils, Re
 
             configureRecyclerView();
             configureOnClickRecyclerView();
+            if (listePrescription.size() == 0) {
+                buttonListPrescription.setVisibility(View.GONE);
+            }
+            if (listeRdvContact.size() == 0) {
+                buttonListRdvContact.setVisibility(View.GONE);
+            }
+            if (listeRdvAnalyse.size() == 0) {
+                buttonListRdvAnalyse.setVisibility(View.GONE);
+            }
+            if (listeRdvExamen.size() == 0) {
+                buttonListRdvExamen.setVisibility(View.GONE);
+            }
         }
 
         @RequiresApi(api = Build.VERSION_CODES.N)
@@ -221,7 +368,19 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils, Re
             progressBar.setProgress(integer[0],true);
         }
     }
+    private void ActualiserListPrescription() {
+        List<Ordonnance> listAllOrdonnance = Ordonnance.find(Ordonnance.class,"utilisateur = ?",activeUser.getId().toString());
+        for (Ordonnance currentOrdonnance : listAllOrdonnance) {
+            List<Prescription> listAllPrescription = Prescription.find(Prescription.class,"ordonnance = ?",currentOrdonnance.getId().toString());
+            for (Prescription currentPrescription : listAllPrescription) {
+                if (currentPrescription.getDateFin().after(DateUtils.ajouterJour(new Date(),1))) {
+                    listePrescription.add(currentPrescription);
+                }
+            }
+        }
 
+        Collections.sort(listePrescription);
+    }
     private void ActualiserListRdvContact() {
         List<RdvContact> listAllRdvContact = RdvContact.find(RdvContact.class,"utilisateur = ?",activeUser.getId().toString());
         for (RdvContact currentContact : listAllRdvContact) {
@@ -251,6 +410,13 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils, Re
     }
 
     private void configureOnClickRecyclerView(){
+        ItemClickSupport.addTo(listPrescription, R.layout.recycler_list_prescription)
+                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        Log.e("TAG", "Position : "+position);
+                    }
+                });
         ItemClickSupport.addTo(listRdvContact, R.layout.recycler_list_rdv_contact)
                 .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
                     @Override
@@ -275,6 +441,10 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils, Re
     }
 
     public void configureRecyclerView() {
+        adapterPrescription = new RecyclerAdapterPrescription(listePrescription, this);
+        listPrescription.setAdapter(adapterPrescription);
+        listPrescription.setLayoutManager(new LinearLayoutManager(this));
+
         adapterRdvContact = new RecyclerAdapterRdvContact(listeRdvContact, this);
         listRdvContact.setAdapter(adapterRdvContact);
         listRdvContact.setLayoutManager(new LinearLayoutManager(this));

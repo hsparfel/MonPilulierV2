@@ -45,6 +45,7 @@ import com.pouillos.monpilulier.entities.ContactLight;
 import com.pouillos.monpilulier.entities.ImportContact;
 import com.pouillos.monpilulier.entities.Medicament;
 import com.pouillos.monpilulier.entities.Profession;
+import com.pouillos.monpilulier.entities.Profil;
 import com.pouillos.monpilulier.entities.Region;
 import com.pouillos.monpilulier.entities.SavoirFaire;
 import com.pouillos.monpilulier.entities.Utilisateur;
@@ -132,12 +133,13 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         });
 
         buttonNewMedecinOfficiel.setOnClickListener(v -> {
-            //remplirMedecinOfficielBD();
+            /*//remplirMedecinOfficielBD();
             progressBar.setVisibility(View.VISIBLE);
             //remplirMedicamentOfficielBD();
             progressBar.setProgress(0);
             AsyncTaskRunnerContact runner = new AsyncTaskRunnerContact(this);
-            runner.execute();
+            runner.execute();*/
+            Toast.makeText(MainActivity.this, "desactive", Toast.LENGTH_LONG).show();
         });
 
         buttonAccueil.setOnClickListener(v -> {
@@ -294,8 +296,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
           //  SugarRecord.executeQuery("DROP TABLE CONTACT");
             //
            // SugarRecord.executeQuery("DROP TABLE RDV_ACTE_MEDICAL");
+            //SugarRecord.executeQuery("DROP TABLE DUREE");
+            SugarRecord.executeQuery("DELETE FROM PROFIL");
+
             //RAZ TOTAL
-            SugarContext.terminate();
+          /*  SugarContext.terminate();
             publishProgress(20);
             SchemaGenerator schemaGenerator = new SchemaGenerator(getApplicationContext());
             publishProgress(40);
@@ -304,7 +309,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             SugarContext.init(getApplicationContext());
             publishProgress(80);
             schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());
-
+*/
 
             publishProgress(100);
 

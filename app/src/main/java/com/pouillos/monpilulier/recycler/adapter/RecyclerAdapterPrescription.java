@@ -18,7 +18,7 @@ public class RecyclerAdapterPrescription extends RecyclerView.Adapter<RecyclerVi
         private List<Prescription> listPrescription;
 
     public interface Listener {
-        void onClickDeleteButton(int position);
+        void onClickPrescriptionButton(int position);
     }
 
     private final Listener callback;
@@ -32,7 +32,7 @@ public class RecyclerAdapterPrescription extends RecyclerView.Adapter<RecyclerVi
         public RecyclerViewHolderPrescription onCreateViewHolder(ViewGroup parent, int viewType) {
             Context context = parent.getContext();
             LayoutInflater inflater = LayoutInflater.from(context);
-            View view = inflater.inflate(R.layout.recycler_list_item, parent, false);
+            View view = inflater.inflate(R.layout.recycler_list_prescription, parent, false);
 
             return new RecyclerViewHolderPrescription(view);
         }

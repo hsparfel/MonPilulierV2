@@ -134,15 +134,18 @@ public class AfficherGraphiqueActivity extends NavDrawerActivity implements Seri
         long diff = dateFin.getTime() - dateDebut.getTime();
         float res = (diff / (1000*60*60*24));
         int res2 = (int) res +1;
+
+
+
         int compt = 0;
         List<Integer> tailleList = new ArrayList<>();
         List<String> dateList = new ArrayList<>();
         Map<Integer,Integer> tailleMap = new HashMap<>();
-        Map<Integer,String> dateMap = new HashMap<>();
-
+       // Map<Integer,String> dateMap = new HashMap<>();
+        Map<Integer,Long> dateMap = new HashMap<>();
         Calendar c = Calendar.getInstance();
 
-        for (int i=0; i<=res2;i++) {
+        for (int i=0; i<=res;i++) {
             xList.add(i);
             c.setTime(dateDebut);
             c.add(Calendar.DATE, i); //same with c.add(Calendar.DAY_OF_MONTH, 1);
@@ -151,7 +154,7 @@ public class AfficherGraphiqueActivity extends NavDrawerActivity implements Seri
 
             if (compt<listProfil.size() && listProfil.get(compt).getDate().equals(dateEnCours)) {
                 tailleMap.put(i,listProfil.get(compt).getTaille());
-                dateMap.put(i,new DateUtils().ecrireDate(listProfil.get(compt).getDate()));
+                dateMap.put(i,listProfil.get(compt).getDate().getTime());
                 compt++;
                 xValueMax = i;
             }
@@ -210,14 +213,17 @@ public class AfficherGraphiqueActivity extends NavDrawerActivity implements Seri
         renderer.setYLabels(20);
         renderer.setYAxisMin(tailleMin-5);
         renderer.setYAxisMax(tailleMax+5);
-        renderer.setXAxisMin(-xList.size()*12/100);
-        renderer.setXAxisMax(xList.size()+xList.size()*12/100);
+      /*  renderer.setXAxisMin(-xList.size()*12/100);
+        renderer.setXAxisMax(xList.size()+xList.size()*12/100);*/
+        renderer.setXAxisMin(dateMap.get(0));
+        renderer.setXAxisMax(dateMap.get(dateMap.size()-1));
         renderer.setBackgroundColor(Color.TRANSPARENT);
         renderer.setMarginsColor(getResources().getColor(android.R.color.transparent));
         renderer.setApplyBackgroundColor(true);
         renderer.setMargins(new int[] { 0, 0, 0, 0 });
-        renderer.addXTextLabel(0, dateMap.get(0));
-        renderer.addXTextLabel(xList.size()-1, dateMap.get(xValueMax));
+        renderer.addXTextLabel(0, dateMap.get(0).toString());
+        renderer.addXTextLabel(xList.size()-1, dateMap.get(dateMap.size()-1).toString());
+       // renderer.addXTextLabel(xList.size()-1, dateMap.get(xValueMax));
         renderer.addSeriesRenderer(tailleRenderer);
         renderer.setShowLegend(false);
 

@@ -22,9 +22,6 @@ public class RecyclerViewHolderPrescription extends RecyclerView.ViewHolder impl
     @BindView(R.id.detail)
     TextView detail;
 
-    @BindView(R.id.buttonDelete)
-    ImageButton buttonDelete;
-
     private WeakReference<RecyclerAdapterPrescription.Listener> callbackWeakRef;
 
     public RecyclerViewHolderPrescription(View itemView) {
@@ -35,7 +32,7 @@ public class RecyclerViewHolderPrescription extends RecyclerView.ViewHolder impl
 
     public void updateWithPrescription(Prescription prescription, RecyclerAdapterPrescription.Listener callback){
         this.detail.setText(prescription.getMedicament().toString());
-        this.buttonDelete.setOnClickListener(this);
+        this.detail.setOnClickListener(this);
 
         //4 - Create a new weak Reference to our Listener
         this.callbackWeakRef = new WeakReference<RecyclerAdapterPrescription.Listener>(callback);
@@ -46,6 +43,6 @@ public class RecyclerViewHolderPrescription extends RecyclerView.ViewHolder impl
     public void onClick(View view) {
         // 5 - When a click happens, we fire our listener.
         RecyclerAdapterPrescription.Listener callback = callbackWeakRef.get();
-        if (callback != null) callback.onClickDeleteButton(getAdapterPosition());
+        if (callback != null) callback.onClickPrescriptionButton(getAdapterPosition());
     }
 }
