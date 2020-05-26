@@ -6,8 +6,38 @@ import java.util.Date;
 
 public class DateUtils {
 
+    public static String recupJour(Date date) {
+        String pattern = "dd";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String dateMaj = simpleDateFormat.format(date);
+        return dateMaj;
+    }
+
+    public static String recupMois(Date date) {
+        String pattern = "MM";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String dateMaj = simpleDateFormat.format(date);
+        return dateMaj;
+    }
+
+    public static String recupAnnee(Date date) {
+        String pattern = "yyyy";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String dateMaj = simpleDateFormat.format(date);
+        return dateMaj;
+    }
+
+
+
     public static String ecrireDate(Date date) {
         String pattern = "dd/MM/yyyy";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String dateMaj = simpleDateFormat.format(date);
+        return dateMaj;
+    }
+
+    public static String ecrireAnnee(Date date) {
+        String pattern = "yyyy";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         String dateMaj = simpleDateFormat.format(date);
         return dateMaj;

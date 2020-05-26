@@ -46,6 +46,7 @@ import com.pouillos.monpilulier.activities.afficher.AfficherProfilActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvContactActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvAnalyseActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvExamenActivity;
+import com.pouillos.monpilulier.activities.graphique.BarToLineChartActivity;
 import com.pouillos.monpilulier.activities.photo.MakePhotoActivity;
 import com.pouillos.monpilulier.activities.recherche.ChercherContactActivity;
 
@@ -133,6 +134,7 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
                 break;
             case R.id.activity_main_drawer_evolution:
                 ouvrirActiviteSuivante(NavDrawerActivity.this, AfficherGraphiqueActivity.class,true);
+                //ouvrirActiviteSuivante(NavDrawerActivity.this, BarToLineChartActivity.class,true);
                 break;
             case R.id.activity_main_drawer_account:
                // ouvrirActiviteSuivante(NavDrawerActivity.this, AddUserActivity.class, getResources().getString(R.string.id_user), activeUser.getId());

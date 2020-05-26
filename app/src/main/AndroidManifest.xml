@@ -71,6 +71,11 @@
         <activity android:name=".activities.afficher.AfficherRdvAnalyseActivity" />
         <activity android:name=".activities.afficher.AfficherRdvExamenActivity" />
         <activity android:name=".activities.afficher.AfficherGraphiqueActivity" />
+
+        <activity android:name=".activities.graphique.BarToLineChartActivity" />
+
+
+
         <activity android:name=".activities.afficher.AfficherAnalyseActivity" />
         <activity android:name=".activities.afficher.AfficherExamenActivity" />
         <activity android:name=".activities.afficher.AfficherProfilActivity" />
