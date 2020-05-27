@@ -51,6 +51,7 @@ import com.pouillos.monpilulier.activities.photo.MakePhotoActivity;
 import com.pouillos.monpilulier.activities.recherche.ChercherContactActivity;
 
 import com.pouillos.monpilulier.activities.tools.ImportContactActivity;
+import com.pouillos.monpilulier.activities.tools.ImportEtablissementActivity;
 import com.pouillos.monpilulier.activities.tools.PriseNotificationBroadcastReceiver;
 import com.pouillos.monpilulier.activities.tools.RdvAnalyseNotificationBroadcastReceiver;
 import com.pouillos.monpilulier.activities.tools.RdvExamenNotificationBroadcastReceiver;
@@ -221,6 +222,10 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
                 return true;
             case R.id.importContact:
                 myProfilActivity = new Intent(NavDrawerActivity.this, ImportContactActivity.class);
+                startActivity(myProfilActivity);
+                return true;
+            case R.id.importEtablissement:
+                myProfilActivity = new Intent(NavDrawerActivity.this, ImportEtablissementActivity.class);
                 startActivity(myProfilActivity);
                 return true;
             default:

@@ -15,9 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.facebook.stetho.Stetho;
 import com.google.android.material.button.MaterialButton;
-import com.orm.SchemaGenerator;
-import com.orm.SugarContext;
-import com.orm.SugarDb;
 import com.pouillos.monpilulier.R;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvAnalyseActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvContactActivity;
@@ -27,6 +24,8 @@ import com.pouillos.monpilulier.entities.Analyse;
 import com.pouillos.monpilulier.entities.AssociationFormeDose;
 import com.pouillos.monpilulier.entities.Departement;
 import com.pouillos.monpilulier.entities.Dose;
+import com.pouillos.monpilulier.entities.ImportEtablissement;
+import com.pouillos.monpilulier.entities.TypeEtablissement;
 import com.pouillos.monpilulier.entities.Examen;
 import com.pouillos.monpilulier.entities.FormePharmaceutique;
 import com.pouillos.monpilulier.entities.ImportContact;
@@ -226,6 +225,13 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils, Re
         }
     }
 
+    public void remplirImportEtablissementBD() {
+        Long count = ImportEtablissement.count(ImportEtablissement.class);
+        if (count == 0) {
+            new ImportEtablissement("etablissement.txt", false).save();
+        }
+    }
+
     @Override
     public void onClickPrescriptionButton(int position) {
         Toast.makeText(AccueilActivity.this, "click sur prescription", Toast.LENGTH_LONG).show();
@@ -301,6 +307,8 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils, Re
             //remplir BD avec valeur par defaut
             remplirFormePharmaceutiqueBD();
             publishProgress(10);
+            remplirTypeEtablissementBD();
+            publishProgress(15);
             remplirDefaultBD();
             publishProgress(20);
             remplirProfessionBD();
@@ -313,6 +321,8 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils, Re
             publishProgress(70);
             remplirImportContactBD();
             publishProgress(80);
+            remplirImportEtablissementBD();
+            publishProgress(85);
 
             if (activeUser != null) {
                 ActualiserListPrescription();
@@ -1097,6 +1107,176 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils, Re
             new FormePharmaceutique("trousse pour préparation radiopharmaceutique et  trousse pour préparation radiopharmaceutique").save();
             new FormePharmaceutique("trousse radiopharmaceutique").save();
             new FormePharmaceutique("vernis à ongles médicamenteux(se)").save();
+        }
+    }
+
+    public void remplirTypeEtablissementBD() {
+        Long count = TypeEtablissement.count(TypeEtablissement.class);
+        if (count ==0) {
+            new TypeEtablissement("Aire Station Nomades").save();
+            new TypeEtablissement("Appartement de Coordination Thérapeutique (A.C.T.)").save();
+            new TypeEtablissement("Appartement Thérapeutique").save();
+            new TypeEtablissement("Atelier Thérapeutique").save();
+            new TypeEtablissement("Autre Centre d'Accueil").save();
+            new TypeEtablissement("Autre Etablissement Loi Hospitalière").save();
+            new TypeEtablissement("Autre Laboratoire de Biologie Médicale sans FSE").save();
+            new TypeEtablissement("Autre Résidence Sociale (hors Maison Relais, Pension de Fami").save();
+            new TypeEtablissement("Bureau d'Aide Psychologique Universitaire (B.A.P.U.)").save();
+            new TypeEtablissement("Centre Accueil Demandeurs Asile (C.A.D.A.)").save();
+            new TypeEtablissement("Centre Action Médico-Sociale Précoce (C.A.M.S.P.)").save();
+            new TypeEtablissement("Centre Circonscription Sanitaire et Sociale").save();
+            new TypeEtablissement("Centre Crise Accueil Permanent").save();
+            new TypeEtablissement("Centre d'Accueil Familial Spécialisé").save();
+            new TypeEtablissement("Centre d'Accueil Thérapeutique à temps partiel (C.A.T.T.P.)").save();
+            new TypeEtablissement("Centre d'Action Educative (C.A.E.)").save();
+            new TypeEtablissement("Centre de Consultations Cancer").save();
+            new TypeEtablissement("Centre de dialyse").save();
+            new TypeEtablissement("Centre de Jour pour Personnes Agées").save();
+            new TypeEtablissement("Centre de Lutte Contre Cancer").save();
+            new TypeEtablissement("Centre de Médecine collective").save();
+            new TypeEtablissement("Centre de Médecine Sportive").save();
+            new TypeEtablissement("Centre de Médecine Universitaire").save();
+            new TypeEtablissement("Centre de Pré orientation pour Handicapés").save();
+            new TypeEtablissement("Centre de Santé").save();
+            new TypeEtablissement("Centre de Services pour Associations").save();
+            new TypeEtablissement("Centre de soins et de prévention").save();
+            new TypeEtablissement("Centre de Vaccination BCG").save();
+            new TypeEtablissement("Centre d'Examens de Santé").save();
+            new TypeEtablissement("Centre Hébergement & Réinsertion Sociale (C.H.R.S.)").save();
+            new TypeEtablissement("Centre Hospitalier (C.H.)").save();
+            new TypeEtablissement("Centre Hospitalier Régional (C.H.R.)").save();
+            new TypeEtablissement("Centre Hospitalier Spécialisé lutte Maladies Mentales").save();
+            new TypeEtablissement("Centre hospitalier, ex Hôpital local").save();
+            new TypeEtablissement("Centre Médico-Psychologique (C.M.P.)").save();
+            new TypeEtablissement("Centre Médico-Psycho-Pédagogique (C.M.P.P.)").save();
+            new TypeEtablissement("Centre Médico-Scolaire").save();
+            new TypeEtablissement("Centre Placement Familial Socio-Educatif (C.P.F.S.E.)").save();
+            new TypeEtablissement("Centre Planification ou Education Familiale").save();
+            new TypeEtablissement("Centre Postcure Malades Mentaux").save();
+            new TypeEtablissement("Centre Provisoire Hébergement (C.P.H.)").save();
+            new TypeEtablissement("Centre Rééducation Professionnelle").save();
+            new TypeEtablissement("Centre Social").save();
+            new TypeEtablissement("Centre soins accompagnement prévention addictologie (CSAPA)").save();
+            new TypeEtablissement("Centres de Ressources S.A.I. (Sans Aucune Indication)").save();
+            new TypeEtablissement("Centres Locaux Information Coordination P.A .(C.L.I.C.)").save();
+            new TypeEtablissement("Club Equipe de Prévention").save();
+            new TypeEtablissement("Communautés professionnelles territoriales de santé (CPTS)").save();
+            new TypeEtablissement("Ctre.Accueil/ Accomp.Réduc.Risq.Usag. Drogues (C.A.A.R.U.D.)").save();
+            new TypeEtablissement("Dispensaire Antihansénien").save();
+            new TypeEtablissement("Dispensaire Antituberculeux").save();
+            new TypeEtablissement("Dispensaire Antivénérien").save();
+            new TypeEtablissement("Ecole des Hautes Etudes en Santé Publique (E.H.E.S.P.)").save();
+            new TypeEtablissement("Ecoles Formant aux Professions Sanitaires").save();
+            new TypeEtablissement("Ecoles Formant aux Professions Sanitaires et Sociales").save();
+            new TypeEtablissement("Ecoles Formant aux Professions Sociales").save();
+            new TypeEtablissement("EHPA ne percevant pas des crédits d'assurance maladie").save();
+            new TypeEtablissement("EHPA percevant des crédits d'assurance maladie").save();
+            new TypeEtablissement("Entité Ayant Autorisation").save();
+            new TypeEtablissement("Entreprise adaptée").save();
+            new TypeEtablissement("Etab.Acc.Médicalisé en tout ou partie personnes handicapées").save();
+            new TypeEtablissement("Etab.Accueil Non Médicalisé pour personnes handicapées").save();
+            new TypeEtablissement("Etablissement Consultation Protection Infantile").save();
+            new TypeEtablissement("Etablissement d'Accueil Mère-Enfant").save();
+            new TypeEtablissement("Etablissement d'Accueil Temporaire d'Enfants Handicapés").save();
+            new TypeEtablissement("Etablissement d'Accueil Temporaire pour Adultes Handicapés").save();
+            new TypeEtablissement("Etablissement de Consultation Pré et Post-natale").save();
+            new TypeEtablissement("Etablissement de santé privé autorisé en SSR").save();
+            new TypeEtablissement("Etablissement de Soins Chirurgicaux").save();
+            new TypeEtablissement("Etablissement de Soins du Service de Santé des Armées").save();
+            new TypeEtablissement("Etablissement de Soins Longue Durée").save();
+            new TypeEtablissement("Etablissement de Soins Médicaux").save();
+            new TypeEtablissement("Etablissement de Soins Pluridisciplinaire").save();
+            new TypeEtablissement("Etablissement de Transfusion Sanguine").save();
+            new TypeEtablissement("Etablissement d'hébergement pour personnes âgées dépendantes").save();
+            new TypeEtablissement("Etablissement et Service d'Aide par le Travail (E.S.A.T.)").save();
+            new TypeEtablissement("Etablissement Expérimental Autres Adultes").save();
+            new TypeEtablissement("Etablissement Expérimental Enfance Protégée").save();
+            new TypeEtablissement("Etablissement Expérimental pour Adultes Handicapés").save();
+            new TypeEtablissement("Etablissement Expérimental pour Enfance Handicapée").save();
+            new TypeEtablissement("Etablissement Expérimental pour Personnes Agées").save();
+            new TypeEtablissement("Etablissement Expérimental pour personnes handicapées").save();
+            new TypeEtablissement("Etablissement Information Consultation Conseil Familial").save();
+            new TypeEtablissement("Etablissement pour Enfants ou Adolescents Polyhandicapés").save();
+            new TypeEtablissement("Etablissement Sanitaire des Prisons").save();
+            new TypeEtablissement("Etablissement Soins Obstétriques Chirurgico-Gynécologiques").save();
+            new TypeEtablissement("Etablissement Thermal").save();
+            new TypeEtablissement("Foyer Club Restaurant").save();
+            new TypeEtablissement("Foyer d'Accueil Médicalisé pour Adultes Handicapés (F.A.M.)").save();
+            new TypeEtablissement("Foyer d'Accueil Polyvalent pour Adultes Handicapés").save();
+            new TypeEtablissement("Foyer d'Action Educative (F.A.E.)").save();
+            new TypeEtablissement("Foyer de Jeunes Travailleurs (résidence sociale ou non)").save();
+            new TypeEtablissement("Foyer de l'Enfance").save();
+            new TypeEtablissement("Foyer de Vie pour Adultes Handicapés").save();
+            new TypeEtablissement("Foyer Hébergement Adultes Handicapés").save();
+            new TypeEtablissement("Foyer Hébergement Enfants et Adolescents Handicapés").save();
+            new TypeEtablissement("Foyer Travailleurs Migrants non transformé en Résidence Soc.").save();
+            new TypeEtablissement("Groupement de coopération sanitaire - Etablissement de santé").save();
+            new TypeEtablissement("Groupement de coopération sanitaire de moyens").save();
+            new TypeEtablissement("Groupement de coopération sanitaire de moyens - Exploitant").save();
+            new TypeEtablissement("Hôpital des armées").save();
+            new TypeEtablissement("Hospitalisation à Domicile").save();
+            new TypeEtablissement("Installation autonome de chirurgie esthétique").save();
+            new TypeEtablissement("Institut d'éducation motrice").save();
+            new TypeEtablissement("Institut d'Education Sensorielle Sourd/Aveugle").save();
+            new TypeEtablissement("Institut Médico-Educatif (I.M.E.)").save();
+            new TypeEtablissement("Institut pour Déficients Auditifs").save();
+            new TypeEtablissement("Institut pour Déficients Visuels").save();
+            new TypeEtablissement("Institut Thérapeutique Éducatif et Pédagogique (I.T.E.P.)").save();
+            new TypeEtablissement("Intermédiaire de Placement Social").save();
+            new TypeEtablissement("Jardin d'Enfants Spécialisé").save();
+            new TypeEtablissement("Laboratoire d'Analyses").save();
+            new TypeEtablissement("Laboratoire de Biologie Médicale").save();
+            new TypeEtablissement("Laboratoire pharmaceutique préparant délivrant allergènes").save();
+            new TypeEtablissement("Lieux de vie").save();
+            new TypeEtablissement("Lits d'Accueil Médicalisés (L.A.M.)").save();
+            new TypeEtablissement("Lits Halte Soins Santé (L.H.S.S.)").save();
+            new TypeEtablissement("Logement Foyer non Spécialisé").save();
+            new TypeEtablissement("Maison d'Accueil Spécialisée (M.A.S.)").save();
+            new TypeEtablissement("Maison de naissance").save();
+            new TypeEtablissement("Maison de santé (L.6223-3)").save();
+            new TypeEtablissement("Maison de Santé pour Maladies Mentales").save();
+            new TypeEtablissement("Maison d'Enfants à Caractère Social").save();
+            new TypeEtablissement("Maisons d'accueil hospitalières (M.A.H.)").save();
+            new TypeEtablissement("Maisons Relais - Pensions de Famille").save();
+            new TypeEtablissement("Pharmacie d'Officine").save();
+            new TypeEtablissement("Pharmacie Minière").save();
+            new TypeEtablissement("Pharmacie Mutualiste").save();
+            new TypeEtablissement("Pouponnière à Caractère Social").save();
+            new TypeEtablissement("Propharmacie").save();
+            new TypeEtablissement("Protection Maternelle et Infantile (P.M.I.)").save();
+            new TypeEtablissement("Résidences autonomie").save();
+            new TypeEtablissement("Service Action Educative en Milieu Ouvert (A.E.M.O.)").save();
+            new TypeEtablissement("Service d'Accompagnement à la Vie Sociale (S.A.V.S.)").save();
+            new TypeEtablissement("Service d'accompagnement médico-social adultes handicapés").save();
+            new TypeEtablissement("Service d'Aide aux Familles en Difficulté").save();
+            new TypeEtablissement("Service d'Aide aux Personnes Agées").save();
+            new TypeEtablissement("Service d'Aide et d'Accompagnement à Domicile (S.A.A.D.)").save();
+            new TypeEtablissement("Service d'Aide Ménagère à Domicile").save();
+            new TypeEtablissement("Service de Réparation Pénale").save();
+            new TypeEtablissement("Service de Repas à Domicile").save();
+            new TypeEtablissement("Service de Soins Infirmiers A Domicile (S.S.I.A.D)").save();
+            new TypeEtablissement("Service de Travailleuses Familiales").save();
+            new TypeEtablissement("Service dédié mesures d'accompagnement social personnalisé").save();
+            new TypeEtablissement("Service d'Éducation Spéciale et de Soins à Domicile").save();
+            new TypeEtablissement("Service délégué aux prestations familiales").save();
+            new TypeEtablissement("Service d'Enquêtes Sociales (S.E.S.)").save();
+            new TypeEtablissement("Service d'information et de soutien aux tuteurs familiaux").save();
+            new TypeEtablissement("Service Educatif Auprès des Tribunaux (S.E.A.T.)").save();
+            new TypeEtablissement("Service Investigation Orientation Educative (S.I.O.E.)").save();
+            new TypeEtablissement("Service mandataire judiciaire à la protection des majeurs").save();
+            new TypeEtablissement("Service Médico-Psychologique Régional (S.M.P.R.)").save();
+            new TypeEtablissement("Service Polyvalent Aide et Soins A Domicile (S.P.A.S.A.D.)").save();
+            new TypeEtablissement("Service Social Polyvalent de Secteur").save();
+            new TypeEtablissement("Service Social Spécialisé ou Polyvalent de Catégorie").save();
+            new TypeEtablissement("Service Tutelle Prestation Sociale").save();
+            new TypeEtablissement("Structure d'Alternative à la dialyse en centre").save();
+            new TypeEtablissement("Structure Dispensatrice à domicile d'Oxygène à usage médical").save();
+            new TypeEtablissement("Syndicat Inter Hospitalier (S.I.H.)").save();
+            new TypeEtablissement("Traitements Spécialisés à Domicile").save();
+            new TypeEtablissement("Unités Evaluation Réentraînement et d'Orient. Soc. et Pro.").save();
+            new TypeEtablissement("Village d'Enfants").save();
+
+
         }
     }
 

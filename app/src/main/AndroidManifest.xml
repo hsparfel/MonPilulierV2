@@ -24,7 +24,7 @@
         <meta-data
             android:name="VERSION"
 
-            android:value="82" />
+            android:value="83" />
 
         <meta-data
             android:name="QUERY_LOG"
@@ -82,6 +82,7 @@
         <activity android:name=".activities.afficher.AfficherPhotoActivity" />
         <activity android:name=".activities.photo.MakePhotoActivity" />
         <activity android:name=".activities.tools.ImportContactActivity" />
+        <activity android:name=".activities.tools.ImportEtablissementActivity" />
         <!-- <receiver android:name=".activities.tools.MyBroadcastReceiver" ></receiver> -->
         <!-- <receiver android:name = ".activities.tools.MyNotificationBroadcastReceiver" >
             <intent-filter>

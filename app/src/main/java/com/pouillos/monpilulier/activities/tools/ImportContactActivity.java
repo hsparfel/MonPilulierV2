@@ -349,74 +349,15 @@ public class ImportContactActivity extends NavDrawerActivity implements Serializ
 
     @OnClick(R.id.fabSupprDoublon)
     public void fabSupprDoublonClick() {
-        //todo
-        //  progressBar.setVisibility(View.VISIBLE);
-        // ImportContactActivity.AsyncTaskRunnerDoublon runnerDoublon = new ImportContactActivity.AsyncTaskRunnerDoublon();
-        // runnerDoublon.execute();
+
         Toast.makeText(ImportContactActivity.this, "raz import contact & contact", Toast.LENGTH_LONG).show();
-        SugarRecord.executeQuery("DELETE FROM IMPORT_CONTACT");
-        SugarRecord.executeQuery("DELETE FROM CONTACT");
+       //mis en commentaire pr eviter raz non voulue
+        // SugarRecord.executeQuery("DELETE FROM IMPORT_CONTACT");
+       // SugarRecord.executeQuery("DELETE FROM CONTACT");
 
     }
 
-    public class AsyncTaskRunnerDoublon extends AsyncTask<Void, Integer, Void> {
-        protected Void doInBackground(Void...voids) {
-            publishProgress(0);
-            publishProgress(10);
-            String requete =  "";
 
-      /*  DELETE
-        FROM   Temperature_Calendar vb
-        WHERE  Temperature_Calendar.rowid >
-                (SELECT rowid
-        FROM   Temperature_Calendar T2
-        WHERE  Temperature_Calendar.rowid <> T2.rowid
-        AND  Temperature_Calendar.DeviceRowID    = T2.DeviceRowID
-        AND  Temperature_Calendar.date    = T2.date);*/
-
-
-            requete += "DELETE FROM CONTACT  WHERE  CONTACT.ID > (SELECT C2.ID FROM CONTACT as C2 WHERE CONTACT.ID <> C2.ID ";
-
-            //  requete += "DELETE  FROM CONTACT AS C, PROFIL AS P";
-
-       /* requete += "DELETE * FROM CONTACT AS C, CONTACT AS C2 ";
-        requete += "WHERE ID > C2.ID ";*/
-            //requete += "AND CONTACT.ADRESSE = C2.ADRESSE";
-            requete += "AND CONTACT.CODE_CIVILITE = C2.CODE_CIVILITE ";
-            // requete += "AND CONTACT.COMPLEMENT = C2.COMPLEMENT";
-            //   requete += "AND CONTACT.CP = C2.CP";
-            requete += "AND CONTACT.DEPARTEMENT = C2.DEPARTEMENT ";
-            //   requete += "AND CONTACT.EMAIL = C2.EMAIL";
-            //    requete += "AND CONTACT.FAX = C2.FAX";
-            requete += "AND CONTACT.ID_PP = C2.ID_PP ";
-            requete += "AND CONTACT.LATITUDE = C2.LATITUDE ";
-            requete += "AND CONTACT.LONGITUDE = C2.LONGITUDE ";
-            requete += "AND CONTACT.NOM = C2.NOM ";
-            requete += "AND CONTACT.PRENOM = C2.PRENOM ";
-            //    requete += "AND CONTACT.PROFESSION = C2.PROFESSION ";
-            //    requete += "AND CONTACT.RAISON_SOCIAL = C2.RAISON_SOCIAL ";
-            requete += "AND CONTACT.REGION = C2.REGION ";
-            //   requete += "AND CONTACT.SAVOIR_FAIRE = C2.SAVOIR_FAIRE ";
-            //   requete += "AND CONTACT.TELEPHONE = C2.TELEPHONE ";
-            //   requete += "AND CONTACT.VILLE = C2.VILLE ";
-
-            requete += ")";
-            SugarRecord.executeQuery(requete);
-
-
-            publishProgress(100);
-            return null;
-        }
-        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-        protected void onPostExecute(Void result) {
-            progressBar.setVisibility(View.GONE);
-            afficherNbContactEnregistre();
-        }
-        @RequiresApi(api = Build.VERSION_CODES.N)
-        protected void onProgressUpdate(Integer... integer) {
-            progressBar.setProgress(integer[0],true);
-        }
-    }
 
 
 }
