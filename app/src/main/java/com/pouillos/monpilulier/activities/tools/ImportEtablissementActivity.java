@@ -198,7 +198,26 @@ public class ImportEtablissementActivity extends NavDrawerActivity implements Se
                         } else {
                             etablissement.setCp(lineSplitted[4]);
                         }
-                        etablissement.setVille(lineSplitted[5]);
+                     /*   if (lineSplitted[5].length()>6 && lineSplitted[5].substring(lineSplitted[5].length()-5).equalsIgnoreCase("CEDEX")){
+                            etablissement.setVille(lineSplitted[5].substring(0,lineSplitted[5].length()-6));
+                        } else {
+                            etablissement.setVille(lineSplitted[5]);
+                        }*/
+                     //todo  revoir avec contains pour tous les cedex
+                        if (lineSplitted[5].contains("CEDEX")) {
+                            int index = lineSplitted[5].indexOf("CEDEX");
+                            etablissement.setVille(lineSplitted[5].substring(0,index-1));
+                        } else {
+                            etablissement.setVille(lineSplitted[5]);
+                        }
+
+
+                        if (lineSplitted[5].length()>6 && lineSplitted[5].substring(lineSplitted[5].length()-5).equalsIgnoreCase("CEDEX")){
+                            etablissement.setVille(lineSplitted[5].substring(0,lineSplitted[5].length()-6));
+                        } else {
+                            etablissement.setVille(lineSplitted[5]);
+                        }
+////////////////////////
                         if (lineSplitted[6].length() == 9) {
                             etablissement.setTelephone("0"+lineSplitted[6]);
                         }
@@ -278,8 +297,9 @@ public class ImportEtablissementActivity extends NavDrawerActivity implements Se
     public void fabSupprDoublonClick() {
 
         Toast.makeText(ImportEtablissementActivity.this, "raz import etablissement & etablissement", Toast.LENGTH_LONG).show();
-        SugarRecord.executeQuery("DELETE FROM IMPORT_ETABLISSEMENT");
-        SugarRecord.executeQuery("DELETE FROM ETABLISSEMENT");
+        //SugarRecord.executeQuery("DELETE FROM IMPORT_ETABLISSEMENT");
+        //SugarRecord.executeQuery("DELETE FROM ETABLISSEMENT");
+        SugarRecord.executeQuery("update import_etablissement set import_completed =0 where id = 9");
 
     }
 

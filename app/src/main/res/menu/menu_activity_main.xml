@@ -42,6 +42,11 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
 
         android:title="importer etablissement"
         />
+
+    <item android:id="@+id/rchEtablissement"
+
+        android:title="rechercher etablissement"
+        />
 <!-- <item
     android:id="@+id/menu_activity_main_params"
     android:icon="@drawable/outline_more_vert_white_18dp"

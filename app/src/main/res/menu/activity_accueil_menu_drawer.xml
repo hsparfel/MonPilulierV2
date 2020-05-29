@@ -54,6 +54,10 @@
                     android:id="@+id/activity_main_drawer_exam_appointments"
                     android:icon="@drawable/heart"
                     android:title="@string/my_exams" />
+                <item
+                    android:id="@+id/activity_main_drawer_etablissement"
+                    android:icon="@drawable/big_hospital"
+                    android:title="Mes Etablissements" />
 
             </group>
         </menu>

@@ -39,6 +39,7 @@ import com.pouillos.monpilulier.activities.add.AddProfilActivity;
 import com.pouillos.monpilulier.activities.add.AddUserActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherAnalyseActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherContactActivity;
+import com.pouillos.monpilulier.activities.afficher.AfficherEtablissementActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherExamenActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherGraphiqueActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherPhotoActivity;
@@ -50,6 +51,7 @@ import com.pouillos.monpilulier.activities.graphique.BarToLineChartActivity;
 import com.pouillos.monpilulier.activities.photo.MakePhotoActivity;
 import com.pouillos.monpilulier.activities.recherche.ChercherContactActivity;
 
+import com.pouillos.monpilulier.activities.recherche.ChercherEtablissementActivity;
 import com.pouillos.monpilulier.activities.tools.ImportContactActivity;
 import com.pouillos.monpilulier.activities.tools.ImportEtablissementActivity;
 import com.pouillos.monpilulier.activities.tools.PriseNotificationBroadcastReceiver;
@@ -166,6 +168,9 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
             case R.id.activity_main_drawer_contacts:
                 ouvrirActiviteSuivante(NavDrawerActivity.this, AfficherContactActivity.class,true);
                 break;
+            case R.id.activity_main_drawer_etablissement:
+                ouvrirActiviteSuivante(NavDrawerActivity.this, AfficherEtablissementActivity.class,true);
+                break;
             case R.id.activity_main_drawer_oldAccueil:
                 ouvrirActiviteSuivante(NavDrawerActivity.this, MainActivity.class,true);
                 break;
@@ -226,6 +231,10 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
                 return true;
             case R.id.importEtablissement:
                 myProfilActivity = new Intent(NavDrawerActivity.this, ImportEtablissementActivity.class);
+                startActivity(myProfilActivity);
+                return true;
+            case R.id.rchEtablissement:
+                myProfilActivity = new Intent(NavDrawerActivity.this, ChercherEtablissementActivity.class);
                 startActivity(myProfilActivity);
                 return true;
             default:

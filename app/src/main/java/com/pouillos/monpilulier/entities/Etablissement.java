@@ -5,6 +5,7 @@ import android.location.Address;
 import android.location.Geocoder;
 
 import com.orm.SugarRecord;
+import com.orm.dsl.Ignore;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -24,6 +25,8 @@ public class Etablissement extends SugarRecord implements Serializable, Comparab
     private double latitude;
     private double longitude;
     private TypeEtablissement typeEtablissement;
+    @Ignore
+    private double distance;
 
     public Etablissement() {
     }
@@ -124,27 +127,27 @@ public class Etablissement extends SugarRecord implements Serializable, Comparab
         this.typeEtablissement = typeEtablissement;
     }
 
-    @Override
-    public String toString() {
-        return "Etablissement{" +
-                "numeroFinessET='" + numeroFinessET + '\'' +
-                ", raisonSocial='" + raisonSocial + '\'' +
-                ", adresse='" + adresse + '\'' +
-                ", cp='" + cp + '\'' +
-                ", ville='" + ville + '\'' +
-                ", telephone='" + telephone + '\'' +
-                ", fax='" + fax + '\'' +
-                ", departement=" + departement +
-                ", region=" + region +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", typeEtablissement=" + typeEtablissement +
-                '}';
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 
     @Override
+    public String toString() {
+        return raisonSocial;
+    }
+
+    /*@Override
     public int compareTo(Etablissement o) {
         return this.raisonSocial.compareTo(o.raisonSocial);
+    }*/
+
+    @Override
+    public int compareTo(Etablissement o) {
+        return Double.compare(this.distance,o.distance);
     }
 
     public void enregisterCoordonnees(Context context) {

@@ -30,4 +30,8 @@ public class TypeEtablissement extends SugarRecord implements Serializable, Comp
         return this.name.compareTo(o.name);
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }

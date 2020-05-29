@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <uses-feature android:name="android.hardware.camera" />
 
@@ -24,7 +25,7 @@
         <meta-data
             android:name="VERSION"
 
-            android:value="83" />
+            android:value="84" />
 
         <meta-data
             android:name="QUERY_LOG"
@@ -71,7 +72,7 @@
         <activity android:name=".activities.afficher.AfficherRdvAnalyseActivity" />
         <activity android:name=".activities.afficher.AfficherRdvExamenActivity" />
         <activity android:name=".activities.afficher.AfficherGraphiqueActivity" />
-
+        <activity android:name=".activities.afficher.AfficherEtablissementActivity" />
         <activity android:name=".activities.graphique.BarToLineChartActivity" />
 
 
@@ -83,6 +84,7 @@
         <activity android:name=".activities.photo.MakePhotoActivity" />
         <activity android:name=".activities.tools.ImportContactActivity" />
         <activity android:name=".activities.tools.ImportEtablissementActivity" />
+        <activity android:name=".activities.recherche.ChercherEtablissementActivity" />
         <!-- <receiver android:name=".activities.tools.MyBroadcastReceiver" ></receiver> -->
         <!-- <receiver android:name = ".activities.tools.MyNotificationBroadcastReceiver" >
             <intent-filter>
