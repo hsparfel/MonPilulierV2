@@ -46,7 +46,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
-                app:srcCompat="@drawable/ic_menu_camera" />
+                app:srcCompat="@drawable/ic_menu_camera"
+                app:backgroundTint="@color/colorPrimary"
+                app:tint="@android:color/white"
+                />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabSavePhoto"
@@ -55,7 +58,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
-                app:srcCompat="@drawable/outline_save_black_24dp" />
+                app:srcCompat="@drawable/outline_save_black_24dp"
+                app:backgroundTint="@color/colorPrimary"
+                app:tint="@android:color/white"
+                />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabCancelPhoto"
@@ -64,7 +70,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
-                app:srcCompat="@drawable/outline_replay_black_24dp" />
+                app:srcCompat="@drawable/outline_replay_black_24dp"
+                app:backgroundTint="@color/colorPrimary"
+                app:tint="@android:color/white"
+                />
         </LinearLayout>
     </LinearLayout>
 

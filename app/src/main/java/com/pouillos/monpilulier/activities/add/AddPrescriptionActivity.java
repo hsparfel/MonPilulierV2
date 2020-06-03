@@ -448,7 +448,12 @@ public class AddPrescriptionActivity extends NavDrawerActivity implements Serial
     public void onClickDeleteButton(int position) {
         Rappel rappel = adapter.getRappel(position);
         Toast.makeText(AddPrescriptionActivity.this, "You are trying to delete user : "+ rappel.getHeure()+" - "+rappel.getQuantiteDose()+ " " + rappel.getDose().getName(), Toast.LENGTH_SHORT).show();
+        rappel.delete();
 
+
+        listRappelBD.remove(position);
+        adapter.notifyItemRemoved(position);
+       // adapter.notifyDataSetChanged();
     }
 
     public class AsyncTaskRunnerBDMedicament extends AsyncTask<Void, Integer, Void> {

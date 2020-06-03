@@ -1,10 +1,7 @@
 package com.pouillos.monpilulier.activities;
 
-import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -22,30 +19,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
 import com.facebook.stetho.Stetho;
-
-import com.orm.SchemaGenerator;
-import com.orm.SugarContext;
-import com.orm.SugarDb;
 import com.orm.SugarRecord;
 import com.pouillos.monpilulier.R;
-///import com.pouillos.monpilulier.activities.listallx.ListAllProfilActivity;
-//import com.pouillos.monpilulier.activities.newx.NewUserActivity;
-import com.pouillos.monpilulier.activities.tools.MyNotificationBroadcastReceiver;
-import com.pouillos.monpilulier.activities.utils.DateUtils;
-import com.pouillos.monpilulier.entities.AlarmRdv;
-
 import com.pouillos.monpilulier.entities.Analyse;
 import com.pouillos.monpilulier.entities.AssociationFormeDose;
 import com.pouillos.monpilulier.entities.Contact;
+import com.pouillos.monpilulier.entities.ContactLight;
 import com.pouillos.monpilulier.entities.Departement;
 import com.pouillos.monpilulier.entities.Dose;
+import com.pouillos.monpilulier.entities.Etablissement;
 import com.pouillos.monpilulier.entities.Examen;
 import com.pouillos.monpilulier.entities.FormePharmaceutique;
-import com.pouillos.monpilulier.entities.ContactLight;
 import com.pouillos.monpilulier.entities.ImportContact;
 import com.pouillos.monpilulier.entities.Medicament;
 import com.pouillos.monpilulier.entities.Profession;
-import com.pouillos.monpilulier.entities.Profil;
 import com.pouillos.monpilulier.entities.Region;
 import com.pouillos.monpilulier.entities.SavoirFaire;
 import com.pouillos.monpilulier.entities.Utilisateur;
@@ -59,6 +46,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+///import com.pouillos.monpilulier.activities.listallx.ListAllProfilActivity;
+//import com.pouillos.monpilulier.activities.newx.NewUserActivity;
 
 public class MainActivity extends AppCompatActivity implements Serializable {
 
@@ -83,12 +73,12 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
 
         Button buttonRAZ = (Button) findViewById(R.id.buttonRAZ);
-        Button buttonCreerNotification = (Button) findViewById(R.id.buttonCreerNotification);
+     //   Button buttonCreerNotification = (Button) findViewById(R.id.buttonCreerNotification);
         Button buttonNewMedicamentOfficiel = (Button) findViewById(R.id.buttonMajMedicamentOfficiel);
         Button buttonNewMedecinOfficiel = (Button) findViewById(R.id.buttonMajMedecinOfficiel);
         Button buttonInfoDb = (Button) findViewById(R.id.buttonInfoDb);
         Button buttonAccueil = (Button) findViewById(R.id.buttonAccueil);
-        Button buttonAlarm = (Button) findViewById(R.id.buttonAddAlarm);
+     //   Button buttonAlarm = (Button) findViewById(R.id.buttonAddAlarm);
 
         progressBar = (ProgressBar) findViewById(R.id.my_progressBar);
 
@@ -106,11 +96,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         // The message will automatically be canceled when the user clicks on Panel
         this.notBuilder.setAutoCancel(true);*/
 
-        buttonCreerNotification.setOnClickListener(v -> {
+        /*buttonCreerNotification.setOnClickListener(v -> {
             startNotification();
-        });
+        });*/
 
-        buttonAlarm.setOnClickListener(new View.OnClickListener() {
+    /*    buttonAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                // startAlert(DateUtils.ajouterSeconde(new Date(),15));
@@ -122,15 +112,15 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                 requestCode = new Date().getTime();
                 startAlert(DateUtils.ajouterSeconde(new Date(),15),requestCode.intValue());
             }
-        });
+        }); */
 
-        buttonNewMedicamentOfficiel.setOnClickListener(v -> {
+        /*buttonNewMedicamentOfficiel.setOnClickListener(v -> {
             progressBar.setVisibility(View.VISIBLE);
             //remplirMedicamentOfficielBD();
             progressBar.setProgress(0);
             AsyncTaskRunnerMedicament runnerMedicament = new AsyncTaskRunnerMedicament();
             runnerMedicament.execute();
-        });
+        });*/
 
         buttonNewMedecinOfficiel.setOnClickListener(v -> {
             /*//remplirMedecinOfficielBD();
@@ -151,7 +141,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         buttonInfoDb.setOnClickListener(v -> {
             long size1 = Medicament.count(Medicament.class);
             long size2 = Contact.count(Contact.class);
-            Toast toast = Toast.makeText(MainActivity.this, "nb medicament: "+size1+" - nb medecin: "+size2, Toast.LENGTH_LONG);
+            long size3 = Etablissement.count(Etablissement.class);
+            Toast toast = Toast.makeText(MainActivity.this, "nb medicament: "+size1+"/13023\nnb medecin: "+size2+"/1825106\nnb etablissement: "+size3+"/95186", Toast.LENGTH_LONG);
             toast.show();
         });
 
@@ -165,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
     }
 
-    public void startNotification() {
+    /*public void startNotification() {
         // --------------------------
         // Prepare a notification
         // --------------------------
@@ -213,10 +204,10 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         Notification notification =  notBuilder.build();
         notificationService.notify(MY_NOTIFICATION_ID, notification);
-    }
+    }*/
 
    // public void startAlert(Date date) {
-    public void startAlert(Date date,int requestCode) {
+    /*public void startAlert(Date date,int requestCode) {
         //EditText text = findViewById(R.id.time);
         //int i = Integer.parseInt(text.getText().toString());
         //int i = 10;
@@ -245,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         Toast.makeText(this, "Alarm set : " + date.toString(), Toast.LENGTH_LONG).show();
         //startNotification();
-    }
+    }*/
 
     private class AsyncTaskRunnerRAZ extends AsyncTask<Void, Integer, Void> {
 
@@ -1030,7 +1021,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         }
     }
 
-    private class AsyncTaskRunnerMedicament extends AsyncTask<Void, Integer, Void> {
+    /*private class AsyncTaskRunnerMedicament extends AsyncTask<Void, Integer, Void> {
 
         protected Void doInBackground(Void...voids) {
 
@@ -1042,63 +1033,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     reader = new BufferedReader(new InputStreamReader(is,"iso-8859-1"));
                     String line = null;
 
-                    List<Medicament> listMedicament = Medicament.listAll(Medicament.class);
-                    Map<Long, Medicament> mapMedicamentOfficiel = new HashMap<>();
-                    for (Medicament medicament : listMedicament) {
-                        mapMedicamentOfficiel.put(medicament.getCodeCIS(), medicament);
-                    }
 
-                    List<FormePharmaceutique> listFormePharamaceutique = FormePharmaceutique.listAll(FormePharmaceutique.class);
-                    Map<String, FormePharmaceutique> mapFormePharamaceutique = new HashMap<>();
-                    for (FormePharmaceutique formePharmaceutique : listFormePharamaceutique) {
-                        mapFormePharamaceutique.put(formePharmaceutique.getName(), formePharmaceutique);
-                    }
 
-                    int readerSize = 15090;
-                    int readerCount = 0;
-                    int compteur = 0;
-                    publishProgress(compteur);
+
                     while ((line = reader.readLine()) != null) {
-                        readerCount ++;
-                        compteur = readerCount*100/readerSize;
-                        publishProgress(compteur);
-                        final String SEPARATEUR = "\t";
-                        String lineSplitted[] = line.split(SEPARATEUR);
 
-                        Medicament medicament = new Medicament();
-                        //verif si commercialise
-                        if (!lineSplitted[6].equals("Commercialisée") ) {
-                            continue;
-                        }
-
-                        //verif si existant
-                        Medicament verifMedicament = null;
-                        verifMedicament = mapMedicamentOfficiel.get(Long.parseLong(lineSplitted[0]));
-                        if (verifMedicament != null){
-                            continue;
-                        }
-
-                        medicament.setCodeCIS(Long.parseLong(lineSplitted[0]));
-
-                        int positionVirgule = lineSplitted[1].indexOf(",");
-                        if (positionVirgule >=0){
-                            medicament.setDenomination(lineSplitted[1].substring(0,positionVirgule));
-                        } else {
-                            medicament.setDenomination(lineSplitted[1]);
-                        }
-                        if (lineSplitted[2].substring(0,1).equals(" ")) {
-                            lineSplitted[2] = lineSplitted[2].substring(1,lineSplitted[2].length());
-                        }
-
-                        medicament.setFormePharmaceutique(mapFormePharamaceutique.get(lineSplitted[2]));
-
-                        int positionPointVirgule = lineSplitted[10].indexOf(";");
-                        if (positionPointVirgule >=0){
-                            medicament.setTitulaire(lineSplitted[10].substring(0,positionPointVirgule));
-                        } else {
-                            medicament.setTitulaire(lineSplitted[10]);
-                        }
-                        medicament.save();
                     }
                 } catch (final Exception e) {
                     e.printStackTrace();
@@ -1133,7 +1072,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         protected void onProgressUpdate(Integer... integer) {
             progressBar.setProgress(integer[0],true);
         }
-    }
+    }*/
 
     private class AsyncTaskRunnerContact extends AsyncTask<Void, Integer, Void> {
 

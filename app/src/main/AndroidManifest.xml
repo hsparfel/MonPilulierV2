@@ -25,7 +25,7 @@
         <meta-data
             android:name="VERSION"
 
-            android:value="84" />
+            android:value="85" />
 
         <meta-data
             android:name="QUERY_LOG"
@@ -38,7 +38,6 @@
 
 
         <activity android:name=".activities.recherche.ChercherContactActivity" />
-        <activity android:name=".activities.enregistrer.EnregistrerPrescriptionActivity" />
         <activity android:name=".activities.AuthentificationActivity" />
         <activity android:name=".activities.add.AddUserActivity"
             android:windowSoftInputMode="stateHidden"/>
@@ -73,7 +72,7 @@
         <activity android:name=".activities.afficher.AfficherRdvExamenActivity" />
         <activity android:name=".activities.afficher.AfficherGraphiqueActivity" />
         <activity android:name=".activities.afficher.AfficherEtablissementActivity" />
-        <activity android:name=".activities.graphique.BarToLineChartActivity" />
+    <!--    <activity android:name=".activities.graphique.BarToLineChartActivity" /> -->
 
 
 
@@ -84,6 +83,7 @@
         <activity android:name=".activities.photo.MakePhotoActivity" />
         <activity android:name=".activities.tools.ImportContactActivity" />
         <activity android:name=".activities.tools.ImportEtablissementActivity" />
+        <activity android:name=".activities.tools.ImportMedicamentActivity" />
         <activity android:name=".activities.recherche.ChercherEtablissementActivity" />
         <!-- <receiver android:name=".activities.tools.MyBroadcastReceiver" ></receiver> -->
         <!-- <receiver android:name = ".activities.tools.MyNotificationBroadcastReceiver" >
@@ -92,7 +92,7 @@
             </intent-filter>
         </receiver> -->
 
-        <receiver android:name = ".activities.tools.MyNotificationBroadcastReceiver" ></receiver>
+
         <receiver android:name = ".activities.tools.RdvContactNotificationBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

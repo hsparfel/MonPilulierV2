@@ -140,6 +140,9 @@
         android:layout_gravity="bottom|center"
         android:layout_margin="20dip"
         app:srcCompat="@drawable/outline_save_black_24dp"
+
+        app:backgroundTint="@color/colorPrimary"
+        app:tint="@android:color/white"
         />
 
 </LinearLayout>

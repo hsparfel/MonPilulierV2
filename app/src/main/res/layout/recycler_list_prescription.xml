@@ -22,5 +22,10 @@
         android:layout_weight="1"
         android:paddingLeft="20dip"
         android:text="TextView" />
+    <ImageButton
+        android:id="@+id/buttonDelete"
+        android:layout_width="20dip"
+        android:layout_height="20dip"
+        android:background="@drawable/outline_delete_black_24dp" />
 
 </LinearLayout>

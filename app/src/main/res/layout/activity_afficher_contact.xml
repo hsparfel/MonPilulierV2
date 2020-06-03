@@ -67,7 +67,10 @@
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
                 app:fabSize="mini"
-                app:srcCompat="@drawable/outline_today_black_24dp" />
+                app:srcCompat="@drawable/outline_today_black_24dp"
+                app:backgroundTint="@color/colorPrimary"
+                app:tint="@android:color/white"
+                />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabPrescription"
@@ -77,7 +80,10 @@
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
                 app:fabSize="mini"
-                app:srcCompat="@drawable/drug_icon" />
+                app:srcCompat="@drawable/drug_icon"
+                app:backgroundTint="@color/colorPrimary"
+                app:tint="@android:color/white"
+                />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabGoogleMap"
@@ -87,7 +93,10 @@
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
                 app:fabSize="mini"
-                app:srcCompat="@drawable/outline_place_black_24dp" />
+                app:srcCompat="@drawable/outline_place_black_24dp"
+                app:backgroundTint="@color/colorPrimary"
+                app:tint="@android:color/white"
+                />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabWaze"
@@ -97,7 +106,10 @@
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
                 app:fabSize="mini"
-                app:srcCompat="@drawable/outline_navigation_black_24dp" />
+                app:srcCompat="@drawable/outline_navigation_black_24dp"
+                app:backgroundTint="@color/colorPrimary"
+                app:tint="@android:color/white"
+                />
 
 
         </LinearLayout>
@@ -116,7 +128,10 @@
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
                 app:fabSize="mini"
-                app:srcCompat="@drawable/outline_save_black_24dp" />
+                app:srcCompat="@drawable/outline_save_black_24dp"
+                app:backgroundTint="@color/colorPrimary"
+                app:tint="@android:color/white"
+                />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabCancel"
@@ -126,7 +141,10 @@
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
                 app:fabSize="mini"
-                app:srcCompat="@drawable/outline_replay_black_24dp" />
+                app:srcCompat="@drawable/outline_replay_black_24dp"
+                app:backgroundTint="@color/colorPrimary"
+                app:tint="@android:color/white"
+                />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabEdit"
@@ -136,7 +154,10 @@
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
                 app:fabSize="mini"
-                app:srcCompat="@drawable/outline_create_black_24dp" />
+                app:srcCompat="@drawable/outline_create_black_24dp"
+                app:backgroundTint="@color/colorPrimary"
+                app:tint="@android:color/white"
+                />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabDelete"
@@ -146,7 +167,10 @@
                 android:layout_gravity="bottom|center"
                 android:layout_margin="10dip"
                 app:fabSize="mini"
-                app:srcCompat="@drawable/outline_delete_black_24dp" />
+                app:srcCompat="@drawable/outline_delete_black_24dp"
+                app:backgroundTint="@color/colorPrimary"
+                app:tint="@android:color/white"
+                />
 
 
         </LinearLayout>

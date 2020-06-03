@@ -190,7 +190,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
             android:layout_margin="60dip"
-            app:srcCompat="@drawable/outline_search_black_24dp" />
+            app:srcCompat="@drawable/outline_search_black_24dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:tint="@android:color/white"
+            />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabRaz"
@@ -199,7 +202,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
             android:layout_margin="60dip"
-            app:srcCompat="@drawable/outline_clear_black_24dp" />
+            app:srcCompat="@drawable/outline_clear_black_24dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:tint="@android:color/white"
+            />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/layoutContact"

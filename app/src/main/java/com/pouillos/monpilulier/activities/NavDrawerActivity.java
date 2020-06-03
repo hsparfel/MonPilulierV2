@@ -3,20 +3,17 @@ package com.pouillos.monpilulier.activities;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
-
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,20 +41,19 @@ import com.pouillos.monpilulier.activities.afficher.AfficherExamenActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherGraphiqueActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherPhotoActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherProfilActivity;
-import com.pouillos.monpilulier.activities.afficher.AfficherRdvContactActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvAnalyseActivity;
+import com.pouillos.monpilulier.activities.afficher.AfficherRdvContactActivity;
 import com.pouillos.monpilulier.activities.afficher.AfficherRdvExamenActivity;
-import com.pouillos.monpilulier.activities.graphique.BarToLineChartActivity;
 import com.pouillos.monpilulier.activities.photo.MakePhotoActivity;
 import com.pouillos.monpilulier.activities.recherche.ChercherContactActivity;
-
 import com.pouillos.monpilulier.activities.recherche.ChercherEtablissementActivity;
 import com.pouillos.monpilulier.activities.tools.ImportContactActivity;
 import com.pouillos.monpilulier.activities.tools.ImportEtablissementActivity;
+import com.pouillos.monpilulier.activities.tools.ImportMedicamentActivity;
 import com.pouillos.monpilulier.activities.tools.PriseNotificationBroadcastReceiver;
 import com.pouillos.monpilulier.activities.tools.RdvAnalyseNotificationBroadcastReceiver;
-import com.pouillos.monpilulier.activities.tools.RdvExamenNotificationBroadcastReceiver;
 import com.pouillos.monpilulier.activities.tools.RdvContactNotificationBroadcastReceiver;
+import com.pouillos.monpilulier.activities.tools.RdvExamenNotificationBroadcastReceiver;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.AlarmRdv;
 import com.pouillos.monpilulier.entities.AssociationAlarmRdv;
@@ -71,14 +67,12 @@ import com.pouillos.monpilulier.enumeration.Echeance;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
 
 import java.math.BigDecimal;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 
 import icepick.Icepick;
 import icepick.State;
@@ -141,7 +135,7 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
                 break;
             case R.id.activity_main_drawer_account:
                // ouvrirActiviteSuivante(NavDrawerActivity.this, AddUserActivity.class, getResources().getString(R.string.id_user), activeUser.getId());
-                ouvrirActiviteSuivante(NavDrawerActivity.this, AddUserActivity.class,true);
+                ouvrirActiviteSuivante(NavDrawerActivity.this, AddUserActivity.class,"userId",activeUser.getId(),true);
 
                 break;
             case R.id.activity_main_drawer_change_account:
@@ -231,6 +225,10 @@ public class NavDrawerActivity extends AppCompatActivity implements BasicUtils, 
                 return true;
             case R.id.importEtablissement:
                 myProfilActivity = new Intent(NavDrawerActivity.this, ImportEtablissementActivity.class);
+                startActivity(myProfilActivity);
+                return true;
+            case R.id.importMedicament:
+                myProfilActivity = new Intent(NavDrawerActivity.this, ImportMedicamentActivity.class);
                 startActivity(myProfilActivity);
                 return true;
             case R.id.rchEtablissement:

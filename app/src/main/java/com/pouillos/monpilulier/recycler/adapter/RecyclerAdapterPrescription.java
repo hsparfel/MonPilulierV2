@@ -16,9 +16,10 @@ import java.util.List;
 public class RecyclerAdapterPrescription extends RecyclerView.Adapter<RecyclerViewHolderPrescription> {
 
         private List<Prescription> listPrescription;
+        private boolean activate;
 
     public interface Listener {
-        void onClickPrescriptionButton(int position);
+        void onClickDeleteButton(int position);
     }
 
     private final Listener callback;
@@ -40,6 +41,11 @@ public class RecyclerAdapterPrescription extends RecyclerView.Adapter<RecyclerVi
         @Override
         public void onBindViewHolder(RecyclerViewHolderPrescription viewHolder, int position) {
                 viewHolder.updateWithPrescription(this.listPrescription.get(position), this.callback);
+            if (activate) {
+                viewHolder.buttonDelete.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.buttonDelete.setVisibility(View.INVISIBLE);
+            }
         }
 
         @Override
@@ -51,4 +57,8 @@ public class RecyclerAdapterPrescription extends RecyclerView.Adapter<RecyclerVi
         return this.listPrescription.get(position);
     }
 
+    public void displayButtons(boolean activate) {
+        this.activate = activate;
+        notifyDataSetChanged(); //need to call it for the child views to be re-created with buttons.
+    }
 }

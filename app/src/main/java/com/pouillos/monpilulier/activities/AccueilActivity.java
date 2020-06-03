@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +26,7 @@ import com.pouillos.monpilulier.entities.AssociationFormeDose;
 import com.pouillos.monpilulier.entities.Departement;
 import com.pouillos.monpilulier.entities.Dose;
 import com.pouillos.monpilulier.entities.ImportEtablissement;
+import com.pouillos.monpilulier.entities.ImportMedicament;
 import com.pouillos.monpilulier.entities.TypeEtablissement;
 import com.pouillos.monpilulier.entities.Examen;
 import com.pouillos.monpilulier.entities.FormePharmaceutique;
@@ -58,6 +60,9 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils, Re
 
     @BindView(R.id.my_progressBar)
     ProgressBar progressBar;
+
+    //@BindView(R.id.buttonDelete)
+ //   ImageButton buttonDelete;
 
     @BindView(R.id.textView)
     TextView textView;
@@ -109,8 +114,8 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils, Re
         ButterKnife.bind(this);
 
         progressBar.setVisibility(View.VISIBLE);
-
-        textView.setText(DateUtils.ecrireDate(new Date()));
+        //buttonDelete.setVisibility(View.INVISIBLE);
+        textView.setText(DateUtils.ecrireDateLettre(new Date()));
 
         //RAZ de secours
        /* SugarContext.terminate();
@@ -232,8 +237,16 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils, Re
         }
     }
 
+    public void remplirImportMedicamentBD() {
+        Long count = ImportMedicament.count(ImportMedicament.class);
+        if (count == 0) {
+            new ImportMedicament("CIS_bdpm.txt", false).save();
+        }
+    }
+
+
     @Override
-    public void onClickPrescriptionButton(int position) {
+    public void onClickDeleteButton(int position) {
         Toast.makeText(AccueilActivity.this, "click sur prescription", Toast.LENGTH_LONG).show();
         Prescription prescription = listePrescription.get(position);
         //creer la classe
@@ -318,11 +331,13 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils, Re
             remplirRegionBD();
             publishProgress(50);
             remplirDepartementBD();
-            publishProgress(70);
+            publishProgress(55);
             remplirImportContactBD();
-            publishProgress(80);
+            publishProgress(60);
             remplirImportEtablissementBD();
-            publishProgress(85);
+            publishProgress(65);
+            remplirImportMedicamentBD();
+            publishProgress(70);
 
             if (activeUser != null) {
                 ActualiserListPrescription();
@@ -379,7 +394,7 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils, Re
         }
     }
     private void ActualiserListPrescription() {
-        List<Ordonnance> listAllOrdonnance = Ordonnance.find(Ordonnance.class,"utilisateur = ?",activeUser.getId().toString());
+        List<Ordonnance> listAllOrdonnance = Ordonnance.find(Ordonnance.class,"utilisateur = ? and validated = 1",activeUser.getId().toString());
         for (Ordonnance currentOrdonnance : listAllOrdonnance) {
             List<Prescription> listAllPrescription = Prescription.find(Prescription.class,"ordonnance = ?",currentOrdonnance.getId().toString());
             for (Prescription currentPrescription : listAllPrescription) {
@@ -452,6 +467,7 @@ public class AccueilActivity extends NavDrawerActivity implements BasicUtils, Re
 
     public void configureRecyclerView() {
         adapterPrescription = new RecyclerAdapterPrescription(listePrescription, this);
+        adapterPrescription.displayButtons(false);
         listPrescription.setAdapter(adapterPrescription);
         listPrescription.setLayoutManager(new LinearLayoutManager(this));
 

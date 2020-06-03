@@ -135,7 +135,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
             android:layout_margin="10dip"
-            app:srcCompat="@drawable/eyedropper_plus" />
+            app:srcCompat="@drawable/eyedropper_plus"
+            app:backgroundTint="@color/colorPrimary"
+            app:tint="@android:color/white"
+            />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabSave"
@@ -144,7 +147,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
             android:layout_margin="30dip"
-            app:srcCompat="@drawable/outline_save_black_24dp" />
+            app:srcCompat="@drawable/outline_save_black_24dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:tint="@android:color/white"
+            />
 
     </LinearLayout>
 

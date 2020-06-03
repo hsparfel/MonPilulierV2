@@ -92,7 +92,9 @@ public class ImportContactActivity extends NavDrawerActivity implements Serializ
 
     public void afficherNbContactEnregistre() {
         Long nb = Contact.count(Contact.class);
-        nbContactImported.setText(" nb de contacts importes:" + nb.toString());
+        int total = 1825106;
+        Long pourcentage = nb*100/total;
+        nbContactImported.setText(" nb de contacts importes:" + nb.toString()+"/"+total+" ("+pourcentage+"%)");
     }
 
     public class AsyncTaskRunnerBDImportContact extends AsyncTask<Void, Integer, Void> {
@@ -220,11 +222,14 @@ public class ImportContactActivity extends NavDrawerActivity implements Serializ
                         contact.setPrenom(lineSplitted[8]);
                         contact.setProfession(mapProfession.get(lineSplitted[10]));
 
-                        if (lineSplitted[16].equals("Qualifié en Médecine Générale") || lineSplitted[16].equals("Spécialiste en Médecine Générale")) {
-                            contact.setSavoirFaire(mapSavoirFaire.get("Médecine Générale"));
-                        } else {
-                            contact.setSavoirFaire(mapSavoirFaire.get(lineSplitted[16]));
+                        if (lineSplitted.length>16) {
+                            if (lineSplitted[16].equals("Qualifié en Médecine Générale") || lineSplitted[16].equals("Spécialiste en Médecine Générale")) {
+                                contact.setSavoirFaire(mapSavoirFaire.get("Médecine Générale"));
+                            } else {
+                                contact.setSavoirFaire(mapSavoirFaire.get(lineSplitted[16]));
+                            }
                         }
+
                         if (lineSplitted.length>24) {
                             contact.setRaisonSocial(lineSplitted[24]);
                         }
@@ -248,9 +253,14 @@ public class ImportContactActivity extends NavDrawerActivity implements Serializ
                         contact.setAdresse(adresse.toUpperCase());
 
                         if (lineSplitted.length>34 && !lineSplitted[34].isEmpty())  {
+                            if (lineSplitted.length>39 && lineSplitted[39].equalsIgnoreCase("Israel")) {
+//plutot different de france à voir si necessaire
+                            } else {
+                                contact.setCp(lineSplitted[34].substring(0,5));
+                                contact.setVille(lineSplitted[34].substring(6));
+                            }
 
-                            contact.setCp(lineSplitted[34].substring(0,5));
-                            contact.setVille(lineSplitted[34].substring(6));
+
 
                         } else {
                             contact.setCp("");
@@ -354,7 +364,8 @@ public class ImportContactActivity extends NavDrawerActivity implements Serializ
        //mis en commentaire pr eviter raz non voulue
         // SugarRecord.executeQuery("DELETE FROM IMPORT_CONTACT");
        // SugarRecord.executeQuery("DELETE FROM CONTACT");
-
+       // SugarRecord.executeQuery("update import_contact set import_completed =0 where id = 48");
+        SugarRecord.executeQuery("update import_contact set import_completed =0 where id = 71");
     }
 
 

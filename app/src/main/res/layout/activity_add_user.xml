@@ -140,7 +140,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
             android:layout_margin="30dip"
-            app:srcCompat="@drawable/outline_save_black_24dp" />
+            app:srcCompat="@drawable/outline_save_black_24dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:tint="@android:color/white"
+            />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabCancel"
@@ -149,7 +152,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
             android:layout_margin="30dip"
-            app:srcCompat="@drawable/outline_replay_black_24dp" />
+            app:srcCompat="@drawable/outline_replay_black_24dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:tint="@android:color/white"
+            />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabEdit"
@@ -158,7 +164,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
             android:layout_margin="30dip"
-            app:srcCompat="@drawable/outline_create_black_24dp" />
+            app:srcCompat="@drawable/outline_create_black_24dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:tint="@android:color/white"
+            />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabDelete"
@@ -167,7 +176,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
             android:layout_margin="30dip"
-            app:srcCompat="@drawable/outline_delete_black_24dp" />
+            app:srcCompat="@drawable/outline_delete_black_24dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:tint="@android:color/white"
+            />
     </LinearLayout>
     </LinearLayout>
 

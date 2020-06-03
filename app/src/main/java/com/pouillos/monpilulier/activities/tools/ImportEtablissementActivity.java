@@ -81,7 +81,10 @@ public class ImportEtablissementActivity extends NavDrawerActivity implements Se
 
     public void afficherNbEtablissementEnregistre() {
         Long nb = Etablissement.count(Etablissement.class);
-        nbEtablissementImported.setText(" nb de etablissements importes:" + nb.toString());
+        int total = 95186;
+        Long pourcentage = nb*100/total;
+
+        nbEtablissementImported.setText(" nb de etablissements importes:" + nb.toString()+"/"+total+" ("+pourcentage+"%)");
     }
 
     public class AsyncTaskRunnerBDImportEtablissement extends AsyncTask<Void, Integer, Void> {

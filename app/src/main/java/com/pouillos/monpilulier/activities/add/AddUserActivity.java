@@ -32,6 +32,7 @@ import com.pouillos.monpilulier.activities.AccueilActivity;
 import com.pouillos.monpilulier.activities.NavDrawerActivity;
 import com.pouillos.monpilulier.activities.utils.DateUtils;
 import com.pouillos.monpilulier.entities.Departement;
+import com.pouillos.monpilulier.entities.RdvContact;
 import com.pouillos.monpilulier.entities.Utilisateur;
 import com.pouillos.monpilulier.fragments.DatePickerFragment;
 import com.pouillos.monpilulier.interfaces.BasicUtils;
@@ -109,7 +110,7 @@ public class AddUserActivity extends NavDrawerActivity implements Serializable, 
         activeUser=findActiveUser();
 
         setTitle(getResources().getString(R.string.title_connexion));
-
+        //traiterIntent();
         AddUserActivity.AsyncTaskRunnerDepartement runnerDepartement = new AddUserActivity.AsyncTaskRunnerDepartement();
         runnerDepartement.execute();
 
@@ -127,6 +128,8 @@ public class AddUserActivity extends NavDrawerActivity implements Serializable, 
             }
         });
     }
+
+
 
     @Override
     public void enableItems(Boolean bool) {

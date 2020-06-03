@@ -94,7 +94,6 @@ public class AddAnalyseActivity extends NavDrawerActivity implements Serializabl
             publishProgress(10);
             listAnalyseBD = Analyse.listAll(Analyse.class);
             Collections.sort(listAnalyseBD);
-
             publishProgress(100);
             return null;
         }
