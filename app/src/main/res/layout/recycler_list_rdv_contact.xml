@@ -10,7 +10,6 @@
 
 
     <ImageView
-        android:id="@+id/icone"
         android:layout_width="20dip"
         android:layout_height="30dip"
         app:srcCompat="@drawable/outline_schedule_black_18dp" />

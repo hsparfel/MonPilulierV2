@@ -51,7 +51,6 @@
                 android:orientation="horizontal">
 
                 <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/chipGroupRechercheGeographique"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:singleSelection="true">

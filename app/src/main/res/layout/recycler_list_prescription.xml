@@ -10,7 +10,6 @@
 
 
     <ImageView
-        android:id="@+id/icone"
         android:layout_width="20dip"
         android:layout_height="30dip"
         app:srcCompat="@drawable/medicine_medical_pharmacy_health_prescription_pill_drug_icon_140910" />
